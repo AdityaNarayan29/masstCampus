@@ -102,15 +102,17 @@ This document captures **business, team, and operational workflow** for Masst Ca
 
 ```mermaid
 flowchart TD
-    style A fill:#78C0E0,stroke:#000,stroke-width:1px
-    style B fill:#78C0E0,stroke:#000,stroke-width:1px
-    style C fill:#FFA500,stroke:#000,stroke-width:1px
-    style D fill:#78C0E0,stroke:#000,stroke-width:1px
-    style E fill:#FFFF99,stroke:#000,stroke-width:1px
-    style F fill:#78C0E0,stroke:#000,stroke-width:1px
-    style G fill:#78C0E0,stroke:#000,stroke-width:1px
-    style H fill:#78C0E0,stroke:#000,stroke-width:1px
+    %% Node styles with high contrast
+    style A fill:#1F77B4,stroke:#000,stroke-width:2px,color:#fff
+    style B fill:#FF7F0E,stroke:#000,stroke-width:2px,color:#fff
+    style C fill:#2CA02C,stroke:#000,stroke-width:2px,color:#fff
+    style D fill:#D62728,stroke:#000,stroke-width:2px,color:#fff
+    style E fill:#9467BD,stroke:#000,stroke-width:2px,color:#fff
+    style F fill:#8C564B,stroke:#000,stroke-width:2px,color:#fff
+    style G fill:#E377C2,stroke:#000,stroke-width:2px,color:#fff
+    style H fill:#7F7F7F,stroke:#000,stroke-width:2px,color:#fff
 
+    %% Nodes
     A([Lead Generation<br>Dad & Bittu])
     B([Pitch / Demo<br>Dad primary, You technical backup])
     C([Data Collection<br>Bittu primary, Dad oversight])
@@ -120,6 +122,7 @@ flowchart TD
     G([Post-Deployment Support<br>Dad & Mukesh primary, You support])
     H([Feature Addition & Roadmap<br>You primary, Team input])
 
+    %% Main Flow
     A --> B
     B --> C
     C --> D
@@ -127,7 +130,22 @@ flowchart TD
     E --> F
     F --> G
     G --> H
+
+    %% Alternative / skipped flows (dashed)
+    B -.-> D["Skip Demo, go straight to Data Migration?"]
+    C -.-> F["Skip Data Collection?"]
+    E -.-> H["Skip Training, go straight to Roadmap?"]
+
+    %% Legend (optional)
+    subgraph Legend
+        L1([Primary Flow]):::solid
+        L2([Optional/Skipped Flow]):::dashed
+    end
+
+    classDef solid stroke-width:2px,stroke:#000;
+    classDef dashed stroke-dasharray: 5 5,stroke:#555;
 ```
+
 ---
 
 ## **5️⃣ Workflow Diagram (Textual)**
