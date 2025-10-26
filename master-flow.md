@@ -178,35 +178,6 @@ flowchart TD
 
 ---
 
-## **5️⃣ Workflow Diagram (Textual)**
-
-```
-Lead Generation (Dad & Bittu bhaiya)
-   |
-   v
-Pitch / Demo (Dad + Addi)
-   |
-   v
-Data Collection (Bittu bhaiya + Dad)
-   |
-   v
-Data Migration (Mukesh bhaiya + Addi)
-   |
-   v
-Staff Training (Dad + Bittu bhaiya + Addi)
-   |
-   v
-Go-Live (Addi + Mukesh bhaiya)
-   |
-   v
-Post-Deployment Support (Dad + Mukesh bhaiya + Addi)
-   |
-   v
-Feature Addition & Roadmap (Addi + Team Input)
-```
-
----
-
 ## **6️⃣ Tool Stack for Coordination**
 
 | Purpose                  | Tool                 | Notes                           |
