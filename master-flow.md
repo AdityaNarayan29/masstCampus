@@ -9,10 +9,10 @@ This document captures **business, team, and operational workflow** for Masst Ca
 
 | Member        | Designation                   | Responsibilities                                         | Skills                            |
 |---------------|------------------------------|----------------------------------------------------------|-----------------------------------|
-| You           | CEO & CTO                    | Product strategy, full-stack development, migration oversight, technical backup | Tech architecture, dev, mentoring |
+| Addi           | CEO & CTO                    | Product strategy, full-stack development, migration oversight, technical backup | Tech architecture, dev, mentoring |
 | Dad           | COO / Head of School Adoption | School relationships, pitching, adoption, staff training | Communication, teaching, trust    |
-| Mukesh Bhaiya | Migration & Data Lead         | Data migration, validation, running scripts, troubleshooting | Admin, data handling, tech training |
-| Bittu Bhaiya  | Operations & Admin Lead       | School liaison, scheduling, data collection, coordination | Admin, trust, operations          |
+| Mukesh bhaiya Bhaiya | Migration & Data Lead         | Data migration, validation, running scripts, troubleshooting | Admin, data handling, tech training |
+| Bittu bhaiya Bhaiya  | Operations & Admin Lead       | School liaison, scheduling, data collection, coordination | Admin, trust, operations          |
 
 ---
 
@@ -26,57 +26,57 @@ This document captures **business, team, and operational workflow** for Masst Ca
 **Suggested Meeting Rhythm:**
 - Daily standup: 15 min, all 4 members
 - Weekly sync: 30–45 min, progress & adoption review
-- Bi-weekly sprint review: You + Mukesh, dev & migration progress
-- Monthly business review: You + Dad + Bittu, leads, metrics, roadmap
+- Bi-weekly sprint review: Addi + Mukesh bhaiya, dev & migration progress
+- Monthly business review: Addi + Dad + Bittu bhaiya, leads, metrics, roadmap
 
 ---
 
 ## **3️⃣ Business Workflow Steps**
 
 ### **Step 1: Lead Generation**
-- **Owner:** Dad & Bittu
+- **Owner:** Dad & Bittu bhaiya
 - **Actions:** Identify target schools, collect basic info, schedule initial contact
 - **Tracking:** Slack `#lead-generation` + Trello/Jira board
 - **Skills:** Communication, research, relationship building
 
 ### **Step 2: Pitch / Demo**
-- **Owner:** Dad (primary), You (technical backup)
+- **Owner:** Dad (primary), Addi (technical backup)
 - **Actions:** Present Masst Campus benefits, dashboard & workflow demo, collect requirements
 - **Tracking:** Trello/Jira card per school
 - **Skills:** Public speaking, trust building, technical explanation
 
 ### **Step 3: Data Collection**
-- **Owner:** Bittu (primary), Dad (oversight)
+- **Owner:** Bittu bhaiya (primary), Dad (oversight)
 - **Actions:** Collect student, class, attendance, fee data; verify completeness
 - **Tracking:** Jira subtasks, Notion / Google Drive storage
 - **Skills:** Admin, coordination, attention to detail
 
 ### **Step 4: Data Migration**
-- **Owner:** Mukesh (primary), You (oversight)
+- **Owner:** Mukesh bhaiya (primary), Addi (oversight)
 - **Actions:** Clean & standardize data, map fields, run migration scripts, validate integrity
 - **Tracking:** Jira `School Migration` board
 - **Skills:** Data handling, technical troubleshooting, validation
 
 ### **Step 5: Staff Training**
-- **Owner:** Dad (primary), You & Bittu (support)
+- **Owner:** Dad (primary), Addi & Bittu bhaiya (support)
 - **Actions:** Teach attendance, fee, notifications workflow; dashboard overview; provide manuals
 - **Tracking:** Checklist or Jira board
 - **Skills:** Teaching, communication, patience
 
 ### **Step 6: Go-Live**
-- **Owner:** You & Mukesh, Dad & Bittu support
+- **Owner:** Addi & Mukesh bhaiya, Dad & Bittu bhaiya support
 - **Actions:** Deploy Masst Campus instance, monitor initial usage, resolve immediate issues
 - **Tracking:** Jira board, Slack alerts
 - **Skills:** Technical troubleshooting, coordination
 
 ### **Step 7: Post-Deployment Support**
-- **Owner:** Dad & Mukesh (primary), You (support)
+- **Owner:** Dad & Mukesh bhaiya (primary), Addi (support)
 - **Actions:** Handle school queries, resolve issues, collect feedback
 - **Tracking:** Jira tickets + Slack support channel
 - **Skills:** Communication, problem-solving, tech backup
 
 ### **Step 8: Feature Addition & Roadmap**
-- **Owner:** You (primary), team input from Dad, Bittu, Mukesh
+- **Owner:** Addi (primary), team input from Dad, Bittu bhaiya, Mukesh bhaiya
 - **Actions:** Add new features to backlog, prioritize, plan sprints, implement & QA
 - **Tracking:** Jira backlog, Notion roadmap
 - **Skills:** Strategic planning, development, team coordination
@@ -85,7 +85,7 @@ This document captures **business, team, and operational workflow** for Masst Ca
 
 ## **4️⃣ Skills Utilization Matrix**
 
-| Workflow Step           | Dad           | Bittu         | Mukesh         | You                      |
+| Workflow Step           | Dad           | Bittu bhaiya         | Mukesh bhaiya         | Addi                      |
 |------------------------ |-------------- |-------------- |--------------- |--------------------------|
 | Lead Generation         | ✅            | ✅            |                |                          |
 | Pitch / Demo            | ✅ (primary)  |               |                | ✅ (backup)              |
@@ -102,7 +102,9 @@ This document captures **business, team, and operational workflow** for Masst Ca
 
 ```mermaid
 flowchart TD
-    %% Node styles with high contrast
+    %% =====================
+    %%  STYLE DEFINITIONS
+    %% =====================
     style A fill:#1F77B4,stroke:#000,stroke-width:2px,color:#fff
     style B fill:#FF7F0E,stroke:#000,stroke-width:2px,color:#fff
     style C fill:#2CA02C,stroke:#000,stroke-width:2px,color:#fff
@@ -112,67 +114,91 @@ flowchart TD
     style G fill:#E377C2,stroke:#000,stroke-width:2px,color:#fff
     style H fill:#7F7F7F,stroke:#000,stroke-width:2px,color:#fff
 
-    %% Nodes
-    A([Lead Generation<br>Dad & Bittu])
-    B([Pitch / Demo<br>Dad primary, You technical backup])
-    C([Data Collection<br>Bittu primary, Dad oversight])
-    D([Data Migration<br>Mukesh primary, You oversight])
-    E([Staff Training<br>Dad primary, Bittu & You support])
-    F([Go-Live<br>You & Mukesh, Dad & Bittu support])
-    G([Post-Deployment Support<br>Dad & Mukesh primary, You support])
-    H([Feature Addition & Roadmap<br>You primary, Team input])
+    %% =====================
+    %%  NODES
+    %% =====================
+    A([Lead Generation<br><b>Dad & Bittu bhaiya</b><br>Initial contact, lead qualification])
+    B([Pitch / Demo<br><b>Dad primary, Addi technical backup</b><br>Present solution & features])
+    C([Data Collection<br><b>Bittu bhaiya primary, Dad oversight</b><br>Gather client requirements & assets])
+    D([Data Migration<br><b>Mukesh bhaiya primary, Addi oversight</b><br>Migrate existing system data])
+    E([Staff Training<br><b>Dad primary, Bittu bhaiya & Addi support</b><br>Hands-on user enablement])
+    F([Go-Live<br><b>Addi & Mukesh bhaiya, Dad & Bittu bhaiya support</b><br>Production launch])
+    G([Post-Deployment Support<br><b>Dad & Mukesh bhaiya primary, Addi support</b><br>Bug fixes, optimization])
+    H([Feature Addition & Roadmap<br><b>Addi primary, Team input</b><br>Continuous improvement cycle])
 
-    %% Main Flow
-    A --> B
-    B --> C
-    C --> D
-    D --> E
-    E --> F
-    F --> G
-    G --> H
+    %% =====================
+    %%  MAIN LINEAR FLOW
+    %% =====================
+    A -->|Qualified lead| B
+    B -->|Client interested| C
+    C -->|Requirements finalized| D
+    D -->|Data ready| E
+    E -->|Training completed| F
+    F -->|Successful deployment| G
+    G -->|Stable system| H
 
-    %% Alternative / skipped flows (dashed)
-    B -.-> D["Skip Demo, go straight to Data Migration?"]
-    C -.-> F["Skip Data Collection?"]
-    E -.-> H["Skip Training, go straight to Roadmap?"]
+    %% =====================
+    %%  OPTIONAL / SKIPPED / FAST TRACKS
+    %% =====================
+    A -.->|Direct referral| C
+    A -.->|Existing client| D
+    B -.->|Client already convinced| D
+    B -.->|Fast-track demo success| E
+    C -.->|Minimal data| F
+    E -.->|Skip training (experienced staff)| F
+    E -.->|Direct to roadmap planning| H
+    F -.->|Early feedback| H
 
-    %% Legend (optional)
-    subgraph Legend
+    %% =====================
+    %%  FALLBACK / FEEDBACK LOOPS
+    %% =====================
+    F -.->|Issues found| G
+    G -.->|Major issues or rollback| F
+    G -.->|Feature request| H
+    H -.->|Feature deploy| F
+
+    %% =====================
+    %%  LEGEND
+    %% =====================
+    subgraph Legend[Legend]
+        direction TB
         L1([Primary Flow]):::solid
-        L2([Optional/Skipped Flow]):::dashed
+        L2([Optional / Fast Track]):::dashed
+        L3([Feedback / Fallback]):::dotted
     end
 
     classDef solid stroke-width:2px,stroke:#000;
     classDef dashed stroke-dasharray: 5 5,stroke:#555;
-```
+    classDef dotted stroke-dasharray: 2 4,stroke:#999;
+
 
 ---
 
 ## **5️⃣ Workflow Diagram (Textual)**
 
 ```
-Lead Generation (Dad & Bittu)
+Lead Generation (Dad & Bittu bhaiya)
    |
    v
-Pitch / Demo (Dad + You)
+Pitch / Demo (Dad + Addi)
    |
    v
-Data Collection (Bittu + Dad)
+Data Collection (Bittu bhaiya + Dad)
    |
    v
-Data Migration (Mukesh + You)
+Data Migration (Mukesh bhaiya + Addi)
    |
    v
-Staff Training (Dad + Bittu + You)
+Staff Training (Dad + Bittu bhaiya + Addi)
    |
    v
-Go-Live (You + Mukesh)
+Go-Live (Addi + Mukesh bhaiya)
    |
    v
-Post-Deployment Support (Dad + Mukesh + You)
+Post-Deployment Support (Dad + Mukesh bhaiya + Addi)
    |
    v
-Feature Addition & Roadmap (You + Team Input)
+Feature Addition & Roadmap (Addi + Team Input)
 ```
 
 ---
@@ -191,9 +217,9 @@ Feature Addition & Roadmap (You + Team Input)
 
 ## **7️⃣ Notes**
 
-- Dad & Bittu are **first point of contact for schools** to build trust
-- You intervene during technical or strategic decisions
-- Mukesh handles all **data migration & technical implementation**
+- Dad & Bittu bhaiya are **first point of contact for schools** to build trust
+- Addi intervene during technical or strategic decisions
+- Mukesh bhaiya handles all **data migration & technical implementation**
 - Workflow is **repeatable & scalable**: same steps can be replicated for new schools
 - Jira + Slack + Notion combination ensures **smooth tracking, transparency, and coordination**
 
