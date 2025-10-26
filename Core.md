@@ -75,7 +75,7 @@ Successfully deploy Masst Campus to first 3–5 schools, ensuring smooth adoptio
 - Test migrations on dummy data
 - Supervised migrations with 1–2 schools
 
-### **Bittu – Operations & Admin Lead**
+### **Bittu bhaiya – Operations & Admin Lead**
 - Data collection from schools
 - Basic platform navigation
 - Verification & coordination
@@ -89,17 +89,17 @@ Even non-tech team members should know:
 | Stack Component | Who Needs to Know | Level of Understanding |
 |-----------------|-----------------|----------------------|
 | Frontend (React/Next.js) | All | Navigate modules, dashboards |
-| Backend (Node.js/Express) | Mukesh & You | Run migration scripts; high-level flow for others |
-| Database (PostgreSQL) | Mukesh & Dad | Table structure, relationships |
+| Backend (Node.js/Express) | Mukesh bhaiya & You | Run migration scripts; high-level flow for others |
+| Database (PostgreSQL) | Mukesh bhaiya & Dad | Table structure, relationships |
 | Deployment (Vercel/AWS) | You | Full access |
-| Analytics / Reporting | Dad & Bittu | Access reports, spot inconsistencies |
+| Analytics / Reporting | Dad & Bittu bhaiya | Access reports, spot inconsistencies |
 | Migration Scripts | Mukesh | Full usage; others high-level |
 
 ---
 
 ## **Suggested Training Schedule (6 Weeks)**
 
-| Week | You | Dad | Mukesh | Bittu |
+| Week | You | Dad | Mukesh bhaiya | Bittu bhaiya |
 |------|-----|-----|--------|------|
 | 1 | Build platform modules | SaaS basics, navigation | Excel & DB foundations | Data collection, platform basics |
 | 2 | Setup migration templates | Reporting, data awareness | Migration templates, field mapping | Checklists, basic validation |
@@ -111,9 +111,9 @@ Even non-tech team members should know:
 ---
 
 ## **Outcome**
-- **Mukesh:** Fully independent migration specialist  
+- **Mukesh bhaiya:** Fully independent migration specialist  
 - **Dad:** Confidently handles school adoption  
-- **Bittu:** Strong operations and coordination backbone  
+- **Bittu bhaiya:** Strong operations and coordination backbone  
 - **You:** Focus on tech development, scaling, and mentorship  
 
 > With this roadmap, the **core team is strong, self-sufficient, and ready for long-term scaling**.

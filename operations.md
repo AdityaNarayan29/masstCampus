@@ -1,7 +1,3 @@
----
-title: Masst Campus - Business Workflow & Team Responsibilities
----
-
 # Masst Campus – Business Workflow & Roles
 
 ## **Objective**

@@ -174,16 +174,6 @@ flowchart TD
     G -.-> F
     G -.-> H
     H -.-> F
-
-    %% =====================
-    %%  LEGEND
-    %% =====================
-    subgraph Legend[Legend]
-      direction TB
-      L1([Solid → Primary Workflow])
-      L2([Dashed → Optional / Skipped Flow])
-      L3([Dotted → Feedback / Fallback])
-    end
 ```
 
 ---

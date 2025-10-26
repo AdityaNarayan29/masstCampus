@@ -175,7 +175,7 @@ A modular, layered architecture is standard for school management systems, suppo
 1. Prepare migration templates (Excel/CSV)
 2. Test migration scripts for sample school
 3. Validate data integrity post-migration
-4. Train team members (Mukesh, Dad, Bittu) on workflow
+4. Train team members (Mukesh bhaiya, Dad, Bittu bhaiya) on workflow
 
 ### **Phase 7: Deployment**
 1. Deploy backend (DigitalOcean/AWS)
@@ -212,7 +212,7 @@ This phased, modular rollout is aligned with best practices for educational soft
 - Maintain **documentation** for every module → critical for team handover and scaling
 
 > **Migration Best Practice:**  
-Prepare migration templates and scripts early, and test with real school data. Clean, validate, and back up all data before migration. Train users and provide ongoing support for smooth adoption [[46]].
+Prepare migration templates and scripts early, and test with real school data. Clean, validate, and back up all data before migration. Train users and provide ongoing support for smooth adoption.
 
 ---
 
@@ -237,11 +237,6 @@ A structured, clear implementation roadmap from zero → MVP → beta deployment
   Plan for hands-on training and support for all user roles (admins, teachers, staff) during and after migration .
 
 - **Future-Proofing:**  
-  Design the system to be extensible, allowing for easy addition of modules like gradebook, scheduling, parent portals, and analytics .
+  Design the system to be extensible, allowing for easy addition of modules like gradebook, scheduling, parent portals, and analytics.
 
 ---
-
-**Would you like a “Weekly Development Gantt + Team Responsibilities Table” in .mdx format, mapping out who does what, with dependencies, for your 4-person core team? This can help ensure accountability and smooth progress through each phase.**
-
----
-
