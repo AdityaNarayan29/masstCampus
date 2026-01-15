@@ -1,0 +1,399 @@
+// Prisma schema for multi-tenant School CRM
+// Database: PostgreSQL
+// Multi-tenancy: Shared database with tenantId column
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============ TENANT MANAGEMENT ============
+
+model Tenant {
+  id            String   @id @default(cuid())
+  name          String
+  primaryDomain String?  @unique // e.g., "vidyamandir.com"
+  subdomain     String   @unique // e.g., "portal.vidyamandir"
+  theme         Json     @default("{}")
+  config        Json     @default("{}")
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  users         User[]
+  brokers       Broker[]
+  students      Student[]
+  teachers      Teacher[]
+  classes       Class[]
+  fees          Fee[]
+  payments      Payment[]
+  attendance    Attendance[]
+  messages      Message[]
+  auditLogs     AuditLog[]
+  commissions   Commission[]
+
+  @@index([primaryDomain])
+  @@index([subdomain])
+  @@index([isActive])
+  @@map("tenants")
+}
+
+// ============ USER MANAGEMENT ============
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  TEACHER
+  STUDENT
+  PARENT
+  BROKER
+  AGENT
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String
+  passwordHash String?  // null for Clerk users
+  role         UserRole
+  tenantId     String
+  brokerId     String?
+  profile      Json     @default("{}")
+  isActive     Boolean  @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  tenant            Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  broker            Broker?      @relation(fields: [brokerId], references: [id])
+  markedAttendance  Attendance[]
+  sentMessages      Message[]    @relation("SentMessages")
+  auditLogs         AuditLog[]
+
+  @@unique([email, tenantId])
+  @@index([tenantId])
+  @@index([email])
+  @@index([role])
+  @@index([brokerId])
+  @@map("users")
+}
+
+// ============ BROKER & COMMISSION ============
+
+model Broker {
+  id             String   @id @default(cuid())
+  name           String
+  code           String   // Unique broker code
+  parentBrokerId String?
+  tenantId       String
+  level          Int      @default(0) // 0 = top-level broker
+  metadata       Json     @default("{}")
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  tenant           Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  parent           Broker?          @relation("BrokerHierarchy", fields: [parentBrokerId], references: [id])
+  children         Broker[]         @relation("BrokerHierarchy")
+  users            User[]
+  students         Student[]
+  commissionRules  CommissionRule[]
+  commissions      Commission[]
+
+  @@unique([code, tenantId])
+  @@index([tenantId])
+  @@index([parentBrokerId])
+  @@index([level])
+  @@map("brokers")
+}
+
+model CommissionRule {
+  id         String   @id @default(cuid())
+  brokerId   String
+  name       String
+  level      Int      // Broker level this rule applies to
+  percentage Float    // Commission percentage (e.g., 5.0 for 5%)
+  conditions Json     @default("{}") // Complex conditions (min/max amount, fee types, etc.)
+  priority   Int      @default(0) // Higher priority rules apply first
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  broker Broker @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+
+  @@index([brokerId])
+  @@index([level])
+  @@index([isActive])
+  @@map("commission_rules")
+}
+
+model Commission {
+  id              String   @id @default(cuid())
+  tenantId        String
+  brokerId        String
+  paymentId       String
+  ruleId          String?
+  amount          Float    // Commission amount
+  percentage      Float    // Percentage used
+  baseAmount      Float    // Amount commission was calculated on
+  status          String   @default("PENDING") // PENDING, APPROVED, PAID
+  paidAt          DateTime?
+  metadata        Json     @default("{}")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  broker  Broker  @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([brokerId])
+  @@index([paymentId])
+  @@index([status])
+  @@map("commissions")
+}
+
+// ============ STUDENT MANAGEMENT ============
+
+model Student {
+  id               String   @id @default(cuid())
+  firstName        String
+  lastName         String
+  email            String?
+  phone            String?
+  tenantId         String
+  brokerId         String?  // Which broker enrolled this student
+  enrollmentNumber String
+  gradeLevel       String
+  section          String?
+  parentId         String?
+  metadata         Json     @default("{}")
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  tenant     Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  broker     Broker?      @relation(fields: [brokerId], references: [id])
+  fees       Fee[]
+  payments   Payment[]
+  attendance Attendance[]
+  messages   Message[]
+
+  @@unique([enrollmentNumber, tenantId])
+  @@index([tenantId])
+  @@index([brokerId])
+  @@index([gradeLevel])
+  @@map("students")
+}
+
+// ============ TEACHER & CLASS ============
+
+model Teacher {
+  id        String   @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String
+  phone     String?
+  tenantId  String
+  subject   String?
+  metadata  Json     @default("{}")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  classes Class[]
+
+  @@unique([email, tenantId])
+  @@index([tenantId])
+  @@map("teachers")
+}
+
+model Class {
+  id         String   @id @default(cuid())
+  name       String
+  gradeLevel String
+  section    String
+  tenantId   String
+  teacherId  String?
+  schedule   Json     @default("[]") // Array of schedule objects
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  tenant     Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  teacher    Teacher?     @relation(fields: [teacherId], references: [id])
+  attendance Attendance[]
+
+  @@index([tenantId])
+  @@index([teacherId])
+  @@index([gradeLevel])
+  @@map("classes")
+}
+
+// ============ ATTENDANCE ============
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+model Attendance {
+  id        String           @id @default(cuid())
+  studentId String
+  classId   String
+  tenantId  String
+  date      DateTime
+  status    AttendanceStatus
+  markedBy  String
+  notes     String?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  // Relations
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  class   Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
+  marker  User    @relation(fields: [markedBy], references: [id])
+
+  @@unique([studentId, classId, date])
+  @@index([tenantId])
+  @@index([studentId])
+  @@index([classId])
+  @@index([date])
+  @@map("attendance")
+}
+
+// ============ FEES & PAYMENTS ============
+
+enum FeeStatus {
+  PENDING
+  PAID
+  OVERDUE
+  WAIVED
+}
+
+model Fee {
+  id           String    @id @default(cuid())
+  studentId    String
+  tenantId     String
+  type         String    // TUITION, ADMISSION, EXAM, etc.
+  amount       Float
+  dueDate      DateTime
+  status       FeeStatus @default(PENDING)
+  description  String?
+  academicYear String
+  metadata     Json      @default("{}")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relations
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  student  Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  payments Payment[]
+
+  @@index([tenantId])
+  @@index([studentId])
+  @@index([status])
+  @@index([dueDate])
+  @@map("fees")
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  feeId         String
+  studentId     String
+  tenantId      String
+  amount        Float
+  paymentMethod String
+  transactionId String?
+  status        PaymentStatus @default(PENDING)
+  paidAt        DateTime
+  metadata      Json          @default("{}")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Relations
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  fee         Fee          @relation(fields: [feeId], references: [id], onDelete: Cascade)
+  student     Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  commissions Commission[]
+
+  @@index([tenantId])
+  @@index([feeId])
+  @@index([studentId])
+  @@index([status])
+  @@index([paidAt])
+  @@map("payments")
+}
+
+// ============ MESSAGING ============
+
+model Message {
+  id         String   @id @default(cuid())
+  tenantId   String
+  senderId   String
+  studentId  String?
+  subject    String
+  body       String
+  isRead     Boolean  @default(false)
+  metadata   Json     @default("{}")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  tenant  Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  sender  User     @relation("SentMessages", fields: [senderId], references: [id])
+  student Student? @relation(fields: [studentId], references: [id])
+
+  @@index([tenantId])
+  @@index([senderId])
+  @@index([studentId])
+  @@index([isRead])
+  @@map("messages")
+}
+
+// ============ AUDIT LOG ============
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  tenantId   String
+  userId     String
+  action     String   // CREATE, UPDATE, DELETE, LOGIN, etc.
+  resource   String   // USER, STUDENT, FEE, etc.
+  resourceId String
+  metadata   Json     @default("{}")
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([resource])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
