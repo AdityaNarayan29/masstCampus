@@ -1,5 +1,5 @@
 {
-  "name": "@school-crm/frontend",
+  "name": "@school-crm/mobile",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -7,20 +7,29 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "clean": "rm -rf .next"
+    "clean": "rm -rf .next",
+    "cap:sync": "cap sync",
+    "cap:open:ios": "cap open ios",
+    "cap:open:android": "cap open android"
   },
   "dependencies": {
     "@school-crm/ui": "workspace:*",
     "@school-crm/types": "workspace:*",
     "@school-crm/config": "workspace:*",
-    "@clerk/nextjs": "^4.27.7",
+    "@capacitor/app": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/device": "^6.0.0",
+    "@capacitor/status-bar": "^6.0.0",
+    "@capacitor/keyboard": "^6.0.0",
     "next": "14.0.4",
+    "next-pwa": "^5.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "axios": "^1.6.2",
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@capacitor/cli": "^6.0.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

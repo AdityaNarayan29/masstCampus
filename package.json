@@ -1,18 +1,22 @@
 {
-  "name": "school-crm-monorepo",
+  "name": "masst-campus-monorepo",
   "version": "1.0.0",
   "private": true,
-  "description": "Multi-tenant School CRM with custom domain support",
+  "description": "Multi-tenant School Management Platform - Masst Campus",
   "scripts": {
     "dev": "turbo run dev",
+    "dev:web": "turbo run dev --filter=web",
+    "dev:mobile": "turbo run dev --filter=mobile",
+    "dev:api": "turbo run dev --filter=api",
     "build": "turbo run build",
     "test": "turbo run test",
     "lint": "turbo run lint",
     "clean": "turbo run clean && rm -rf node_modules",
-    "db:migrate": "cd apps/backend && pnpm prisma migrate dev",
-    "db:seed": "cd apps/backend && pnpm prisma db seed",
-    "db:studio": "cd apps/backend && pnpm prisma studio",
-    "db:push": "cd apps/backend && pnpm prisma db push",
+    "db:migrate": "cd services/api && pnpm prisma migrate dev",
+    "db:seed": "cd services/api && pnpm prisma db seed",
+    "db:studio": "cd services/api && pnpm prisma studio",
+    "db:push": "cd services/api && pnpm prisma db push",
+    "db:generate": "cd services/api && pnpm prisma generate",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\""
   },
   "devDependencies": {

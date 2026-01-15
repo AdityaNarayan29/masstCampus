@@ -36,6 +36,7 @@ model Tenant {
   messages      Message[]
   auditLogs     AuditLog[]
   commissions   Commission[]
+  notifications Notification[]
 
   @@index([primaryDomain])
   @@index([subdomain])
@@ -69,11 +70,14 @@ model User {
   updatedAt    DateTime @updatedAt
 
   // Relations
-  tenant            Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  broker            Broker?      @relation(fields: [brokerId], references: [id])
-  markedAttendance  Attendance[]
-  sentMessages      Message[]    @relation("SentMessages")
-  auditLogs         AuditLog[]
+  tenant             Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  broker             Broker?        @relation(fields: [brokerId], references: [id])
+  markedAttendance   Attendance[]
+  sentMessages       Message[]      @relation("SentMessages")
+  auditLogs          AuditLog[]
+  teacherProfile     TeacherProfile?
+  parentProfile      ParentProfile?
+  notifications      Notification[] @relation("CreatedNotifications")
 
   @@unique([email, tenantId])
   @@index([tenantId])
@@ -181,18 +185,46 @@ model Student {
   updatedAt        DateTime @updatedAt
 
   // Relations
-  tenant     Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  broker     Broker?      @relation(fields: [brokerId], references: [id])
-  fees       Fee[]
-  payments   Payment[]
-  attendance Attendance[]
-  messages   Message[]
+  tenant         Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  broker         Broker?        @relation(fields: [brokerId], references: [id])
+  parent         ParentProfile? @relation(fields: [parentId], references: [id])
+  fees           Fee[]
+  payments       Payment[]
+  attendance     Attendance[]
+  messages       Message[]
 
   @@unique([enrollmentNumber, tenantId])
   @@index([tenantId])
   @@index([brokerId])
+  @@index([parentId])
   @@index([gradeLevel])
   @@map("students")
+}
+
+// ParentProfile linked to User
+enum RelationshipType {
+  FATHER
+  MOTHER
+  GUARDIAN
+}
+
+model ParentProfile {
+  id               String           @id @default(cuid())
+  userId           String           @unique
+  tenantId         String
+  relationshipType RelationshipType
+  occupation       String?
+  metadata         Json             @default("{}")
+  isActive         Boolean          @default(true)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  // Relations
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  children Student[]
+
+  @@index([tenantId])
+  @@map("parent_profiles")
 }
 
 // ============ TEACHER & CLASS ============
@@ -217,6 +249,27 @@ model Teacher {
   @@unique([email, tenantId])
   @@index([tenantId])
   @@map("teachers")
+}
+
+// New TeacherProfile linked to User
+model TeacherProfile {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  tenantId       String
+  employeeId     String
+  subjects       String[] // Array of subjects
+  qualifications String[] // Array of qualifications
+  metadata       Json     @default("{}")
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([employeeId])
+  @@map("teacher_profiles")
 }
 
 model Class {
@@ -371,6 +424,50 @@ model Message {
   @@index([studentId])
   @@index([isRead])
   @@map("messages")
+}
+
+// ============ NOTIFICATIONS ============
+
+enum NotificationType {
+  STATIC       // Holidays, circulars
+  DYNAMIC      // Fee reminders, exam results
+  ALERT        // Urgent notifications
+  ANNOUNCEMENT
+}
+
+enum NotificationPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model Notification {
+  id          String               @id @default(cuid())
+  tenantId    String
+  type        NotificationType
+  title       String
+  message     String
+  targetRole  String[] // Array of UserRole values
+  targetUsers String[] // Specific user IDs (optional)
+  priority    NotificationPriority @default(MEDIUM)
+  delivered   Boolean              @default(false)
+  readBy      String[]             @default([]) // Array of user IDs who read it
+  metadata    Json                 @default("{}")
+  createdBy   String
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  // Relations
+  tenant  Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  creator User   @relation("CreatedNotifications", fields: [createdBy], references: [id])
+
+  @@index([tenantId])
+  @@index([type])
+  @@index([priority])
+  @@index([delivered])
+  @@index([createdAt])
+  @@map("notifications")
 }
 
 // ============ AUDIT LOG ============

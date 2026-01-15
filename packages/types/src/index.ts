@@ -226,6 +226,73 @@ export interface ClassSchedule {
   subject: string;
 }
 
+// Teacher types
+export interface Teacher {
+  id: string;
+  userId: string;
+  tenantId: string;
+  employeeId: string;
+  subjects: string[];
+  qualifications?: string[];
+  user?: User;
+  classes?: Class[];
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Parent types
+export interface Parent {
+  id: string;
+  userId: string;
+  tenantId: string;
+  relationshipType: RelationshipType;
+  occupation?: string;
+  user?: User;
+  children?: Student[];
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export enum RelationshipType {
+  FATHER = 'FATHER',
+  MOTHER = 'MOTHER',
+  GUARDIAN = 'GUARDIAN',
+}
+
+// Notification types
+export interface Notification {
+  id: string;
+  tenantId: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  targetRole: UserRole[];
+  targetUsers?: string[];
+  priority: NotificationPriority;
+  delivered: boolean;
+  readBy?: string[];
+  metadata?: Record<string, any>;
+  createdBy: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export enum NotificationType {
+  STATIC = 'STATIC',       // Holidays, circulars
+  DYNAMIC = 'DYNAMIC',     // Fee reminders, exam results
+  ALERT = 'ALERT',         // Urgent notifications
+  ANNOUNCEMENT = 'ANNOUNCEMENT',
+}
+
+export enum NotificationPriority {
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH',
+  URGENT = 'URGENT',
+}
+
 // Audit types
 export interface AuditLog {
   id: string;

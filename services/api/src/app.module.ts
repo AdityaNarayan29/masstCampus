@@ -10,6 +10,9 @@ import { StudentsModule } from './students/students.module';
 import { FeesModule } from './fees/fees.module';
 import { CommissionModule } from './commission/commission.module';
 import { AttendanceModule } from './attendance/attendance.module';
+import { TeachersModule } from './teachers/teachers.module';
+import { ParentsModule } from './parents/parents.module';
+import { NotificationsModule } from './notifications/notifications.module';
 import { TenantInterceptor } from './tenant/tenant.interceptor';
 
 @Module({
@@ -26,6 +29,9 @@ import { TenantInterceptor } from './tenant/tenant.interceptor';
     FeesModule,
     CommissionModule,
     AttendanceModule,
+    TeachersModule,
+    ParentsModule,
+    NotificationsModule,
   ],
   providers: [
     {
