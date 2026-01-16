@@ -1,0 +1,128 @@
+[
+  {
+    "id": 1,
+    "header": "Vidyamandir Classes",
+    "type": "School",
+    "status": "Active",
+    "target": "150",
+    "limit": "200",
+    "reviewer": "Super Admin"
+  },
+  {
+    "id": 2,
+    "header": "Demo School",
+    "type": "School",
+    "status": "Active",
+    "target": "50",
+    "limit": "100",
+    "reviewer": "Super Admin"
+  },
+  {
+    "id": 3,
+    "header": "Development Tenant",
+    "type": "School",
+    "status": "Active",
+    "target": "25",
+    "limit": "50",
+    "reviewer": "Super Admin"
+  },
+  {
+    "id": 4,
+    "header": "Rahul Sharma",
+    "type": "Student",
+    "status": "Active",
+    "target": "85",
+    "limit": "100",
+    "reviewer": "John Teacher"
+  },
+  {
+    "id": 5,
+    "header": "Priya Patel",
+    "type": "Student",
+    "status": "Active",
+    "target": "92",
+    "limit": "100",
+    "reviewer": "Jane Teacher"
+  },
+  {
+    "id": 6,
+    "header": "Amit Kumar",
+    "type": "Student",
+    "status": "Active",
+    "target": "78",
+    "limit": "100",
+    "reviewer": "John Teacher"
+  },
+  {
+    "id": 7,
+    "header": "John Smith",
+    "type": "Teacher",
+    "status": "Active",
+    "target": "30",
+    "limit": "40",
+    "reviewer": "School Admin"
+  },
+  {
+    "id": 8,
+    "header": "Jane Doe",
+    "type": "Teacher",
+    "status": "Active",
+    "target": "25",
+    "limit": "40",
+    "reviewer": "School Admin"
+  },
+  {
+    "id": 9,
+    "header": "Anita Counselor",
+    "type": "Counselor",
+    "status": "Active",
+    "target": "15",
+    "limit": "20",
+    "reviewer": "Super Admin"
+  },
+  {
+    "id": 10,
+    "header": "Ravi Counselor",
+    "type": "Counselor",
+    "status": "Active",
+    "target": "12",
+    "limit": "20",
+    "reviewer": "Super Admin"
+  },
+  {
+    "id": 11,
+    "header": "Meera Counselor",
+    "type": "Counselor",
+    "status": "Active",
+    "target": "18",
+    "limit": "20",
+    "reviewer": "Super Admin"
+  },
+  {
+    "id": 12,
+    "header": "Vikram Partner",
+    "type": "Partner",
+    "status": "Active",
+    "target": "5",
+    "limit": "10",
+    "reviewer": "Super Admin"
+  },
+  {
+    "id": 13,
+    "header": "EduConnect Ltd",
+    "type": "Partner",
+    "status": "Active",
+    "target": "3",
+    "limit": "10",
+    "reviewer": "Super Admin"
+  },
+  {
+    "id": 14,
+    "header": "SchoolBridge Inc",
+    "type": "Partner",
+    "status": "Pending",
+    "target": "0",
+    "limit": "10",
+    "reviewer": "Assign reviewer"
+  }
+]
