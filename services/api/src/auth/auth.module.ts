@@ -5,10 +5,12 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 import { UsersModule } from '../users/users.module';
+import { TenantModule } from '../tenant/tenant.module';
 
 @Module({
   imports: [
     UsersModule,
+    TenantModule,
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'change-me-in-production',

@@ -6,7 +6,9 @@ import {
   BarChartIcon,
   BookOpenIcon,
   BuildingIcon,
+  CalendarCheckIcon,
   CreditCardIcon,
+  DollarSignIcon,
   GraduationCapIcon,
   HelpCircleIcon,
   LayoutDashboardIcon,
@@ -16,6 +18,8 @@ import {
   UserPlusIcon,
   BellIcon,
   FileTextIcon,
+  LayersIcon,
+  Users2Icon,
 } from "lucide-react"
 
 import { NavDocuments } from "@/components/nav-documents"
@@ -50,6 +54,11 @@ const data = {
       icon: BuildingIcon,
     },
     {
+      title: "Classes",
+      url: "/classes",
+      icon: LayersIcon,
+    },
+    {
       title: "Students",
       url: "/students",
       icon: GraduationCapIcon,
@@ -68,6 +77,21 @@ const data = {
       title: "Partners",
       url: "/partners",
       icon: UserPlusIcon,
+    },
+    {
+      title: "Parents",
+      url: "/parents",
+      icon: Users2Icon,
+    },
+    {
+      title: "Attendance",
+      url: "/attendance",
+      icon: CalendarCheckIcon,
+    },
+    {
+      title: "Fees",
+      url: "/fees",
+      icon: DollarSignIcon,
     },
     {
       title: "Analytics",

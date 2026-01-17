@@ -110,4 +110,43 @@ export class AuthService {
       where: { id: userId },
     });
   }
+
+  /**
+   * Refresh access token
+   */
+  async refreshToken(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId, isActive: true },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found or inactive');
+    }
+
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      tenantId: user.tenantId,
+    };
+
+    return {
+      accessToken: this.jwtService.sign(payload),
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        profile: user.profile,
+      },
+    };
+  }
+
+  /**
+   * Logout - clear session
+   */
+  async logout(userId: string) {
+    // For stateless JWT, logout is handled client-side by removing the token
+    // This endpoint exists for audit logging and future token blacklisting
+    return { message: 'Logged out successfully' };
+  }
 }

@@ -16,10 +16,10 @@ async function main() {
 
   const vidyamandirTenant = await prisma.tenant.upsert({
     where: { subdomain: 'portal.vidyamandir' },
-    update: {},
+    update: { primaryDomain: 'localhost:3003' }, // For local development
     create: {
       name: 'Vidyamandir Classes',
-      primaryDomain: 'portal.vidyamandir.com',
+      primaryDomain: 'localhost:3003', // For local development
       subdomain: 'portal.vidyamandir',
       theme: {
         logo: 'https://vidyamandir.com/logo.svg',
@@ -94,48 +94,7 @@ async function main() {
     },
   });
 
-  // Localhost tenant for development
-  const localhostTenant = await prisma.tenant.upsert({
-    where: { subdomain: 'localhost' },
-    update: {},
-    create: {
-      name: 'Development Tenant',
-      primaryDomain: 'localhost:3000',
-      subdomain: 'localhost',
-      theme: {
-        logo: '/logo.svg',
-        colors: {
-          primary: 'hsl(221 83% 53%)',
-          secondary: 'hsl(210 40% 96.1%)',
-          accent: 'hsl(210 40% 96.1%)',
-          background: 'hsl(0 0% 100%)',
-          foreground: 'hsl(222.2 84% 4.9%)',
-          muted: 'hsl(210 40% 96.1%)',
-          mutedForeground: 'hsl(215.4 16.3% 46.9%)',
-          border: 'hsl(214.3 31.8% 91.4%)',
-        },
-        fonts: {
-          heading: 'Inter, sans-serif',
-          body: 'Inter, sans-serif',
-        },
-      },
-      config: {
-        features: {
-          attendance: true,
-          fees: true,
-          messaging: true,
-          commission: true,
-          reports: true,
-        },
-        locale: 'en-US',
-        timezone: 'America/New_York',
-        currency: 'USD',
-      },
-      isActive: true,
-    },
-  });
-
-  console.log(`✅ Created tenants: ${vidyamandirTenant.name}, ${demoTenant.name}, ${localhostTenant.name}`);
+  console.log(`✅ Created tenants: ${vidyamandirTenant.name}, ${demoTenant.name}`);
 
   // ============ BROKERS (Vidyamandir only) ============
   console.log('🏢 Creating broker hierarchy...');
@@ -599,7 +558,7 @@ async function main() {
 
   console.log('\n✨ Seed completed successfully!\n');
   console.log('📊 Summary:');
-  console.log(`  - Tenants: 3 (Vidyamandir Classes, Demo School, Development Tenant)`);
+  console.log(`  - Tenants: 2 (Vidyamandir Classes, Demo School)`);
   console.log(`  - Brokers: 4 (1 top broker, 2 sub-brokers, 1 agent)`);
   console.log(`  - Users: 4`);
   console.log(`  - Students: 3`);
@@ -615,7 +574,7 @@ async function main() {
   console.log('  Vidyamandir Teacher: teacher@vidyamandir.com / teacher123');
   console.log('  Demo Admin: admin@demo.com / demo123');
   console.log('\n🌐 Development:');
-  console.log('  Access at: http://localhost:3000');
+  console.log('  Access at: http://localhost:3003');
 }
 
 main()

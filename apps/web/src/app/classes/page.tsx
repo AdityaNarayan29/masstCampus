@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontalIcon, ArrowUpDownIcon, Loader2Icon } from "lucide-react"
+import { MoreHorizontalIcon, ArrowUpDownIcon, UsersIcon, Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
 
 import { PageLayout } from "@/components/page-layout"
@@ -10,7 +10,6 @@ import { EntityTable } from "@/components/entity-table"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,89 +42,92 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { StudentForm } from "@/components/forms/student-form"
-import { type StudentFormData } from "@/lib/schemas"
-import { studentsApi } from "@/lib/api"
+import { ClassForm } from "@/components/forms/class-form"
+import { type ClassFormData } from "@/lib/schemas"
+import { classesApi } from "@/lib/api"
 
-type Student = {
+type Class = {
   id: string
   name: string
-  email: string
-  phone: string
   school: string
   grade: string
-  status: "active" | "inactive" | "graduated"
-  enrolledAt: string
-  avatar?: string
+  section: string
+  students: number
+  teacher: string
+  status: "active" | "inactive"
+  createdAt: string
 }
 
 const schools = ["Vidyamandir Classes", "Demo School", "Development Tenant"]
 
-const demoStudents: Student[] = [
+const demoClasses: Class[] = [
   {
     id: "1",
-    name: "Rahul Sharma",
-    email: "rahul.sharma@email.com",
-    phone: "+91 98765 43210",
+    name: "Class 12-A",
     school: "Vidyamandir Classes",
     grade: "12th",
+    section: "A",
+    students: 45,
+    teacher: "Dr. Rajesh Kumar",
     status: "active",
-    enrolledAt: "2024-01-15",
+    createdAt: "2024-01-15",
   },
   {
     id: "2",
-    name: "Priya Patel",
-    email: "priya.patel@email.com",
-    phone: "+91 98765 43211",
+    name: "Class 12-B",
     school: "Vidyamandir Classes",
-    grade: "11th",
+    grade: "12th",
+    section: "B",
+    students: 42,
+    teacher: "Mrs. Priya Sharma",
     status: "active",
-    enrolledAt: "2024-02-20",
+    createdAt: "2024-01-15",
   },
   {
     id: "3",
-    name: "Amit Kumar",
-    email: "amit.kumar@email.com",
-    phone: "+91 98765 43212",
-    school: "Demo School",
-    grade: "10th",
+    name: "Class 11-A",
+    school: "Vidyamandir Classes",
+    grade: "11th",
+    section: "A",
+    students: 48,
+    teacher: "Mr. Amit Verma",
     status: "active",
-    enrolledAt: "2024-03-10",
+    createdAt: "2024-01-20",
   },
 ]
 
-export default function StudentsPage() {
-  const [students, setStudents] = useState<Student[]>([])
+export default function ClassesPage() {
+  const [classes, setClasses] = useState<Class[]>([])
   const [loading, setLoading] = useState(true)
   const [isSheetOpen, setIsSheetOpen] = useState(false)
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
+  const [selectedClass, setSelectedClass] = useState<Class | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [studentToDelete, setStudentToDelete] = useState<Student | null>(null)
+  const [classToDelete, setClassToDelete] = useState<Class | null>(null)
 
   useEffect(() => {
-    fetchStudents()
+    fetchClasses()
   }, [])
 
-  const fetchStudents = async () => {
+  const fetchClasses = async () => {
     try {
-      const response = await studentsApi.getAll()
+      const response = await classesApi.getAll()
       if (response.success && response.data) {
-        const formattedStudents = response.data.students.map((s: any) => ({
-          id: s.id,
-          name: `${s.firstName} ${s.lastName}`,
-          email: s.email,
-          phone: s.phone || "N/A",
-          school: s.tenant?.name || "Unknown",
-          grade: s.gradeLevel || "N/A",
-          status: s.status?.toLowerCase() || "active",
-          enrolledAt: s.createdAt?.split("T")[0] || new Date().toISOString().split("T")[0],
+        const formattedClasses = response.data.classes.map((c: any) => ({
+          id: c.id,
+          name: c.name,
+          school: c.tenant?.name || "Unknown",
+          grade: c.gradeLevel || "N/A",
+          section: c.section || "A",
+          students: c._count?.students || 0,
+          teacher: c.teacher ? `${c.teacher.firstName} ${c.teacher.lastName}` : "Unassigned",
+          status: c.status?.toLowerCase() || "active",
+          createdAt: c.createdAt?.split("T")[0] || new Date().toISOString().split("T")[0],
         }))
-        setStudents(formattedStudents)
+        setClasses(formattedClasses)
       }
     } catch (error) {
-      console.error("Failed to fetch students:", error)
-      // Fall back to demo data
-      setStudents(demoStudents)
+      console.error("Failed to fetch classes:", error)
+      setClasses(demoClasses)
       toast.info("Using demo data (API unavailable)")
     } finally {
       setLoading(false)
@@ -133,101 +135,96 @@ export default function StudentsPage() {
   }
 
   const handleAdd = () => {
-    setSelectedStudent(null)
+    setSelectedClass(null)
     setIsSheetOpen(true)
   }
 
-  const handleEdit = (student: Student) => {
-    setSelectedStudent(student)
+  const handleEdit = (classItem: Class) => {
+    setSelectedClass(classItem)
     setIsSheetOpen(true)
   }
 
-  const handleDelete = (student: Student) => {
-    setStudentToDelete(student)
+  const handleDelete = (classItem: Class) => {
+    setClassToDelete(classItem)
     setDeleteDialogOpen(true)
   }
 
   const confirmDelete = async () => {
-    if (studentToDelete) {
+    if (classToDelete) {
       try {
-        await studentsApi.delete(studentToDelete.id)
-        setStudents(students.filter((s) => s.id !== studentToDelete.id))
-        toast.success(`${studentToDelete.name} has been removed`)
+        await classesApi.delete(classToDelete.id)
+        setClasses(classes.filter((c) => c.id !== classToDelete.id))
+        toast.success(`${classToDelete.name} has been removed`)
       } catch (error) {
-        // Demo mode fallback
-        setStudents(students.filter((s) => s.id !== studentToDelete.id))
-        toast.success(`${studentToDelete.name} has been removed (Demo Mode)`)
+        setClasses(classes.filter((c) => c.id !== classToDelete.id))
+        toast.success(`${classToDelete.name} has been removed (Demo Mode)`)
       }
       setDeleteDialogOpen(false)
-      setStudentToDelete(null)
+      setClassToDelete(null)
     }
   }
 
-  const handleFormSubmit = async (data: StudentFormData) => {
-    const nameParts = data.name.split(" ")
-    const firstName = nameParts[0]
-    const lastName = nameParts.slice(1).join(" ") || ""
-
-    if (selectedStudent) {
+  const handleFormSubmit = async (data: ClassFormData) => {
+    if (selectedClass) {
       try {
-        await studentsApi.update(selectedStudent.id, {
-          firstName,
-          lastName,
-          email: data.email,
-          phone: data.phone,
+        await classesApi.update(selectedClass.id, {
+          name: data.name,
           gradeLevel: data.grade,
+          section: data.section,
           status: data.status.toUpperCase(),
         })
-        setStudents(
-          students.map((s) =>
-            s.id === selectedStudent.id ? { ...s, ...data } : s
+        setClasses(
+          classes.map((c) =>
+            c.id === selectedClass.id
+              ? { ...c, ...data, students: selectedClass.students }
+              : c
           )
         )
         toast.success(`${data.name} has been updated`)
       } catch (error) {
-        // Demo mode fallback
-        setStudents(
-          students.map((s) =>
-            s.id === selectedStudent.id ? { ...s, ...data } : s
+        setClasses(
+          classes.map((c) =>
+            c.id === selectedClass.id
+              ? { ...c, ...data, students: selectedClass.students }
+              : c
           )
         )
         toast.success(`${data.name} has been updated (Demo Mode)`)
       }
     } else {
       try {
-        const response = await studentsApi.create({
-          firstName,
-          lastName,
-          email: data.email,
-          phone: data.phone,
+        const response = await classesApi.create({
+          name: data.name,
           gradeLevel: data.grade,
+          section: data.section,
           status: data.status.toUpperCase(),
         })
         if (response.success && response.data) {
-          const newStudent: Student = {
+          const newClass: Class = {
             id: response.data.id,
             ...data,
-            enrolledAt: new Date().toISOString().split("T")[0],
+            students: 0,
+            createdAt: new Date().toISOString().split("T")[0],
           }
-          setStudents([...students, newStudent])
+          setClasses([...classes, newClass])
           toast.success(`${data.name} has been added`)
         }
       } catch (error) {
-        // Demo mode fallback
-        const newStudent: Student = {
+        const newClass: Class = {
           id: String(Date.now()),
           ...data,
-          enrolledAt: new Date().toISOString().split("T")[0],
+          students: 0,
+          createdAt: new Date().toISOString().split("T")[0],
         }
-        setStudents([...students, newStudent])
+        setClasses([...classes, newClass])
         toast.success(`${data.name} has been added (Demo Mode)`)
       }
     }
     setIsSheetOpen(false)
-    setSelectedStudent(null)
+    setSelectedClass(null)
   }
 
-  const columns: ColumnDef<Student>[] = [
+  const columns: ColumnDef<Class>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -255,32 +252,12 @@ export default function StudentsPage() {
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Student
+            Class Name
             <ArrowUpDownIcon className="ml-2 h-4 w-4" />
           </Button>
         )
       },
-      cell: ({ row }) => {
-        const student = row.original
-        const initials = student.name.split(" ").map(n => n[0]).join("")
-        return (
-          <div className="flex items-center gap-3">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={student.avatar} alt={student.name} />
-              <AvatarFallback>{initials}</AvatarFallback>
-            </Avatar>
-            <div>
-              <div className="font-medium">{student.name}</div>
-              <div className="text-sm text-muted-foreground">{student.email}</div>
-            </div>
-          </div>
-        )
-      },
-    },
-    {
-      accessorKey: "phone",
-      header: "Phone",
-      cell: ({ row }) => <div>{row.getValue("phone")}</div>,
+      cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
     },
     {
       accessorKey: "school",
@@ -295,30 +272,54 @@ export default function StudentsPage() {
       ),
     },
     {
+      accessorKey: "section",
+      header: "Section",
+      cell: ({ row }) => (
+        <Badge variant="secondary">{row.getValue("section")}</Badge>
+      ),
+    },
+    {
+      accessorKey: "students",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Students
+            <ArrowUpDownIcon className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => (
+        <div className="flex items-center gap-1">
+          <UsersIcon className="h-4 w-4 text-muted-foreground" />
+          <span>{row.getValue("students")}</span>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "teacher",
+      header: "Class Teacher",
+      cell: ({ row }) => <div>{row.getValue("teacher")}</div>,
+    },
+    {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
         const status = row.getValue("status") as string
         return (
-          <Badge
-            variant={
-              status === "active"
-                ? "default"
-                : status === "graduated"
-                ? "secondary"
-                : "destructive"
-            }
-          >
+          <Badge variant={status === "active" ? "default" : "destructive"}>
             {status}
           </Badge>
         )
       },
     },
     {
-      accessorKey: "enrolledAt",
-      header: "Enrolled",
+      accessorKey: "createdAt",
+      header: "Created",
       cell: ({ row }) => {
-        const dateStr = row.getValue("enrolledAt") as string
+        const dateStr = row.getValue("createdAt") as string
         const [year, month, day] = dateStr.split("-")
         return <div>{`${day}/${month}/${year}`}</div>
       },
@@ -327,7 +328,7 @@ export default function StudentsPage() {
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
-        const student = row.original
+        const classItem = row.original
 
         return (
           <DropdownMenu>
@@ -339,22 +340,22 @@ export default function StudentsPage() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(student.id)}>
-                Copy student ID
+              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(classItem.id)}>
+                Copy class ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>View profile</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleEdit(student)}>
-                Edit details
+              <DropdownMenuItem>View students</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleEdit(classItem)}>
+                Edit class
               </DropdownMenuItem>
-              <DropdownMenuItem>View attendance</DropdownMenuItem>
-              <DropdownMenuItem>Contact parent</DropdownMenuItem>
+              <DropdownMenuItem>Assign teacher</DropdownMenuItem>
+              <DropdownMenuItem>View schedule</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-destructive"
-                onClick={() => handleDelete(student)}
+                onClick={() => handleDelete(classItem)}
               >
-                Remove student
+                Deactivate class
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -363,11 +364,13 @@ export default function StudentsPage() {
     },
   ]
 
-  const activeStudents = students.filter((s) => s.status === "active").length
+  const activeClasses = classes.filter((c) => c.status === "active").length
+  const totalStudents = classes.reduce((sum, c) => sum + c.students, 0)
+  const avgClassSize = classes.length > 0 ? Math.round(totalStudents / classes.length) : 0
 
   if (loading) {
     return (
-      <PageLayout title="Students" breadcrumbs={[{ label: "Students" }]}>
+      <PageLayout title="Classes" breadcrumbs={[{ label: "Classes" }]}>
         <div className="flex items-center justify-center h-64">
           <Loader2Icon className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
@@ -376,71 +379,71 @@ export default function StudentsPage() {
   }
 
   return (
-    <PageLayout title="Students" breadcrumbs={[{ label: "Students" }]}>
+    <PageLayout title="Classes" breadcrumbs={[{ label: "Classes" }]}>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Students</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Classes</h1>
           <p className="text-muted-foreground">
-            Manage all students across all schools
+            Manage all classes across all schools
           </p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Classes</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{students.length}</div>
-              <p className="text-xs text-muted-foreground">+2 from last month</p>
+              <div className="text-2xl font-bold">{classes.length}</div>
+              <p className="text-xs text-muted-foreground">Across all schools</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Students</CardTitle>
+              <CardTitle className="text-sm font-medium">Active Classes</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{activeStudents}</div>
+              <div className="text-2xl font-bold">{activeClasses}</div>
               <p className="text-xs text-muted-foreground">
-                {students.length > 0 ? Math.round((activeStudents / students.length) * 100) : 0}% active rate
+                {classes.length > 0 ? Math.round((activeClasses / classes.length) * 100) : 0}% active rate
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">New This Month</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Students</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">1</div>
-              <p className="text-xs text-muted-foreground">Latest enrollment</p>
+              <div className="text-2xl font-bold">{totalStudents}</div>
+              <p className="text-xs text-muted-foreground">Enrolled in classes</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Avg per School</CardTitle>
+              <CardTitle className="text-sm font-medium">Avg Class Size</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{(students.length / schools.length).toFixed(1)}</div>
-              <p className="text-xs text-muted-foreground">students per school</p>
+              <div className="text-2xl font-bold">{avgClassSize}</div>
+              <p className="text-xs text-muted-foreground">students per class</p>
             </CardContent>
           </Card>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>All Students</CardTitle>
+            <CardTitle>All Classes</CardTitle>
             <CardDescription>
-              A list of all students enrolled across all schools
+              A list of all classes across all schools
             </CardDescription>
           </CardHeader>
           <CardContent>
             <EntityTable
               columns={columns}
-              data={students}
+              data={classes}
               searchKey="name"
-              searchPlaceholder="Search students..."
+              searchPlaceholder="Search classes..."
               onAdd={handleAdd}
-              addButtonLabel="Add Student"
+              addButtonLabel="Add Class"
             />
           </CardContent>
         </Card>
@@ -449,16 +452,16 @@ export default function StudentsPage() {
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent>
           <SheetHeader>
-            <SheetTitle>{selectedStudent ? "Edit Student" : "Add Student"}</SheetTitle>
+            <SheetTitle>{selectedClass ? "Edit Class" : "Add Class"}</SheetTitle>
             <SheetDescription>
-              {selectedStudent
-                ? "Update the student details below."
-                : "Fill in the details to add a new student."}
+              {selectedClass
+                ? "Update the class details below."
+                : "Fill in the details to add a new class."}
             </SheetDescription>
           </SheetHeader>
           <div className="mt-6">
-            <StudentForm
-              student={selectedStudent}
+            <ClassForm
+              classItem={selectedClass}
               schools={schools}
               onSubmit={handleFormSubmit}
               onCancel={() => setIsSheetOpen(false)}
@@ -472,13 +475,13 @@ export default function StudentsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently remove {studentToDelete?.name}. This action cannot be undone.
+              This will deactivate {classToDelete?.name}. Students in this class will need to be reassigned.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Remove
+              Deactivate
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

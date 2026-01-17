@@ -1,7 +1,9 @@
 "use client"
 
+import { useState } from "react"
 import { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontalIcon, ArrowUpDownIcon, ExternalLinkIcon } from "lucide-react"
+import { toast } from "sonner"
 
 import { PageLayout } from "@/components/page-layout"
 import { EntityTable } from "@/components/entity-table"
@@ -24,6 +26,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { PartnerForm } from "@/components/forms/partner-form"
+import { type PartnerFormData } from "@/lib/schemas"
 
 type Partner = {
   id: string
@@ -39,7 +60,7 @@ type Partner = {
   avatar?: string
 }
 
-const partners: Partner[] = [
+const initialPartners: Partner[] = [
   {
     id: "1",
     name: "EduConnect Ltd",
@@ -89,187 +110,248 @@ const partners: Partner[] = [
   },
 ]
 
-const columns: ColumnDef<Partner>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Partner
-          <ArrowUpDownIcon className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      const partner = row.original
-      const initials = partner.name.split(" ").map(n => n[0]).join("").slice(0, 2)
-      return (
-        <div className="flex items-center gap-3">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={partner.avatar} alt={partner.name} />
-            <AvatarFallback>{initials}</AvatarFallback>
-          </Avatar>
-          <div>
-            <div className="font-medium flex items-center gap-2">
-              {partner.name}
-              {partner.website && (
-                <a href={partner.website} target="_blank" rel="noopener noreferrer">
-                  <ExternalLinkIcon className="h-3 w-3 text-muted-foreground" />
-                </a>
-              )}
-            </div>
-            <div className="text-sm text-muted-foreground">{partner.email}</div>
-          </div>
-        </div>
-      )
-    },
-  },
-  {
-    accessorKey: "type",
-    header: "Type",
-    cell: ({ row }) => {
-      const type = row.getValue("type") as string
-      return (
-        <Badge variant="outline" className="capitalize">
-          {type}
-        </Badge>
-      )
-    },
-  },
-  {
-    accessorKey: "phone",
-    header: "Phone",
-    cell: ({ row }) => <div>{row.getValue("phone")}</div>,
-  },
-  {
-    accessorKey: "schoolsOnboarded",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Schools
-          <ArrowUpDownIcon className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => (
-      <div className="text-center font-medium">{row.getValue("schoolsOnboarded")}</div>
-    ),
-  },
-  {
-    accessorKey: "commission",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Commission
-          <ArrowUpDownIcon className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      const amount = row.getValue("commission") as number
-      const formatted = new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
-        maximumFractionDigits: 0,
-      }).format(amount)
-      return <div className="font-medium">{formatted}</div>
-    },
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("status") as string
-      return (
-        <Badge
-          variant={
-            status === "active"
-              ? "default"
-              : status === "pending"
-              ? "secondary"
-              : "destructive"
-          }
-        >
-          {status}
-        </Badge>
-      )
-    },
-  },
-  {
-    accessorKey: "joinedAt",
-    header: "Joined",
-    cell: ({ row }) => {
-      const dateStr = row.getValue("joinedAt") as string
-      const [year, month, day] = dateStr.split("-")
-      return <div>{`${day}/${month}/${year}`}</div>
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const partner = row.original
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontalIcon className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(partner.id)}>
-              Copy partner ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View profile</DropdownMenuItem>
-            <DropdownMenuItem>Edit details</DropdownMenuItem>
-            <DropdownMenuItem>View schools</DropdownMenuItem>
-            <DropdownMenuItem>Pay commission</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">
-              Deactivate
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
-  },
-]
-
 export default function PartnersPage() {
+  const [partners, setPartners] = useState<Partner[]>(initialPartners)
+  const [isSheetOpen, setIsSheetOpen] = useState(false)
+  const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [partnerToDelete, setPartnerToDelete] = useState<Partner | null>(null)
+
+  const handleAdd = () => {
+    setSelectedPartner(null)
+    setIsSheetOpen(true)
+  }
+
+  const handleEdit = (partner: Partner) => {
+    setSelectedPartner(partner)
+    setIsSheetOpen(true)
+  }
+
+  const handleDelete = (partner: Partner) => {
+    setPartnerToDelete(partner)
+    setDeleteDialogOpen(true)
+  }
+
+  const confirmDelete = () => {
+    if (partnerToDelete) {
+      setPartners(partners.filter((p) => p.id !== partnerToDelete.id))
+      toast.success(`${partnerToDelete.name} has been deactivated`)
+      setDeleteDialogOpen(false)
+      setPartnerToDelete(null)
+    }
+  }
+
+  const handleFormSubmit = (data: PartnerFormData) => {
+    if (selectedPartner) {
+      setPartners(
+        partners.map((p) =>
+          p.id === selectedPartner.id
+            ? { ...p, ...data }
+            : p
+        )
+      )
+      toast.success(`${data.name} has been updated`)
+    } else {
+      const newPartner: Partner = {
+        id: String(Date.now()),
+        ...data,
+        schoolsOnboarded: 0,
+        commission: 0,
+        joinedAt: new Date().toISOString().split("T")[0],
+      }
+      setPartners([...partners, newPartner])
+      toast.success(`${data.name} has been added`)
+    }
+    setIsSheetOpen(false)
+    setSelectedPartner(null)
+  }
+
+  const columns: ColumnDef<Partner>[] = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={table.getIsAllPageRowsSelected()}
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "name",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Partner
+            <ArrowUpDownIcon className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => {
+        const partner = row.original
+        const initials = partner.name.split(" ").map(n => n[0]).join("").slice(0, 2)
+        return (
+          <div className="flex items-center gap-3">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={partner.avatar} alt={partner.name} />
+              <AvatarFallback>{initials}</AvatarFallback>
+            </Avatar>
+            <div>
+              <div className="font-medium flex items-center gap-2">
+                {partner.name}
+                {partner.website && (
+                  <a href={partner.website} target="_blank" rel="noopener noreferrer">
+                    <ExternalLinkIcon className="h-3 w-3 text-muted-foreground" />
+                  </a>
+                )}
+              </div>
+              <div className="text-sm text-muted-foreground">{partner.email}</div>
+            </div>
+          </div>
+        )
+      },
+    },
+    {
+      accessorKey: "type",
+      header: "Type",
+      cell: ({ row }) => {
+        const type = row.getValue("type") as string
+        return (
+          <Badge variant="outline" className="capitalize">
+            {type}
+          </Badge>
+        )
+      },
+    },
+    {
+      accessorKey: "phone",
+      header: "Phone",
+      cell: ({ row }) => <div>{row.getValue("phone")}</div>,
+    },
+    {
+      accessorKey: "schoolsOnboarded",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Schools
+            <ArrowUpDownIcon className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => (
+        <div className="text-center font-medium">{row.getValue("schoolsOnboarded")}</div>
+      ),
+    },
+    {
+      accessorKey: "commission",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Commission
+            <ArrowUpDownIcon className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => {
+        const amount = row.getValue("commission") as number
+        const formatted = new Intl.NumberFormat("en-IN", {
+          style: "currency",
+          currency: "INR",
+          maximumFractionDigits: 0,
+        }).format(amount)
+        return <div className="font-medium">{formatted}</div>
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = row.getValue("status") as string
+        return (
+          <Badge
+            variant={
+              status === "active"
+                ? "default"
+                : status === "pending"
+                ? "secondary"
+                : "destructive"
+            }
+          >
+            {status}
+          </Badge>
+        )
+      },
+    },
+    {
+      accessorKey: "joinedAt",
+      header: "Joined",
+      cell: ({ row }) => {
+        const dateStr = row.getValue("joinedAt") as string
+        const [year, month, day] = dateStr.split("-")
+        return <div>{`${day}/${month}/${year}`}</div>
+      },
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const partner = row.original
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontalIcon className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(partner.id)}>
+                Copy partner ID
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>View profile</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleEdit(partner)}>
+                Edit details
+              </DropdownMenuItem>
+              <DropdownMenuItem>View schools</DropdownMenuItem>
+              <DropdownMenuItem>Pay commission</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={() => handleDelete(partner)}
+              >
+                Deactivate
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+      },
+    },
+  ]
+
   const totalCommission = partners.reduce((sum, p) => sum + p.commission, 0)
   const totalSchools = partners.reduce((sum, p) => sum + p.schoolsOnboarded, 0)
+  const activePartners = partners.filter(p => p.status === "active").length
 
   return (
     <PageLayout title="Partners" breadcrumbs={[{ label: "Partners" }]}>
@@ -296,10 +378,10 @@ export default function PartnersPage() {
               <CardTitle className="text-sm font-medium">Active Partners</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {partners.filter(p => p.status === "active").length}
-              </div>
-              <p className="text-xs text-muted-foreground">75% active rate</p>
+              <div className="text-2xl font-bold">{activePartners}</div>
+              <p className="text-xs text-muted-foreground">
+                {partners.length > 0 ? Math.round((activePartners / partners.length) * 100) : 0}% active rate
+              </p>
             </CardContent>
           </Card>
           <Card>
@@ -341,12 +423,49 @@ export default function PartnersPage() {
               data={partners}
               searchKey="name"
               searchPlaceholder="Search partners..."
-              onAdd={() => console.log("Add partner")}
+              onAdd={handleAdd}
               addButtonLabel="Add Partner"
             />
           </CardContent>
         </Card>
       </div>
+
+      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>{selectedPartner ? "Edit Partner" : "Add Partner"}</SheetTitle>
+            <SheetDescription>
+              {selectedPartner
+                ? "Update the partner details below."
+                : "Fill in the details to add a new partner."}
+            </SheetDescription>
+          </SheetHeader>
+          <div className="mt-6">
+            <PartnerForm
+              partner={selectedPartner}
+              onSubmit={handleFormSubmit}
+              onCancel={() => setIsSheetOpen(false)}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will deactivate {partnerToDelete?.name}. They will no longer be able to onboard new schools.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Deactivate
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </PageLayout>
   )
 }

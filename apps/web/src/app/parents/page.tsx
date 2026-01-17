@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontalIcon, ArrowUpDownIcon, Loader2Icon } from "lucide-react"
+import { MoreHorizontalIcon, ArrowUpDownIcon, Loader2Icon, UsersIcon } from "lucide-react"
 import { toast } from "sonner"
 
 import { PageLayout } from "@/components/page-layout"
@@ -43,89 +43,87 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { StudentForm } from "@/components/forms/student-form"
-import { type StudentFormData } from "@/lib/schemas"
-import { studentsApi } from "@/lib/api"
+import { ParentForm } from "@/components/forms/parent-form"
+import { type ParentFormData } from "@/lib/schemas"
+import { parentsApi } from "@/lib/api"
 
-type Student = {
+type Parent = {
   id: string
   name: string
   email: string
   phone: string
-  school: string
-  grade: string
-  status: "active" | "inactive" | "graduated"
-  enrolledAt: string
-  avatar?: string
+  children: number
+  occupation?: string
+  address?: string
+  status: "active" | "inactive"
+  createdAt: string
 }
 
-const schools = ["Vidyamandir Classes", "Demo School", "Development Tenant"]
-
-const demoStudents: Student[] = [
+const demoParents: Parent[] = [
   {
     id: "1",
-    name: "Rahul Sharma",
-    email: "rahul.sharma@email.com",
+    name: "Rajesh Sharma",
+    email: "rajesh.sharma@email.com",
     phone: "+91 98765 43210",
-    school: "Vidyamandir Classes",
-    grade: "12th",
+    children: 2,
+    occupation: "Engineer",
     status: "active",
-    enrolledAt: "2024-01-15",
+    createdAt: "2024-01-15",
   },
   {
     id: "2",
-    name: "Priya Patel",
-    email: "priya.patel@email.com",
+    name: "Sunita Patel",
+    email: "sunita.patel@email.com",
     phone: "+91 98765 43211",
-    school: "Vidyamandir Classes",
-    grade: "11th",
+    children: 1,
+    occupation: "Doctor",
     status: "active",
-    enrolledAt: "2024-02-20",
+    createdAt: "2024-02-20",
   },
   {
     id: "3",
     name: "Amit Kumar",
     email: "amit.kumar@email.com",
     phone: "+91 98765 43212",
-    school: "Demo School",
-    grade: "10th",
+    children: 3,
+    occupation: "Business Owner",
     status: "active",
-    enrolledAt: "2024-03-10",
+    createdAt: "2024-03-10",
   },
 ]
 
-export default function StudentsPage() {
-  const [students, setStudents] = useState<Student[]>([])
+export default function ParentsPage() {
+  const [parents, setParents] = useState<Parent[]>([])
   const [loading, setLoading] = useState(true)
   const [isSheetOpen, setIsSheetOpen] = useState(false)
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
+  const [selectedParent, setSelectedParent] = useState<Parent | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [studentToDelete, setStudentToDelete] = useState<Student | null>(null)
+  const [parentToDelete, setParentToDelete] = useState<Parent | null>(null)
 
   useEffect(() => {
-    fetchStudents()
+    fetchParents()
   }, [])
 
-  const fetchStudents = async () => {
+  const fetchParents = async () => {
     try {
-      const response = await studentsApi.getAll()
+      const response = await parentsApi.getAll()
       if (response.success && response.data) {
-        const formattedStudents = response.data.students.map((s: any) => ({
-          id: s.id,
-          name: `${s.firstName} ${s.lastName}`,
-          email: s.email,
-          phone: s.phone || "N/A",
-          school: s.tenant?.name || "Unknown",
-          grade: s.gradeLevel || "N/A",
-          status: s.status?.toLowerCase() || "active",
-          enrolledAt: s.createdAt?.split("T")[0] || new Date().toISOString().split("T")[0],
+        const formattedParents = response.data.parents.map((p: any) => ({
+          id: p.id,
+          name: p.user ? `${p.user.profile?.firstName || ''} ${p.user.profile?.lastName || ''}`.trim() : "Unknown",
+          email: p.user?.email || "N/A",
+          phone: p.phone || p.user?.profile?.phone || "N/A",
+          children: p._count?.children || 0,
+          occupation: p.occupation,
+          address: p.address,
+          status: p.user?.isActive ? "active" : "inactive",
+          createdAt: p.createdAt?.split("T")[0] || new Date().toISOString().split("T")[0],
         }))
-        setStudents(formattedStudents)
+        setParents(formattedParents)
       }
     } catch (error) {
-      console.error("Failed to fetch students:", error)
-      // Fall back to demo data
-      setStudents(demoStudents)
+      console.error("Failed to fetch parents:", error)
+      setParents(demoParents)
       toast.info("Using demo data (API unavailable)")
     } finally {
       setLoading(false)
@@ -133,101 +131,100 @@ export default function StudentsPage() {
   }
 
   const handleAdd = () => {
-    setSelectedStudent(null)
+    setSelectedParent(null)
     setIsSheetOpen(true)
   }
 
-  const handleEdit = (student: Student) => {
-    setSelectedStudent(student)
+  const handleEdit = (parent: Parent) => {
+    setSelectedParent(parent)
     setIsSheetOpen(true)
   }
 
-  const handleDelete = (student: Student) => {
-    setStudentToDelete(student)
+  const handleDelete = (parent: Parent) => {
+    setParentToDelete(parent)
     setDeleteDialogOpen(true)
   }
 
   const confirmDelete = async () => {
-    if (studentToDelete) {
+    if (parentToDelete) {
       try {
-        await studentsApi.delete(studentToDelete.id)
-        setStudents(students.filter((s) => s.id !== studentToDelete.id))
-        toast.success(`${studentToDelete.name} has been removed`)
+        await parentsApi.delete(parentToDelete.id)
+        setParents(parents.filter((p) => p.id !== parentToDelete.id))
+        toast.success(`${parentToDelete.name} has been removed`)
       } catch (error) {
-        // Demo mode fallback
-        setStudents(students.filter((s) => s.id !== studentToDelete.id))
-        toast.success(`${studentToDelete.name} has been removed (Demo Mode)`)
+        setParents(parents.filter((p) => p.id !== parentToDelete.id))
+        toast.success(`${parentToDelete.name} has been removed (Demo Mode)`)
       }
       setDeleteDialogOpen(false)
-      setStudentToDelete(null)
+      setParentToDelete(null)
     }
   }
 
-  const handleFormSubmit = async (data: StudentFormData) => {
+  const handleFormSubmit = async (data: ParentFormData) => {
     const nameParts = data.name.split(" ")
     const firstName = nameParts[0]
     const lastName = nameParts.slice(1).join(" ") || ""
 
-    if (selectedStudent) {
+    if (selectedParent) {
       try {
-        await studentsApi.update(selectedStudent.id, {
+        await parentsApi.update(selectedParent.id, {
           firstName,
           lastName,
           email: data.email,
           phone: data.phone,
-          gradeLevel: data.grade,
-          status: data.status.toUpperCase(),
+          occupation: data.occupation,
+          address: data.address,
         })
-        setStudents(
-          students.map((s) =>
-            s.id === selectedStudent.id ? { ...s, ...data } : s
+        setParents(
+          parents.map((p) =>
+            p.id === selectedParent.id ? { ...p, ...data, children: selectedParent.children } : p
           )
         )
         toast.success(`${data.name} has been updated`)
       } catch (error) {
-        // Demo mode fallback
-        setStudents(
-          students.map((s) =>
-            s.id === selectedStudent.id ? { ...s, ...data } : s
+        setParents(
+          parents.map((p) =>
+            p.id === selectedParent.id ? { ...p, ...data, children: selectedParent.children } : p
           )
         )
         toast.success(`${data.name} has been updated (Demo Mode)`)
       }
     } else {
       try {
-        const response = await studentsApi.create({
+        const response = await parentsApi.create({
           firstName,
           lastName,
           email: data.email,
           phone: data.phone,
-          gradeLevel: data.grade,
-          status: data.status.toUpperCase(),
+          occupation: data.occupation,
+          address: data.address,
         })
         if (response.success && response.data) {
-          const newStudent: Student = {
+          const newParent: Parent = {
             id: response.data.id,
             ...data,
-            enrolledAt: new Date().toISOString().split("T")[0],
+            children: 0,
+            createdAt: new Date().toISOString().split("T")[0],
           }
-          setStudents([...students, newStudent])
+          setParents([...parents, newParent])
           toast.success(`${data.name} has been added`)
         }
       } catch (error) {
-        // Demo mode fallback
-        const newStudent: Student = {
+        const newParent: Parent = {
           id: String(Date.now()),
           ...data,
-          enrolledAt: new Date().toISOString().split("T")[0],
+          children: 0,
+          createdAt: new Date().toISOString().split("T")[0],
         }
-        setStudents([...students, newStudent])
+        setParents([...parents, newParent])
         toast.success(`${data.name} has been added (Demo Mode)`)
       }
     }
     setIsSheetOpen(false)
-    setSelectedStudent(null)
+    setSelectedParent(null)
   }
 
-  const columns: ColumnDef<Student>[] = [
+  const columns: ColumnDef<Parent>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -255,23 +252,23 @@ export default function StudentsPage() {
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Student
+            Parent
             <ArrowUpDownIcon className="ml-2 h-4 w-4" />
           </Button>
         )
       },
       cell: ({ row }) => {
-        const student = row.original
-        const initials = student.name.split(" ").map(n => n[0]).join("")
+        const parent = row.original
+        const initials = parent.name.split(" ").map(n => n[0]).join("")
         return (
           <div className="flex items-center gap-3">
             <Avatar className="h-8 w-8">
-              <AvatarImage src={student.avatar} alt={student.name} />
+              <AvatarImage src={undefined} alt={parent.name} />
               <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
             <div>
-              <div className="font-medium">{student.name}</div>
-              <div className="text-sm text-muted-foreground">{student.email}</div>
+              <div className="font-medium">{parent.name}</div>
+              <div className="text-sm text-muted-foreground">{parent.email}</div>
             </div>
           </div>
         )
@@ -283,16 +280,29 @@ export default function StudentsPage() {
       cell: ({ row }) => <div>{row.getValue("phone")}</div>,
     },
     {
-      accessorKey: "school",
-      header: "School",
-      cell: ({ row }) => <div>{row.getValue("school")}</div>,
+      accessorKey: "children",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Children
+            <ArrowUpDownIcon className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => (
+        <div className="flex items-center gap-1">
+          <UsersIcon className="h-4 w-4 text-muted-foreground" />
+          <span>{row.getValue("children")}</span>
+        </div>
+      ),
     },
     {
-      accessorKey: "grade",
-      header: "Grade",
-      cell: ({ row }) => (
-        <Badge variant="outline">{row.getValue("grade")}</Badge>
-      ),
+      accessorKey: "occupation",
+      header: "Occupation",
+      cell: ({ row }) => <div>{row.getValue("occupation") || "N/A"}</div>,
     },
     {
       accessorKey: "status",
@@ -300,25 +310,17 @@ export default function StudentsPage() {
       cell: ({ row }) => {
         const status = row.getValue("status") as string
         return (
-          <Badge
-            variant={
-              status === "active"
-                ? "default"
-                : status === "graduated"
-                ? "secondary"
-                : "destructive"
-            }
-          >
+          <Badge variant={status === "active" ? "default" : "destructive"}>
             {status}
           </Badge>
         )
       },
     },
     {
-      accessorKey: "enrolledAt",
-      header: "Enrolled",
+      accessorKey: "createdAt",
+      header: "Registered",
       cell: ({ row }) => {
-        const dateStr = row.getValue("enrolledAt") as string
+        const dateStr = row.getValue("createdAt") as string
         const [year, month, day] = dateStr.split("-")
         return <div>{`${day}/${month}/${year}`}</div>
       },
@@ -327,7 +329,7 @@ export default function StudentsPage() {
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
-        const student = row.original
+        const parent = row.original
 
         return (
           <DropdownMenu>
@@ -339,22 +341,22 @@ export default function StudentsPage() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(student.id)}>
-                Copy student ID
+              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(parent.id)}>
+                Copy parent ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>View profile</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleEdit(student)}>
+              <DropdownMenuItem onClick={() => handleEdit(parent)}>
                 Edit details
               </DropdownMenuItem>
-              <DropdownMenuItem>View attendance</DropdownMenuItem>
-              <DropdownMenuItem>Contact parent</DropdownMenuItem>
+              <DropdownMenuItem>View children</DropdownMenuItem>
+              <DropdownMenuItem>Send message</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-destructive"
-                onClick={() => handleDelete(student)}
+                onClick={() => handleDelete(parent)}
               >
-                Remove student
+                Remove parent
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -363,11 +365,13 @@ export default function StudentsPage() {
     },
   ]
 
-  const activeStudents = students.filter((s) => s.status === "active").length
+  const activeParents = parents.filter((p) => p.status === "active").length
+  const totalChildren = parents.reduce((sum, p) => sum + p.children, 0)
+  const avgChildren = parents.length > 0 ? (totalChildren / parents.length).toFixed(1) : "0"
 
   if (loading) {
     return (
-      <PageLayout title="Students" breadcrumbs={[{ label: "Students" }]}>
+      <PageLayout title="Parents" breadcrumbs={[{ label: "Parents" }]}>
         <div className="flex items-center justify-center h-64">
           <Loader2Icon className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
@@ -376,71 +380,71 @@ export default function StudentsPage() {
   }
 
   return (
-    <PageLayout title="Students" breadcrumbs={[{ label: "Students" }]}>
+    <PageLayout title="Parents" breadcrumbs={[{ label: "Parents" }]}>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Students</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Parents</h1>
           <p className="text-muted-foreground">
-            Manage all students across all schools
+            Manage all parents across all schools
           </p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Parents</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{students.length}</div>
-              <p className="text-xs text-muted-foreground">+2 from last month</p>
+              <div className="text-2xl font-bold">{parents.length}</div>
+              <p className="text-xs text-muted-foreground">Registered parents</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Students</CardTitle>
+              <CardTitle className="text-sm font-medium">Active Parents</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{activeStudents}</div>
+              <div className="text-2xl font-bold">{activeParents}</div>
               <p className="text-xs text-muted-foreground">
-                {students.length > 0 ? Math.round((activeStudents / students.length) * 100) : 0}% active rate
+                {parents.length > 0 ? Math.round((activeParents / parents.length) * 100) : 0}% active rate
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">New This Month</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Children</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">1</div>
-              <p className="text-xs text-muted-foreground">Latest enrollment</p>
+              <div className="text-2xl font-bold">{totalChildren}</div>
+              <p className="text-xs text-muted-foreground">Students enrolled</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Avg per School</CardTitle>
+              <CardTitle className="text-sm font-medium">Avg Children</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{(students.length / schools.length).toFixed(1)}</div>
-              <p className="text-xs text-muted-foreground">students per school</p>
+              <div className="text-2xl font-bold">{avgChildren}</div>
+              <p className="text-xs text-muted-foreground">per parent</p>
             </CardContent>
           </Card>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>All Students</CardTitle>
+            <CardTitle>All Parents</CardTitle>
             <CardDescription>
-              A list of all students enrolled across all schools
+              A list of all parents registered across all schools
             </CardDescription>
           </CardHeader>
           <CardContent>
             <EntityTable
               columns={columns}
-              data={students}
+              data={parents}
               searchKey="name"
-              searchPlaceholder="Search students..."
+              searchPlaceholder="Search parents..."
               onAdd={handleAdd}
-              addButtonLabel="Add Student"
+              addButtonLabel="Add Parent"
             />
           </CardContent>
         </Card>
@@ -449,17 +453,16 @@ export default function StudentsPage() {
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent>
           <SheetHeader>
-            <SheetTitle>{selectedStudent ? "Edit Student" : "Add Student"}</SheetTitle>
+            <SheetTitle>{selectedParent ? "Edit Parent" : "Add Parent"}</SheetTitle>
             <SheetDescription>
-              {selectedStudent
-                ? "Update the student details below."
-                : "Fill in the details to add a new student."}
+              {selectedParent
+                ? "Update the parent details below."
+                : "Fill in the details to add a new parent."}
             </SheetDescription>
           </SheetHeader>
           <div className="mt-6">
-            <StudentForm
-              student={selectedStudent}
-              schools={schools}
+            <ParentForm
+              parent={selectedParent}
               onSubmit={handleFormSubmit}
               onCancel={() => setIsSheetOpen(false)}
             />
@@ -472,7 +475,7 @@ export default function StudentsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently remove {studentToDelete?.name}. This action cannot be undone.
+              This will permanently remove {parentToDelete?.name}. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

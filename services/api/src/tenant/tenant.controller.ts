@@ -1,5 +1,7 @@
-import { Controller, Get, Headers } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Headers, HttpException, HttpStatus } from '@nestjs/common';
 import { TenantService } from './tenant.service';
+import { Roles } from '../auth/roles.decorator';
+import { Public } from '../auth/public.decorator';
 
 @Controller('tenants')
 export class TenantController {
@@ -9,6 +11,7 @@ export class TenantController {
    * Resolve tenant by host header
    * Used by frontend to get tenant info before auth
    */
+  @Public()
   @Get('resolve')
   async resolveTenant(
     @Headers('x-forwarded-host') forwardedHost?: string,
@@ -41,11 +44,77 @@ export class TenantController {
   }
 
   /**
-   * Get all tenants (admin only - add auth guard in production)
+   * Get all tenants (super admin only)
    */
   @Get()
+  @Roles('SUPER_ADMIN')
   async getAllTenants() {
     const tenants = await this.tenantService.getAllTenants();
     return { success: true, data: tenants };
+  }
+
+  /**
+   * Get tenant by ID
+   */
+  @Get(':id')
+  @Roles('SUPER_ADMIN', 'ADMIN')
+  async getTenantById(@Param('id') id: string) {
+    try {
+      const tenant = await this.tenantService.getTenantById(id);
+      return { success: true, data: tenant };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
+   * Create a new tenant (school)
+   */
+  @Post()
+  @Roles('SUPER_ADMIN')
+  async createTenant(@Body() data: any) {
+    try {
+      const tenant = await this.tenantService.createTenant(data);
+      return { success: true, data: tenant };
+    } catch (error: any) {
+      throw new HttpException(
+        { success: false, error: error.message },
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
+  /**
+   * Update a tenant
+   */
+  @Put(':id')
+  @Roles('SUPER_ADMIN')
+  async updateTenant(@Param('id') id: string, @Body() data: any) {
+    try {
+      const tenant = await this.tenantService.updateTenant(id, data);
+      return { success: true, data: tenant };
+    } catch (error: any) {
+      throw new HttpException(
+        { success: false, error: error.message },
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
+  /**
+   * Delete (deactivate) a tenant
+   */
+  @Delete(':id')
+  @Roles('SUPER_ADMIN')
+  async deleteTenant(@Param('id') id: string) {
+    try {
+      const tenant = await this.tenantService.updateTenant(id, { isActive: false });
+      return { success: true, data: tenant };
+    } catch (error: any) {
+      throw new HttpException(
+        { success: false, error: error.message },
+        HttpStatus.BAD_REQUEST
+      );
+    }
   }
 }

@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import {
   FolderIcon,
   MoreHorizontalIcon,
@@ -34,19 +35,22 @@ export function NavDocuments({
   }[]
 }) {
   const { isMobile } = useSidebar()
+  const pathname = usePathname()
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Documents</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => (
-          <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild>
-              <Link href={item.url}>
-                <item.icon />
-                <span>{item.name}</span>
-              </Link>
-            </SidebarMenuButton>
+        {items.map((item) => {
+          const isActive = pathname === item.url || pathname.startsWith(item.url + "/")
+          return (
+            <SidebarMenuItem key={item.name}>
+              <SidebarMenuButton asChild isActive={isActive}>
+                <Link href={item.url}>
+                  <item.icon />
+                  <span>{item.name}</span>
+                </Link>
+              </SidebarMenuButton>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuAction
@@ -72,8 +76,9 @@ export function NavDocuments({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </SidebarMenuItem>
-        ))}
+            </SidebarMenuItem>
+          )
+        })}
         <SidebarMenuItem>
           <SidebarMenuButton className="text-sidebar-foreground/70">
             <MoreHorizontalIcon className="text-sidebar-foreground/70" />

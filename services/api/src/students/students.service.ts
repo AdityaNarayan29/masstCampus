@@ -14,6 +14,7 @@ export class StudentsService {
     options?: {
       gradeLevel?: string;
       brokerId?: string;
+      search?: string;
       page?: number;
       limit?: number;
     }
@@ -32,12 +33,26 @@ export class StudentsService {
       where.brokerId = options.brokerId;
     }
 
+    // Search by name or email
+    if (options?.search) {
+      where.OR = [
+        { firstName: { contains: options.search, mode: 'insensitive' } },
+        { lastName: { contains: options.search, mode: 'insensitive' } },
+        { email: { contains: options.search, mode: 'insensitive' } },
+        { enrollmentNumber: { contains: options.search, mode: 'insensitive' } },
+      ];
+    }
+
     const [students, total] = await Promise.all([
       this.prisma.student.findMany({
         where,
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
+        include: {
+          broker: { select: { id: true, name: true } },
+          parent: { select: { id: true, relationshipType: true } },
+        },
       }),
       this.prisma.student.count({ where }),
     ]);
@@ -53,6 +68,12 @@ export class StudentsService {
       where: {
         id: studentId,
         tenantId,
+      },
+      include: {
+        broker: { select: { id: true, name: true } },
+        parent: { select: { id: true, relationshipType: true } },
+        fees: { orderBy: { dueDate: 'desc' }, take: 5 },
+        attendance: { orderBy: { date: 'desc' }, take: 10 },
       },
     });
   }
@@ -102,11 +123,39 @@ export class StudentsService {
   ): Promise<Student> {
     return this.prisma.student.update({
       where: { id: studentId },
-      data: {
-        ...data,
-        // Ensure tenant can't be changed
-        tenantId,
-      },
+      data,
     });
+  }
+
+  /**
+   * Delete student (soft delete by setting isActive to false)
+   */
+  async deleteStudent(studentId: string, tenantId: string): Promise<Student> {
+    return this.prisma.student.update({
+      where: { id: studentId },
+      data: { isActive: false },
+    });
+  }
+
+  /**
+   * Get student statistics for dashboard
+   */
+  async getStudentStats(tenantId: string) {
+    const [total, active, byGrade] = await Promise.all([
+      this.prisma.student.count({ where: { tenantId } }),
+      this.prisma.student.count({ where: { tenantId, isActive: true } }),
+      this.prisma.student.groupBy({
+        by: ['gradeLevel'],
+        where: { tenantId, isActive: true },
+        _count: true,
+      }),
+    ]);
+
+    return {
+      total,
+      active,
+      inactive: total - active,
+      byGrade: byGrade.map((g) => ({ grade: g.gradeLevel, count: g._count })),
+    };
   }
 }

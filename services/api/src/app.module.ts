@@ -13,7 +13,10 @@ import { AttendanceModule } from './attendance/attendance.module';
 import { TeachersModule } from './teachers/teachers.module';
 import { ParentsModule } from './parents/parents.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { ClassesModule } from './classes/classes.module';
 import { TenantInterceptor } from './tenant/tenant.interceptor';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { RolesGuard } from './auth/roles.guard';
 
 @Module({
   imports: [
@@ -32,11 +35,20 @@ import { TenantInterceptor } from './tenant/tenant.interceptor';
     TeachersModule,
     ParentsModule,
     NotificationsModule,
+    ClassesModule,
   ],
   providers: [
     {
       provide: APP_INTERCEPTOR,
       useClass: TenantInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
   ],
 })

@@ -107,4 +107,95 @@ export class BrokersService {
       },
     });
   }
+
+  /**
+   * Update a broker
+   */
+  async updateBroker(
+    id: string,
+    tenantId: string,
+    data: {
+      name?: string;
+      code?: string;
+      parentBrokerId?: string;
+      isActive?: boolean;
+      metadata?: any;
+    }
+  ): Promise<Broker> {
+    // Recalculate level if parent changed
+    let updateData: any = { ...data };
+    if (data.parentBrokerId !== undefined) {
+      let level = 0;
+      if (data.parentBrokerId) {
+        const parent = await this.prisma.broker.findUnique({
+          where: { id: data.parentBrokerId },
+        });
+        level = parent ? parent.level + 1 : 0;
+      }
+      updateData.level = level;
+    }
+
+    return this.prisma.broker.update({
+      where: { id },
+      data: updateData,
+    });
+  }
+
+  /**
+   * Delete a broker (soft delete by setting isActive = false)
+   */
+  async deleteBroker(id: string, tenantId: string): Promise<Broker> {
+    // Check if broker has students or sub-brokers
+    const [studentsCount, subBrokersCount] = await Promise.all([
+      this.prisma.student.count({ where: { brokerId: id } }),
+      this.prisma.broker.count({ where: { parentBrokerId: id } }),
+    ]);
+
+    if (studentsCount > 0) {
+      throw new Error(`Cannot delete broker with ${studentsCount} assigned students`);
+    }
+
+    if (subBrokersCount > 0) {
+      throw new Error(`Cannot delete broker with ${subBrokersCount} sub-brokers`);
+    }
+
+    return this.prisma.broker.update({
+      where: { id },
+      data: { isActive: false },
+    });
+  }
+
+  /**
+   * Get broker statistics
+   */
+  async getBrokerStats(brokerId: string, tenantId: string) {
+    const [studentsCount, commissionsData] = await Promise.all([
+      this.prisma.student.count({
+        where: { brokerId, tenantId },
+      }),
+      this.prisma.commission.aggregate({
+        where: { brokerId, tenantId },
+        _sum: { amount: true },
+        _count: true,
+      }),
+    ]);
+
+    const pendingCommissions = await this.prisma.commission.aggregate({
+      where: { brokerId, tenantId, status: 'PENDING' },
+      _sum: { amount: true },
+    });
+
+    const paidCommissions = await this.prisma.commission.aggregate({
+      where: { brokerId, tenantId, status: 'PAID' },
+      _sum: { amount: true },
+    });
+
+    return {
+      studentsEnrolled: studentsCount,
+      totalCommissions: commissionsData._sum.amount || 0,
+      commissionsCount: commissionsData._count,
+      pendingCommissions: pendingCommissions._sum.amount || 0,
+      paidCommissions: paidCommissions._sum.amount || 0,
+    };
+  }
 }
