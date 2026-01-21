@@ -43,8 +43,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { SchoolForm } from "@/components/forms/school-form"
-import { type SchoolFormData } from "@/lib/schemas"
+import { type SchoolWithThemeFormData } from "@/lib/schemas"
 import { tenantApi } from "@/lib/api"
+import type { TenantTheme } from "@school-crm/types"
 
 type School = {
   id: string
@@ -55,6 +56,7 @@ type School = {
   status: "active" | "inactive" | "pending"
   plan: "free" | "basic" | "premium"
   createdAt: string
+  theme?: TenantTheme
 }
 
 const demoSchools: School[] = [
@@ -115,6 +117,7 @@ export default function SchoolsPage() {
           status: t.isActive ? "active" : "inactive",
           plan: t.plan?.toLowerCase() || "free",
           createdAt: t.createdAt?.split("T")[0] || new Date().toISOString().split("T")[0],
+          theme: t.theme,
         }))
         setSchools(formattedSchools)
       }
@@ -157,7 +160,7 @@ export default function SchoolsPage() {
     }
   }
 
-  const handleFormSubmit = async (data: SchoolFormData) => {
+  const handleFormSubmit = async (data: SchoolWithThemeFormData) => {
     if (selectedSchool) {
       try {
         await tenantApi.update(selectedSchool.id, {
@@ -165,11 +168,12 @@ export default function SchoolsPage() {
           domain: data.domain,
           isActive: data.status === "active",
           plan: data.plan.toUpperCase(),
+          theme: data.theme,
         })
         setSchools(
           schools.map((s) =>
             s.id === selectedSchool.id
-              ? { ...s, ...data }
+              ? { ...s, name: data.name, domain: data.domain, status: data.status, plan: data.plan, theme: data.theme }
               : s
           )
         )
@@ -178,7 +182,7 @@ export default function SchoolsPage() {
         setSchools(
           schools.map((s) =>
             s.id === selectedSchool.id
-              ? { ...s, ...data }
+              ? { ...s, name: data.name, domain: data.domain, status: data.status, plan: data.plan, theme: data.theme }
               : s
           )
         )
@@ -191,11 +195,16 @@ export default function SchoolsPage() {
           domain: data.domain,
           slug: data.domain.split(".")[0],
           plan: data.plan.toUpperCase(),
+          theme: data.theme,
         })
         if (response.success && response.data) {
           const newSchool: School = {
             id: response.data.id,
-            ...data,
+            name: data.name,
+            domain: data.domain,
+            status: data.status,
+            plan: data.plan,
+            theme: data.theme,
             students: 0,
             teachers: 0,
             createdAt: new Date().toISOString().split("T")[0],
@@ -206,7 +215,11 @@ export default function SchoolsPage() {
       } catch (error) {
         const newSchool: School = {
           id: String(Date.now()),
-          ...data,
+          name: data.name,
+          domain: data.domain,
+          status: data.status,
+          plan: data.plan,
+          theme: data.theme,
           students: 0,
           teachers: 0,
           createdAt: new Date().toISOString().split("T")[0],
@@ -450,16 +463,16 @@ export default function SchoolsPage() {
       </div>
 
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent>
+        <SheetContent className="sm:max-w-lg overflow-y-auto">
           <SheetHeader>
             <SheetTitle>{selectedSchool ? "Edit School" : "Add School"}</SheetTitle>
             <SheetDescription>
               {selectedSchool
-                ? "Update the school details below."
-                : "Fill in the details to add a new school."}
+                ? "Update the school details and theme settings."
+                : "Fill in the details and customize the theme."}
             </SheetDescription>
           </SheetHeader>
-          <div className="mt-6">
+          <div className="mt-6 pb-6">
             <SchoolForm
               school={selectedSchool}
               onSubmit={handleFormSubmit}

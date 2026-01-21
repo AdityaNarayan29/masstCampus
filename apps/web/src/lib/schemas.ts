@@ -1,6 +1,29 @@
 import { z } from "zod"
 
-// School Schema
+// Theme colors schema
+export const themeColorsSchema = z.object({
+  primary: z.string().min(1, "Primary color is required"),
+  secondary: z.string().min(1, "Secondary color is required"),
+  accent: z.string().min(1, "Accent color is required"),
+  background: z.string().min(1, "Background color is required"),
+  foreground: z.string().min(1, "Foreground color is required"),
+  muted: z.string().min(1, "Muted color is required"),
+  mutedForeground: z.string().min(1, "Muted foreground color is required"),
+  border: z.string().min(1, "Border color is required"),
+})
+
+export const themeFontsSchema = z.object({
+  heading: z.string().optional(),
+  body: z.string().optional(),
+})
+
+export const themeSchema = z.object({
+  logo: z.string().optional(),
+  colors: themeColorsSchema,
+  fonts: themeFontsSchema.optional(),
+})
+
+// School Schema (basic info)
 export const schoolSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   domain: z.string().min(3, "Domain must be at least 3 characters"),
@@ -8,7 +31,14 @@ export const schoolSchema = z.object({
   plan: z.enum(["free", "basic", "premium"]),
 })
 
+// Extended school schema with theme
+export const schoolWithThemeSchema = schoolSchema.extend({
+  theme: themeSchema.optional(),
+})
+
 export type SchoolFormData = z.infer<typeof schoolSchema>
+export type SchoolWithThemeFormData = z.infer<typeof schoolWithThemeSchema>
+export type ThemeFormData = z.infer<typeof themeSchema>
 
 // Class Schema
 export const classSchema = z.object({
