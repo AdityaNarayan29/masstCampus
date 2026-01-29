@@ -47,6 +47,18 @@ import { type SchoolWithThemeFormData } from "@/lib/schemas"
 import { tenantApi } from "@/lib/api"
 import type { TenantTheme } from "@school-crm/types"
 
+// Helper to normalize theme from form data to TenantTheme
+function normalizeTheme(theme: SchoolWithThemeFormData["theme"]): TenantTheme | undefined {
+  if (!theme) return undefined
+  return {
+    ...theme,
+    fonts: theme.fonts ? {
+      heading: theme.fonts.heading || "Inter, sans-serif",
+      body: theme.fonts.body || "Inter, sans-serif",
+    } : undefined,
+  }
+}
+
 type School = {
   id: string
   name: string
@@ -173,7 +185,7 @@ export default function SchoolsPage() {
         setSchools(
           schools.map((s) =>
             s.id === selectedSchool.id
-              ? { ...s, name: data.name, domain: data.domain, status: data.status, plan: data.plan, theme: data.theme }
+              ? { ...s, name: data.name, domain: data.domain, status: data.status, plan: data.plan, theme: normalizeTheme(data.theme) }
               : s
           )
         )
@@ -182,7 +194,7 @@ export default function SchoolsPage() {
         setSchools(
           schools.map((s) =>
             s.id === selectedSchool.id
-              ? { ...s, name: data.name, domain: data.domain, status: data.status, plan: data.plan, theme: data.theme }
+              ? { ...s, name: data.name, domain: data.domain, status: data.status, plan: data.plan, theme: normalizeTheme(data.theme) }
               : s
           )
         )
@@ -204,7 +216,7 @@ export default function SchoolsPage() {
             domain: data.domain,
             status: data.status,
             plan: data.plan,
-            theme: data.theme,
+            theme: normalizeTheme(data.theme),
             students: 0,
             teachers: 0,
             createdAt: new Date().toISOString().split("T")[0],
@@ -219,7 +231,7 @@ export default function SchoolsPage() {
           domain: data.domain,
           status: data.status,
           plan: data.plan,
-          theme: data.theme,
+          theme: normalizeTheme(data.theme),
           students: 0,
           teachers: 0,
           createdAt: new Date().toISOString().split("T")[0],

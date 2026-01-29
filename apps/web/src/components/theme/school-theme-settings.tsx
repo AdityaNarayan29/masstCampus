@@ -73,10 +73,11 @@ export function SchoolThemeSettings({ theme, onChange }: SchoolThemeSettingsProp
   }
 
   const handleFontChange = (key: keyof NonNullable<TenantTheme["fonts"]>, value: string) => {
+    const currentFonts = theme.fonts || { heading: "Inter, sans-serif", body: "Inter, sans-serif" }
     onChange({
       ...theme,
       fonts: {
-        ...theme.fonts,
+        ...currentFonts,
         [key]: value,
       },
     })

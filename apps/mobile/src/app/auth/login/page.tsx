@@ -1,10 +1,8 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -29,17 +27,25 @@ export default function LoginPage() {
         throw new Error('Invalid credentials');
       }
 
-      const data = await response.json();
+      const result = await response.json();
 
-      // Store token and user role
-      localStorage.setItem('auth_token', data.token);
-      localStorage.setItem('user_role', data.user.role);
+      // Handle both wrapped and unwrapped response formats
+      const data = result.data || result;
+
+      // Store token and user role in cookies (for middleware) and localStorage (for client)
+      const role = data.user.role.toLowerCase();
+      document.cookie = `auth_token=${data.accessToken}; path=/; max-age=604800`; // 7 days
+      document.cookie = `user_role=${role}; path=/; max-age=604800`;
+      localStorage.setItem('auth_token', data.accessToken);
+      localStorage.setItem('user_role', role);
 
       // Route based on role
-      if (data.user.role === 'teacher') {
-        router.push('/teacher');
-      } else if (data.user.role === 'parent') {
-        router.push('/parent');
+      if (role === 'teacher') {
+        window.location.href = '/teacher';
+      } else if (role === 'parent') {
+        window.location.href = '/parent';
+      } else if (role === 'admin') {
+        window.location.href = '/teacher'; // Admin can access teacher dashboard for now
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
@@ -108,6 +114,44 @@ export default function LoginPage() {
             Sign up
           </a>
         </p>
+      </div>
+
+      <div className="mt-6 p-4 bg-muted/50 rounded-lg border border-border">
+        <p className="text-sm font-medium text-center mb-3">Demo Credentials</p>
+        <div className="space-y-2 text-sm">
+          <div className="flex justify-between items-center p-2 bg-background rounded border">
+            <div>
+              <p className="font-medium">Teacher</p>
+              <p className="text-muted-foreground text-xs">teacher@vidyamandir.com / teacher123</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('teacher@vidyamandir.com');
+                setPassword('teacher123');
+              }}
+              className="text-xs px-2 py-1 bg-primary/10 text-primary rounded hover:bg-primary/20"
+            >
+              Use
+            </button>
+          </div>
+          <div className="flex justify-between items-center p-2 bg-background rounded border">
+            <div>
+              <p className="font-medium">Admin</p>
+              <p className="text-muted-foreground text-xs">admin@vidyamandir.com / admin123</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('admin@vidyamandir.com');
+                setPassword('admin123');
+              }}
+              className="text-xs px-2 py-1 bg-primary/10 text-primary rounded hover:bg-primary/20"
+            >
+              Use
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

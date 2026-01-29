@@ -16,10 +16,10 @@ async function main() {
 
   const vidyamandirTenant = await prisma.tenant.upsert({
     where: { subdomain: 'portal.vidyamandir' },
-    update: { primaryDomain: 'localhost:3003' }, // For local development
+    update: { primaryDomain: 'localhost:3000' }, // For local development (mobile app)
     create: {
       name: 'Vidyamandir Classes',
-      primaryDomain: 'localhost:3003', // For local development
+      primaryDomain: 'localhost:3000', // For local development (mobile app)
       subdomain: 'portal.vidyamandir',
       theme: {
         logo: 'https://vidyamandir.com/logo.svg',

@@ -13,7 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { schoolSchema, type SchoolFormData, type SchoolWithThemeFormData } from "@/lib/schemas"
 import { getDefaultTheme } from "@/lib/theme-presets"
 import { SchoolThemeSettings } from "@/components/theme/school-theme-settings"
@@ -56,9 +55,9 @@ export function SchoolForm({ school, onSubmit, onCancel }: SchoolFormProps) {
     const result = schoolSchema.safeParse(formData)
     if (!result.success) {
       const fieldErrors: Record<string, string> = {}
-      result.error.errors.forEach((err) => {
-        if (err.path[0]) {
-          fieldErrors[err.path[0] as string] = err.message
+      result.error.issues.forEach((issue) => {
+        if (issue.path[0]) {
+          fieldErrors[issue.path[0] as string] = issue.message
         }
       })
       setErrors(fieldErrors)
