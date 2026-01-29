@@ -644,20 +644,20 @@ export default function LandingPage() {
       </section>
 
       {/* Stats Section */}
-      <section ref={statsRef} className={`py-20 border-y ${t('border-white/10 bg-white/[0.02]', 'border-gray-200 bg-gray-50')}`}>
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+      <section ref={statsRef} className={`py-16 border-y ${t('border-white/10 bg-slate-900/50', 'border-gray-200 bg-white')}`}>
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-12">
             {stats.map((stat, i) => (
               <div key={i} className="stat-item text-center">
-                <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center ${
+                <div className={`w-14 h-14 mx-auto mb-3 rounded-2xl flex items-center justify-center ${
                   t('bg-gradient-to-br from-blue-500/20 to-purple-500/20', 'bg-gradient-to-br from-blue-100 to-purple-100')
                 }`}>
-                  <stat.icon className={`w-8 h-8 ${t('text-blue-400', 'text-blue-600')}`} />
+                  <stat.icon className={`w-7 h-7 ${t('text-blue-400', 'text-blue-600')}`} />
                 </div>
-                <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent mb-2">
+                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent mb-1">
                   {stat.value}
                 </div>
-                <p className={t('text-slate-400', 'text-gray-600')}>{stat.label}</p>
+                <p className={`text-sm ${t('text-slate-400', 'text-gray-600')}`}>{stat.label}</p>
               </div>
             ))}
           </div>
@@ -665,40 +665,40 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section ref={featuresRef} id="features" className="py-20">
+      <section ref={featuresRef} id="features" className="py-24">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4 ${
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-6 ${
               t('bg-white/10 border-white/20', 'bg-yellow-50 border-yellow-200')
             }`}>
               <Zap className="w-4 h-4 text-yellow-500" />
-              <span className={t('text-slate-300', 'text-yellow-700')}>Powerful Features</span>
+              <span className={`text-sm font-medium ${t('text-slate-300', 'text-yellow-700')}`}>Powerful Features</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold mb-5">
               Everything You Need to
-              <span className="block bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+              <span className="block mt-1 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
                 Run Your School
               </span>
             </h2>
-            <p className={`text-xl max-w-2xl mx-auto ${t('text-slate-400', 'text-gray-600')}`}>
+            <p className={`text-lg ${t('text-slate-400', 'text-gray-600')}`}>
               From attendance to analytics, we've got every aspect of school management covered.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
             {features.map((feature, i) => (
               <div
                 key={i}
-                className={`feature-card group p-8 rounded-2xl border transition-all duration-300 hover:shadow-xl ${
-                  t('bg-gradient-to-br from-white/5 to-white/[0.02] border-white/10 hover:border-white/20',
-                    'bg-white border-gray-200 hover:border-gray-300 shadow-sm')
+                className={`feature-card group p-6 rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl ${
+                  t('bg-gradient-to-br from-white/[0.08] to-white/[0.02] border-white/10 hover:border-white/25 hover:shadow-purple-500/10',
+                    'bg-white border-gray-200 hover:border-blue-200 shadow-sm hover:shadow-blue-100')
                 }`}
               >
-                <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                  <feature.icon className="w-7 h-7 text-white" />
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                  <feature.icon className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-                <p className={`leading-relaxed ${t('text-slate-400', 'text-gray-600')}`}>{feature.description}</p>
+                <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
+                <p className={`text-sm leading-relaxed ${t('text-slate-400', 'text-gray-600')}`}>{feature.description}</p>
               </div>
             ))}
           </div>
@@ -706,46 +706,46 @@ export default function LandingPage() {
       </section>
 
       {/* How It Works Section */}
-      <section ref={howItWorksRef} className={`py-20 ${t('bg-white/[0.02]', 'bg-gray-50')}`}>
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4 ${
+      <section ref={howItWorksRef} className={`py-24 ${t('bg-slate-900/50', 'bg-gradient-to-b from-gray-50 to-white')}`}>
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-6 ${
               t('bg-white/10 border-white/20', 'bg-blue-50 border-blue-200')
             }`}>
               <PlayCircle className="w-4 h-4 text-blue-500" />
-              <span className={t('text-slate-300', 'text-blue-700')}>Simple Setup</span>
+              <span className={`text-sm font-medium ${t('text-slate-300', 'text-blue-700')}`}>Simple Setup</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Get Started in
-              <span className="block bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">
-                4 Easy Steps
-              </span>
+              <span className="bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent"> 4 Easy Steps</span>
             </h2>
-            <p className={`text-xl max-w-2xl mx-auto ${t('text-slate-400', 'text-gray-600')}`}>
+            <p className={`text-lg ${t('text-slate-400', 'text-gray-600')}`}>
               From signup to managing your school - it takes less than a day.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
             {howItWorks.map((step, i) => (
-              <div key={i} className="how-step relative">
-                <div className={`p-6 rounded-2xl border h-full ${
-                  t('bg-gradient-to-br from-white/5 to-white/[0.02] border-white/10',
-                    'bg-white border-gray-200 shadow-sm')
+              <div key={i} className="how-step relative group">
+                <div className={`p-5 rounded-2xl border h-full transition-all duration-300 group-hover:-translate-y-1 ${
+                  t('bg-gradient-to-br from-white/[0.08] to-white/[0.02] border-white/10 group-hover:border-white/20',
+                    'bg-white border-gray-200 shadow-sm group-hover:shadow-lg')
                 }`}>
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className={`text-4xl font-bold ${t('text-white/20', 'text-gray-200')}`}>
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className={`text-3xl font-bold ${t('text-white/10', 'text-gray-200')}`}>
                       {step.step}
-                    </div>
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
-                      <step.icon className="w-6 h-6 text-white" />
+                    </span>
+                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-lg shadow-purple-500/20">
+                      <step.icon className="w-5 h-5 text-white" />
                     </div>
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">{step.title}</h3>
-                  <p className={`text-sm ${t('text-slate-400', 'text-gray-600')}`}>{step.description}</p>
+                  <h3 className="text-base font-semibold mb-2">{step.title}</h3>
+                  <p className={`text-sm leading-relaxed ${t('text-slate-400', 'text-gray-600')}`}>{step.description}</p>
                 </div>
                 {i < howItWorks.length - 1 && (
-                  <div className={`hidden lg:block absolute top-1/2 -right-4 w-8 h-0.5 ${t('bg-white/20', 'bg-gray-300')}`} />
+                  <div className={`hidden lg:block absolute top-1/2 -right-2.5 w-5 ${t('text-white/20', 'text-gray-300')}`}>
+                    <ChevronRight className="w-5 h-5" />
+                  </div>
                 )}
               </div>
             ))}
@@ -754,21 +754,21 @@ export default function LandingPage() {
       </section>
 
       {/* Trust Features */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <section className={`py-12 border-y ${t('border-white/5 bg-white/[0.02]', 'border-gray-100 bg-gray-50/50')}`}>
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {trustFeatures.map((feature, i) => (
-              <div key={i} className={`flex items-center gap-4 p-4 rounded-xl border ${
-                t('bg-white/5 border-white/10', 'bg-white border-gray-200 shadow-sm')
+              <div key={i} className={`flex items-center gap-3 p-4 rounded-xl transition-all hover:scale-[1.02] ${
+                t('bg-white/5 hover:bg-white/10', 'bg-white shadow-sm hover:shadow-md')
               }`}>
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                  t('bg-green-500/20', 'bg-green-100')
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                  t('bg-emerald-500/20', 'bg-emerald-100')
                 }`}>
-                  <feature.icon className="w-6 h-6 text-green-500" />
+                  <feature.icon className="w-5 h-5 text-emerald-500" />
                 </div>
-                <div>
-                  <p className="font-semibold text-sm">{feature.label}</p>
-                  <p className={`text-xs ${t('text-slate-400', 'text-gray-500')}`}>{feature.description}</p>
+                <div className="min-w-0">
+                  <p className="font-medium text-sm truncate">{feature.label}</p>
+                  <p className={`text-xs truncate ${t('text-slate-500', 'text-gray-500')}`}>{feature.description}</p>
                 </div>
               </div>
             ))}
@@ -777,45 +777,45 @@ export default function LandingPage() {
       </section>
 
       {/* Comparison Section */}
-      <section ref={comparisonRef} className={`py-20 ${t('bg-white/[0.02]', 'bg-gray-50')}`}>
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+      <section ref={comparisonRef} className="py-24">
+        <div className="max-w-3xl mx-auto px-6">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">
               Why Schools Choose
-              <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent"> Masst Campus</span>
+              <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent"> Us</span>
             </h2>
-            <p className={`text-lg ${t('text-slate-400', 'text-gray-600')}`}>
-              See how we compare to traditional school management software.
+            <p className={t('text-slate-400', 'text-gray-600')}>
+              See how we compare to traditional software.
             </p>
           </div>
 
           <div className={`rounded-2xl border overflow-hidden ${
-            t('bg-white/5 border-white/10', 'bg-white border-gray-200 shadow-lg')
+            t('bg-slate-800/50 border-white/10', 'bg-white border-gray-200 shadow-xl')
           }`}>
-            <div className={`grid grid-cols-3 p-4 border-b font-semibold ${
-              t('bg-white/10 border-white/10', 'bg-gray-50 border-gray-200')
+            <div className={`grid grid-cols-3 p-4 border-b text-sm font-semibold ${
+              t('bg-white/5 border-white/10', 'bg-gray-50 border-gray-200')
             }`}>
-              <div>Feature</div>
+              <div className={t('text-slate-400', 'text-gray-500')}>Feature</div>
               <div className="text-center text-blue-500">Masst Campus</div>
-              <div className={`text-center ${t('text-slate-400', 'text-gray-500')}`}>Others</div>
+              <div className={`text-center ${t('text-slate-500', 'text-gray-400')}`}>Others</div>
             </div>
             {comparisonFeatures.map((item, i) => (
-              <div key={i} className={`comparison-row grid grid-cols-3 p-4 border-b last:border-0 ${
-                t('border-white/5', 'border-gray-100')
-              }`}>
+              <div key={i} className={`comparison-row grid grid-cols-3 p-3.5 border-b last:border-0 text-sm ${
+                t('border-white/5 hover:bg-white/5', 'border-gray-100 hover:bg-gray-50')
+              } transition-colors`}>
                 <div className={t('text-slate-300', 'text-gray-700')}>{item.feature}</div>
                 <div className="text-center">
                   {typeof item.us === 'boolean' ? (
-                    item.us ? <Check className="w-5 h-5 text-green-500 mx-auto" /> : <X className="w-5 h-5 text-red-500 mx-auto" />
+                    item.us ? <Check className="w-5 h-5 text-emerald-500 mx-auto" /> : <X className="w-5 h-5 text-red-400 mx-auto" />
                   ) : (
-                    <span className="text-green-500 font-semibold">{item.us}</span>
+                    <span className="text-emerald-500 font-semibold text-xs">{item.us}</span>
                   )}
                 </div>
                 <div className="text-center">
                   {typeof item.others === 'boolean' ? (
-                    item.others ? <Check className="w-5 h-5 text-green-500 mx-auto" /> : <X className="w-5 h-5 text-red-500 mx-auto" />
+                    item.others ? <Check className="w-5 h-5 text-emerald-500 mx-auto" /> : <X className="w-5 h-5 text-red-400/60 mx-auto" />
                   ) : (
-                    <span className={t('text-slate-400', 'text-gray-500')}>{item.others}</span>
+                    <span className={`text-xs ${t('text-slate-500', 'text-gray-400')}`}>{item.others}</span>
                   )}
                 </div>
               </div>
@@ -825,59 +825,57 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing Section */}
-      <section ref={pricingRef} id="pricing" className="py-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-12">
+      <section ref={pricingRef} id="pricing" className={`py-24 ${t('bg-slate-900/50', 'bg-gradient-to-b from-white to-gray-50')}`}>
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center max-w-2xl mx-auto mb-14">
             <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-6 ${
               t('bg-white/10 border-white/20', 'bg-green-50 border-green-200')
             }`}>
               <CreditCard className="w-4 h-4 text-green-500" />
-              <span className={t('text-slate-300', 'text-green-700')}>Simple Pricing</span>
+              <span className={`text-sm font-medium ${t('text-slate-300', 'text-green-700')}`}>Simple Pricing</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
               70% Cheaper Than
-              <span className="block bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">
-                Competitors
-              </span>
+              <span className="bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent"> Competitors</span>
             </h2>
-            <p className={`text-xl max-w-2xl mx-auto ${t('text-slate-400', 'text-gray-600')}`}>
+            <p className={`text-lg ${t('text-slate-400', 'text-gray-600')}`}>
               World-class features at prices that make sense for Indian schools.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-5 max-w-4xl mx-auto">
             {pricingTiers.map((tier, i) => (
               <div
                 key={i}
-                className={`pricing-card relative p-8 rounded-2xl border transition-all ${
+                className={`pricing-card relative p-6 rounded-2xl border transition-all duration-300 hover:-translate-y-1 ${
                   tier.popular
-                    ? 'bg-gradient-to-br from-blue-500/10 to-purple-500/10 border-blue-500/50 shadow-lg shadow-blue-500/10'
-                    : t('bg-white/5 border-white/10', 'bg-white border-gray-200 shadow-sm')
+                    ? `${t('bg-gradient-to-br from-blue-500/20 to-purple-500/20 border-blue-500/40', 'bg-gradient-to-br from-blue-50 to-purple-50 border-blue-300')} shadow-xl ${t('shadow-blue-500/10', 'shadow-blue-200/50')}`
+                    : t('bg-white/5 border-white/10 hover:border-white/20', 'bg-white border-gray-200 shadow-md hover:shadow-lg')
                 }`}
               >
                 {tier.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full text-sm font-medium text-white">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full text-xs font-semibold text-white shadow-lg">
                     Most Popular
                   </div>
                 )}
-                <h3 className="text-xl font-semibold mb-2">{tier.name}</h3>
-                <p className={`text-sm mb-6 ${t('text-slate-400', 'text-gray-500')}`}>{tier.description}</p>
-                <div className="mb-6">
-                  <span className="text-4xl font-bold">{tier.price}</span>
-                  <span className={t('text-slate-400', 'text-gray-500')}>{tier.period}</span>
+                <h3 className="text-lg font-semibold mb-1">{tier.name}</h3>
+                <p className={`text-xs mb-4 ${t('text-slate-400', 'text-gray-500')}`}>{tier.description}</p>
+                <div className="mb-5">
+                  <span className="text-3xl font-bold">{tier.price}</span>
+                  <span className={`text-sm ${t('text-slate-400', 'text-gray-500')}`}>{tier.period}</span>
                 </div>
-                <ul className="space-y-3 mb-8">
+                <ul className="space-y-2.5 mb-6">
                   {tier.features.map((feature, j) => (
-                    <li key={j} className="flex items-center gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <li key={j} className="flex items-start gap-2.5 text-sm">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
                       <span className={t('text-slate-300', 'text-gray-700')}>{feature}</span>
                     </li>
                   ))}
                 </ul>
-                <button className={`w-full py-3 rounded-xl font-medium transition-all ${
+                <button className={`w-full py-2.5 rounded-xl text-sm font-medium transition-all ${
                   tier.popular
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 hover:opacity-90 text-white'
-                    : t('bg-white/10 hover:bg-white/20', 'bg-gray-100 hover:bg-gray-200')
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 hover:shadow-lg hover:shadow-purple-500/25 text-white'
+                    : t('bg-white/10 hover:bg-white/20 border border-white/10', 'bg-gray-100 hover:bg-gray-200 border border-gray-200')
                 }`}>
                   {tier.cta}
                 </button>
@@ -888,45 +886,43 @@ export default function LandingPage() {
       </section>
 
       {/* Testimonials Section */}
-      <section ref={testimonialsRef} id="testimonials" className="py-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-12">
+      <section ref={testimonialsRef} id="testimonials" className="py-24">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center max-w-2xl mx-auto mb-14">
             <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-6 ${
-              t('bg-white/10 border-white/20', 'bg-yellow-50 border-yellow-200')
+              t('bg-white/10 border-white/20', 'bg-amber-50 border-amber-200')
             }`}>
-              <Star className="w-4 h-4 text-yellow-500" />
-              <span className={t('text-slate-300', 'text-yellow-700')}>Testimonials</span>
+              <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+              <span className={`text-sm font-medium ${t('text-slate-300', 'text-amber-700')}`}>Testimonials</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold">
               Loved by Educators
-              <span className="block bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
-                Across India
-              </span>
+              <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent"> Across India</span>
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-5">
             {testimonials.map((testimonial, i) => (
               <div
                 key={i}
-                className={`testimonial-card p-8 rounded-2xl border transition-all ${
-                  t('bg-gradient-to-br from-white/5 to-white/[0.02] border-white/10',
-                    'bg-white border-gray-200 shadow-sm')
+                className={`testimonial-card p-6 rounded-2xl border transition-all duration-300 hover:-translate-y-1 ${
+                  t('bg-gradient-to-br from-white/[0.08] to-white/[0.02] border-white/10 hover:border-white/20',
+                    'bg-white border-gray-200 shadow-md hover:shadow-xl')
                 }`}
               >
-                <div className="flex items-center gap-1 text-yellow-500 mb-6">
+                <div className="flex items-center gap-0.5 text-amber-400 mb-4">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-current" />
+                    <Star key={i} className="w-4 h-4 fill-current" />
                   ))}
                 </div>
-                <p className={`text-lg mb-6 leading-relaxed ${t('text-slate-300', 'text-gray-700')}`}>"{testimonial.quote}"</p>
-                <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${testimonial.gradient} flex items-center justify-center font-bold text-white`}>
+                <p className={`text-sm mb-5 leading-relaxed ${t('text-slate-300', 'text-gray-700')}`}>"{testimonial.quote}"</p>
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${testimonial.gradient} flex items-center justify-center text-xs font-bold text-white shadow-lg`}>
                     {testimonial.avatar}
                   </div>
                   <div>
-                    <p className="font-medium">{testimonial.author}</p>
-                    <p className={`text-sm ${t('text-slate-400', 'text-gray-500')}`}>{testimonial.role}</p>
+                    <p className="text-sm font-medium">{testimonial.author}</p>
+                    <p className={`text-xs ${t('text-slate-400', 'text-gray-500')}`}>{testimonial.role}</p>
                   </div>
                 </div>
               </div>
@@ -936,46 +932,53 @@ export default function LandingPage() {
       </section>
 
       {/* FAQ Section */}
-      <section ref={faqRef} className={`py-20 ${t('bg-white/[0.02]', 'bg-gray-50')}`}>
+      <section ref={faqRef} className={`py-24 ${t('bg-slate-900/30', 'bg-gray-50')}`}>
         <div className="max-w-3xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4 ${
+          <div className="text-center mb-14">
+            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-6 ${
               t('bg-white/10 border-white/20', 'bg-purple-50 border-purple-200')
             }`}>
               <MessageSquare className="w-4 h-4 text-purple-500" />
-              <span className={t('text-slate-300', 'text-purple-700')}>FAQ</span>
+              <span className={`text-sm font-medium ${t('text-slate-300', 'text-purple-700')}`}>FAQ</span>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Frequently Asked Questions
+              Frequently Asked
+              <span className="bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent"> Questions</span>
             </h2>
             <p className={`text-lg ${t('text-slate-400', 'text-gray-600')}`}>
               Everything you need to know about Masst Campus.
             </p>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {faqs.map((faq, i) => (
               <div
                 key={i}
-                className={`faq-item rounded-xl border overflow-hidden ${
-                  t('bg-white/5 border-white/10', 'bg-white border-gray-200 shadow-sm')
+                className={`faq-item rounded-2xl border overflow-hidden transition-all duration-300 ${
+                  openFaq === i
+                    ? t('bg-white/[0.08] border-white/20 shadow-lg', 'bg-white border-purple-200 shadow-lg shadow-purple-100/50')
+                    : t('bg-white/[0.03] border-white/10 hover:bg-white/[0.05]', 'bg-white border-gray-200 shadow-sm hover:shadow-md')
                 }`}
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className={`w-full p-5 flex items-center justify-between text-left transition-colors ${
-                    t('hover:bg-white/5', 'hover:bg-gray-50')
-                  }`}
+                  className="w-full p-5 flex items-center justify-between text-left"
                 >
                   <span className="font-semibold pr-4">{faq.question}</span>
-                  <ChevronDown className={`w-5 h-5 flex-shrink-0 transition-transform duration-300 ${
-                    openFaq === i ? 'rotate-180' : ''
-                  } ${t('text-slate-400', 'text-gray-500')}`} />
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
+                    openFaq === i
+                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 rotate-180'
+                      : t('bg-white/10', 'bg-gray-100')
+                  }`}>
+                    <ChevronDown className={`w-4 h-4 transition-colors ${
+                      openFaq === i ? 'text-white' : t('text-slate-400', 'text-gray-500')
+                    }`} />
+                  </div>
                 </button>
                 <div className={`overflow-hidden transition-all duration-300 ${
                   openFaq === i ? 'max-h-48' : 'max-h-0'
                 }`}>
-                  <p className={`px-5 pb-5 ${t('text-slate-400', 'text-gray-600')}`}>
+                  <p className={`px-5 pb-5 text-sm leading-relaxed ${t('text-slate-400', 'text-gray-600')}`}>
                     {faq.answer}
                   </p>
                 </div>
@@ -986,27 +989,34 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section ref={ctaRef} className="py-20">
+      <section ref={ctaRef} className="py-24">
         <div className="max-w-4xl mx-auto px-6">
-          <div className={`cta-content relative p-12 md:p-16 rounded-3xl border text-center overflow-hidden ${
-            t('bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 border-white/10',
-              'bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 border-gray-200')
+          <div className={`cta-content relative p-10 md:p-14 rounded-3xl border text-center overflow-hidden ${
+            t('bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 border-white/20 shadow-2xl shadow-purple-500/10',
+              'bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 border-transparent shadow-2xl shadow-purple-500/30')
           }`}>
-            <div className={`absolute inset-0 blur-3xl ${t('bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10', 'opacity-0')}`} />
+            <div className={`absolute inset-0 ${t('bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 blur-3xl', 'bg-black/10')}`} />
+            <div className={`absolute inset-0 ${t('', 'bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.2),transparent_50%)]')}`} />
 
             <div className="relative">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 ${
+                t('bg-white/10 border border-white/20', 'bg-white/20 backdrop-blur-sm')
+              }`}>
+                <Sparkles className="w-4 h-4 text-yellow-400" />
+                <span className={`text-sm font-medium ${t('text-slate-200', 'text-white')}`}>Limited Time Offer</span>
+              </div>
+              <h2 className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-5 ${t('', 'text-white')}`}>
                 Ready to Transform Your School?
               </h2>
-              <p className={`text-xl mb-8 max-w-2xl mx-auto ${t('text-slate-300', 'text-gray-600')}`}>
+              <p className={`text-lg mb-8 max-w-xl mx-auto ${t('text-slate-300', 'text-white/90')}`}>
                 Join hundreds of schools already using Masst Campus. Start your free trial today.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
                 <Link
                   href="/login"
-                  className={`group px-8 py-4 rounded-xl text-lg font-semibold transition-all flex items-center gap-2 ${
-                    t('bg-white text-slate-900 hover:bg-slate-100',
-                      'bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:shadow-lg hover:shadow-purple-500/25')
+                  className={`group px-8 py-3.5 rounded-xl text-base font-semibold transition-all flex items-center gap-2 ${
+                    t('bg-white text-slate-900 hover:bg-slate-100 shadow-lg',
+                      'bg-white text-purple-600 hover:bg-gray-100 shadow-lg hover:shadow-xl')
                   }`}
                 >
                   Start Free Trial
@@ -1014,15 +1024,15 @@ export default function LandingPage() {
                 </Link>
                 <a
                   href="#"
-                  className={`px-8 py-4 rounded-xl text-lg font-semibold transition-all border ${
+                  className={`px-8 py-3.5 rounded-xl text-base font-semibold transition-all border ${
                     t('bg-white/10 border-white/20 hover:bg-white/20',
-                      'bg-white border-gray-200 hover:bg-gray-50')
+                      'bg-transparent border-white/40 text-white hover:bg-white/10 hover:border-white/60')
                   }`}
                 >
                   Schedule Demo
                 </a>
               </div>
-              <p className={`mt-6 text-sm ${t('text-slate-400', 'text-gray-500')}`}>
+              <p className={`mt-6 text-sm ${t('text-slate-400', 'text-white/70')}`}>
                 No credit card required • Free 14-day trial • Cancel anytime
               </p>
             </div>
@@ -1031,19 +1041,32 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className={`py-16 border-t ${t('border-white/10', 'border-gray-200')}`}>
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-12 mb-12">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                  <GraduationCap className="w-6 h-6 text-white" />
+      <footer className={`py-14 border-t ${t('border-white/10 bg-slate-950', 'border-gray-200 bg-white')}`}>
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid md:grid-cols-5 gap-8 md:gap-12 mb-10">
+            <div className="md:col-span-2">
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
+                  <GraduationCap className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-xl font-bold">Masst Campus</span>
+                <span className="text-lg font-bold">Masst Campus</span>
               </div>
-              <p className={`text-sm ${t('text-slate-400', 'text-gray-600')}`}>
+              <p className={`text-sm leading-relaxed mb-5 max-w-xs ${t('text-slate-400', 'text-gray-600')}`}>
                 Modern school management for the digital age. Built in India, for India.
               </p>
+              <div className="flex items-center gap-3">
+                {['twitter', 'linkedin', 'facebook', 'instagram'].map((social) => (
+                  <a
+                    key={social}
+                    href="#"
+                    className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all ${
+                      t('bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white', 'bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-900')
+                    }`}
+                  >
+                    <Globe className="w-4 h-4" />
+                  </a>
+                ))}
+              </div>
             </div>
             {[
               { title: 'Product', links: ['Features', 'Pricing', 'Integrations', 'API'] },
@@ -1051,11 +1074,11 @@ export default function LandingPage() {
               { title: 'Legal', links: ['Privacy', 'Terms', 'Security'] },
             ].map((col, i) => (
               <div key={i}>
-                <h4 className="font-semibold mb-4">{col.title}</h4>
-                <ul className={`space-y-2 text-sm ${t('text-slate-400', 'text-gray-600')}`}>
+                <h4 className="font-semibold text-sm mb-4">{col.title}</h4>
+                <ul className={`space-y-2.5 text-sm ${t('text-slate-400', 'text-gray-600')}`}>
                   {col.links.map((link, j) => (
                     <li key={j}>
-                      <a href="#" className={`transition-colors ${t('hover:text-white', 'hover:text-gray-900')}`}>{link}</a>
+                      <a href="#" className={`transition-colors hover:underline underline-offset-4 ${t('hover:text-white', 'hover:text-gray-900')}`}>{link}</a>
                     </li>
                   ))}
                 </ul>
@@ -1063,12 +1086,12 @@ export default function LandingPage() {
             ))}
           </div>
           <div className={`pt-8 border-t flex flex-col md:flex-row justify-between items-center gap-4 ${t('border-white/10', 'border-gray-200')}`}>
-            <p className={`text-sm ${t('text-slate-400', 'text-gray-600')}`}>
+            <p className={`text-xs ${t('text-slate-500', 'text-gray-500')}`}>
               © 2026 Masst Campus (hey.school). All rights reserved.
             </p>
-            <div className={`flex items-center gap-4 ${t('text-slate-400', 'text-gray-600')}`}>
-              <Globe className="w-4 h-4" />
-              <span className="text-sm">Available in 35+ countries</span>
+            <div className={`flex items-center gap-2 ${t('text-slate-500', 'text-gray-500')}`}>
+              <Globe className="w-3.5 h-3.5" />
+              <span className="text-xs">Available in 35+ countries</span>
             </div>
           </div>
         </div>
