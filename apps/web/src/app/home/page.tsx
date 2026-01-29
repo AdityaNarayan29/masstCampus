@@ -32,6 +32,7 @@ import {
   ChevronDown,
   X,
   Check,
+  Menu,
 } from 'lucide-react';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Area, AreaChart, Bar, BarChart, Cell, Pie, PieChart as RechartsPieChart } from 'recharts';
@@ -273,8 +274,10 @@ export default function LandingPage() {
   const ctaRef = useRef<HTMLDivElement>(null);
   const [isDark, setIsDark] = useState(true);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleTheme = () => setIsDark(!isDark);
+  const closeMobileMenu = () => setMobileMenuOpen(false);
 
   // Theme-aware class helper
   const t = (dark: string, light: string) => isDark ? dark : light;
@@ -384,87 +387,141 @@ export default function LandingPage() {
       <nav className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b transition-all duration-500 ${
         t('bg-slate-950/80 border-white/10', 'bg-white/80 border-gray-200')
       }`}>
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-              <GraduationCap className="w-6 h-6 text-white" />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
-            <span className="text-xl font-bold">Masst Campus</span>
+            <span className="text-lg sm:text-xl font-bold">Masst Campus</span>
           </div>
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className={`text-sm transition-colors ${t('text-slate-400 hover:text-white', 'text-gray-600 hover:text-gray-900')}`}>Features</a>
             <a href="#pricing" className={`text-sm transition-colors ${t('text-slate-400 hover:text-white', 'text-gray-600 hover:text-gray-900')}`}>Pricing</a>
             <a href="#testimonials" className={`text-sm transition-colors ${t('text-slate-400 hover:text-white', 'text-gray-600 hover:text-gray-900')}`}>Testimonials</a>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={toggleTheme}
-              className={`p-2.5 rounded-xl transition-all duration-300 ${
+              className={`p-2 sm:p-2.5 rounded-xl transition-all duration-300 ${
                 t('bg-white/10 hover:bg-white/20 border border-white/10',
                   'bg-gray-100 hover:bg-gray-200 border border-gray-200')
               }`}
               aria-label="Toggle theme"
             >
-              {isDark ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-slate-600" />}
+              {isDark ? <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" /> : <Moon className="w-4 h-4 sm:w-5 sm:h-5 text-slate-600" />}
             </button>
-            <Link href="/login" className={`text-sm transition-colors ${t('text-slate-400 hover:text-white', 'text-gray-600 hover:text-gray-900')}`}>
+            <Link href="/login" className={`hidden sm:block text-sm transition-colors ${t('text-slate-400 hover:text-white', 'text-gray-600 hover:text-gray-900')}`}>
               Sign In
             </Link>
             <Link
               href="/login"
-              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity text-white"
+              className="hidden sm:block px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity text-white"
             >
               Get Started
             </Link>
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className={`md:hidden p-2 rounded-xl transition-all ${
+                t('bg-white/10 hover:bg-white/20', 'bg-gray-100 hover:bg-gray-200')
+              }`}
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
+        </div>
+        {/* Mobile menu */}
+        <div className={`md:hidden overflow-hidden transition-all duration-300 ${
+          mobileMenuOpen ? 'max-h-80' : 'max-h-0'
+        }`}>
+          <div className={`px-4 py-4 space-y-3 border-t ${t('border-white/10', 'border-gray-200')}`}>
+            <a
+              href="#features"
+              onClick={closeMobileMenu}
+              className={`block py-2 text-sm font-medium ${t('text-slate-300 hover:text-white', 'text-gray-700 hover:text-gray-900')}`}
+            >
+              Features
+            </a>
+            <a
+              href="#pricing"
+              onClick={closeMobileMenu}
+              className={`block py-2 text-sm font-medium ${t('text-slate-300 hover:text-white', 'text-gray-700 hover:text-gray-900')}`}
+            >
+              Pricing
+            </a>
+            <a
+              href="#testimonials"
+              onClick={closeMobileMenu}
+              className={`block py-2 text-sm font-medium ${t('text-slate-300 hover:text-white', 'text-gray-700 hover:text-gray-900')}`}
+            >
+              Testimonials
+            </a>
+            <div className="pt-3 flex flex-col gap-2 border-t ${t('border-white/10', 'border-gray-200')}">
+              <Link
+                href="/login"
+                onClick={closeMobileMenu}
+                className={`py-2 text-sm font-medium ${t('text-slate-300 hover:text-white', 'text-gray-700 hover:text-gray-900')}`}
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/login"
+                onClick={closeMobileMenu}
+                className="py-2.5 px-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl text-sm font-medium text-white text-center"
+              >
+                Get Started
+              </Link>
+            </div>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section ref={heroRef} className="relative min-h-screen flex items-center pt-20">
+      <section ref={heroRef} className="relative min-h-screen flex items-center pt-16 sm:pt-20">
         <div className="absolute inset-0 overflow-hidden">
-          <div className={`absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl float-1 ${t('bg-blue-500/30', 'bg-blue-400/20')}`} />
-          <div className={`absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl float-2 ${t('bg-purple-500/30', 'bg-purple-400/20')}`} />
-          <div className={`absolute top-1/2 left-1/2 w-64 h-64 rounded-full blur-3xl float-3 ${t('bg-cyan-500/20', 'bg-cyan-400/10')}`} />
+          <div className={`absolute top-1/4 left-1/4 w-64 sm:w-96 h-64 sm:h-96 rounded-full blur-3xl float-1 ${t('bg-blue-500/30', 'bg-blue-400/20')}`} />
+          <div className={`absolute bottom-1/4 right-1/4 w-64 sm:w-96 h-64 sm:h-96 rounded-full blur-3xl float-2 ${t('bg-purple-500/30', 'bg-purple-400/20')}`} />
+          <div className={`absolute top-1/2 left-1/2 w-48 sm:w-64 h-48 sm:h-64 rounded-full blur-3xl float-3 ${t('bg-cyan-500/20', 'bg-cyan-400/10')}`} />
         </div>
 
-        <div className={`absolute inset-0 bg-[size:64px_64px] ${
+        <div className={`absolute inset-0 bg-[size:48px_48px] sm:bg-[size:64px_64px] ${
           t('bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)]',
             'bg-[linear-gradient(rgba(0,0,0,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.05)_1px,transparent_1px)]')
         }`} />
 
-        <div className="relative max-w-7xl mx-auto px-6 py-20 grid lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-8 ${
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20 grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          <div className="text-center lg:text-left">
+            <div className={`inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border mb-6 sm:mb-8 text-sm ${
               t('bg-white/10 border-white/20', 'bg-blue-50 border-blue-200')
             }`}>
-              <Sparkles className="w-4 h-4 text-yellow-500" />
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellow-500" />
               <span className={t('text-slate-300', 'text-blue-700')}>Trusted by 100+ Schools</span>
             </div>
 
-            <h1 className="hero-title text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6">
+            <h1 className="hero-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-4 sm:mb-6">
               School Management
               <span className="block bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
                 Made Simple
               </span>
             </h1>
 
-            <p className={`hero-subtitle text-xl mb-8 max-w-lg ${t('text-slate-400', 'text-gray-600')}`}>
+            <p className={`hero-subtitle text-base sm:text-lg md:text-xl mb-6 sm:mb-8 max-w-lg mx-auto lg:mx-0 ${t('text-slate-400', 'text-gray-600')}`}>
               The all-in-one platform for attendance, fees, communication, and analytics.
               Built for Indian schools, priced for everyone.
             </p>
 
-            <div className="hero-cta flex flex-wrap gap-4">
+            <div className="hero-cta flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
               <Link
                 href="/login"
-                className="group px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl text-lg font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all flex items-center gap-2 text-white"
+                className="group px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl text-base sm:text-lg font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all flex items-center justify-center gap-2 text-white"
               >
                 Start Free Trial
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <a
                 href="#features"
-                className={`px-8 py-4 rounded-xl text-lg font-semibold transition-all border ${
+                className={`px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg font-semibold transition-all border text-center ${
                   t('bg-white/10 border-white/20 hover:bg-white/20',
                     'bg-white border-gray-200 hover:bg-gray-50 shadow-sm')
                 }`}
@@ -473,8 +530,8 @@ export default function LandingPage() {
               </a>
             </div>
 
-            <div className="mt-12 flex items-center gap-6">
-              <div className="flex -space-x-3">
+            <div className="mt-8 sm:mt-12 flex items-center gap-4 sm:gap-6 justify-center lg:justify-start">
+              <div className="flex -space-x-2 sm:-space-x-3">
                 {[
                   { initials: 'RK', gradient: 'from-blue-500 to-cyan-500' },
                   { initials: 'PS', gradient: 'from-purple-500 to-pink-500' },
@@ -483,7 +540,7 @@ export default function LandingPage() {
                 ].map((user, i) => (
                   <div
                     key={i}
-                    className={`w-10 h-10 rounded-full bg-gradient-to-br ${user.gradient} border-2 flex items-center justify-center text-xs font-bold text-white ${
+                    className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br ${user.gradient} border-2 flex items-center justify-center text-[10px] sm:text-xs font-bold text-white ${
                       t('border-slate-900', 'border-white')
                     }`}
                   >
@@ -492,17 +549,17 @@ export default function LandingPage() {
                 ))}
               </div>
               <div>
-                <div className="flex items-center gap-1 text-yellow-500">
+                <div className="flex items-center gap-0.5 sm:gap-1 text-yellow-500">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-current" />
+                    <Star key={i} className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current" />
                   ))}
                 </div>
-                <p className={`text-sm ${t('text-slate-400', 'text-gray-500')}`}>Loved by educators</p>
+                <p className={`text-xs sm:text-sm ${t('text-slate-400', 'text-gray-500')}`}>Loved by educators</p>
               </div>
             </div>
           </div>
 
-          <div className="hero-image relative">
+          <div className="hero-image relative hidden lg:block">
             <div className={`relative rounded-2xl border shadow-2xl overflow-hidden ${
               t('bg-gradient-to-br from-slate-800 to-slate-900 border-white/10',
                 'bg-white border-gray-200')
@@ -637,27 +694,27 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <div className={`absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce ${t('text-slate-500', 'text-gray-400')}`}>
+        <div className={`absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce ${t('text-slate-500', 'text-gray-400')}`}>
           <span className="text-xs">Scroll to explore</span>
           <ChevronRight className="w-5 h-5 rotate-90" />
         </div>
       </section>
 
       {/* Stats Section */}
-      <section ref={statsRef} className={`py-16 border-y ${t('border-white/10 bg-slate-900/50', 'border-gray-200 bg-white')}`}>
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-12">
+      <section ref={statsRef} className={`py-10 sm:py-16 border-y ${t('border-white/10 bg-slate-900/50', 'border-gray-200 bg-white')}`}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-12">
             {stats.map((stat, i) => (
               <div key={i} className="stat-item text-center">
-                <div className={`w-14 h-14 mx-auto mb-3 rounded-2xl flex items-center justify-center ${
+                <div className={`w-11 h-11 sm:w-14 sm:h-14 mx-auto mb-2 sm:mb-3 rounded-xl sm:rounded-2xl flex items-center justify-center ${
                   t('bg-gradient-to-br from-blue-500/20 to-purple-500/20', 'bg-gradient-to-br from-blue-100 to-purple-100')
                 }`}>
-                  <stat.icon className={`w-7 h-7 ${t('text-blue-400', 'text-blue-600')}`} />
+                  <stat.icon className={`w-5 h-5 sm:w-7 sm:h-7 ${t('text-blue-400', 'text-blue-600')}`} />
                 </div>
-                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent mb-1">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent mb-0.5 sm:mb-1">
                   {stat.value}
                 </div>
-                <p className={`text-sm ${t('text-slate-400', 'text-gray-600')}`}>{stat.label}</p>
+                <p className={`text-xs sm:text-sm ${t('text-slate-400', 'text-gray-600')}`}>{stat.label}</p>
               </div>
             ))}
           </div>
@@ -665,40 +722,40 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section ref={featuresRef} id="features" className="py-24">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-6 ${
+      <section ref={featuresRef} id="features" className="py-16 sm:py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16">
+            <div className={`inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border mb-4 sm:mb-6 ${
               t('bg-white/10 border-white/20', 'bg-yellow-50 border-yellow-200')
             }`}>
-              <Zap className="w-4 h-4 text-yellow-500" />
-              <span className={`text-sm font-medium ${t('text-slate-300', 'text-yellow-700')}`}>Powerful Features</span>
+              <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellow-500" />
+              <span className={`text-xs sm:text-sm font-medium ${t('text-slate-300', 'text-yellow-700')}`}>Powerful Features</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-5">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-5">
               Everything You Need to
               <span className="block mt-1 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
                 Run Your School
               </span>
             </h2>
-            <p className={`text-lg ${t('text-slate-400', 'text-gray-600')}`}>
+            <p className={`text-sm sm:text-base md:text-lg ${t('text-slate-400', 'text-gray-600')}`}>
               From attendance to analytics, we've got every aspect of school management covered.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             {features.map((feature, i) => (
               <div
                 key={i}
-                className={`feature-card group p-6 rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl ${
+                className={`feature-card group p-5 sm:p-6 rounded-xl sm:rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl ${
                   t('bg-gradient-to-br from-white/[0.08] to-white/[0.02] border-white/10 hover:border-white/25 hover:shadow-purple-500/10',
                     'bg-white border-gray-200 hover:border-blue-200 shadow-sm hover:shadow-blue-100')
                 }`}
               >
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
-                  <feature.icon className="w-6 h-6 text-white" />
+                <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-4 sm:mb-5 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                  <feature.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
-                <p className={`text-sm leading-relaxed ${t('text-slate-400', 'text-gray-600')}`}>{feature.description}</p>
+                <h3 className="text-base sm:text-lg font-semibold mb-2">{feature.title}</h3>
+                <p className={`text-xs sm:text-sm leading-relaxed ${t('text-slate-400', 'text-gray-600')}`}>{feature.description}</p>
               </div>
             ))}
           </div>
@@ -706,41 +763,41 @@ export default function LandingPage() {
       </section>
 
       {/* How It Works Section */}
-      <section ref={howItWorksRef} className={`py-24 ${t('bg-slate-900/50', 'bg-gradient-to-b from-gray-50 to-white')}`}>
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-6 ${
+      <section ref={howItWorksRef} className={`py-16 sm:py-24 ${t('bg-slate-900/50', 'bg-gradient-to-b from-gray-50 to-white')}`}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
+            <div className={`inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border mb-4 sm:mb-6 ${
               t('bg-white/10 border-white/20', 'bg-blue-50 border-blue-200')
             }`}>
-              <PlayCircle className="w-4 h-4 text-blue-500" />
-              <span className={`text-sm font-medium ${t('text-slate-300', 'text-blue-700')}`}>Simple Setup</span>
+              <PlayCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-500" />
+              <span className={`text-xs sm:text-sm font-medium ${t('text-slate-300', 'text-blue-700')}`}>Simple Setup</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
               Get Started in
               <span className="bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent"> 4 Easy Steps</span>
             </h2>
-            <p className={`text-lg ${t('text-slate-400', 'text-gray-600')}`}>
+            <p className={`text-sm sm:text-base md:text-lg ${t('text-slate-400', 'text-gray-600')}`}>
               From signup to managing your school - it takes less than a day.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
             {howItWorks.map((step, i) => (
               <div key={i} className="how-step relative group">
-                <div className={`p-5 rounded-2xl border h-full transition-all duration-300 group-hover:-translate-y-1 ${
+                <div className={`p-4 sm:p-5 rounded-xl sm:rounded-2xl border h-full transition-all duration-300 group-hover:-translate-y-1 ${
                   t('bg-gradient-to-br from-white/[0.08] to-white/[0.02] border-white/10 group-hover:border-white/20',
                     'bg-white border-gray-200 shadow-sm group-hover:shadow-lg')
                 }`}>
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className={`text-3xl font-bold ${t('text-white/10', 'text-gray-200')}`}>
+                  <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                    <span className={`text-xl sm:text-3xl font-bold ${t('text-white/10', 'text-gray-200')}`}>
                       {step.step}
                     </span>
-                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-lg shadow-purple-500/20">
-                      <step.icon className="w-5 h-5 text-white" />
+                    <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-lg shadow-purple-500/20">
+                      <step.icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                     </div>
                   </div>
-                  <h3 className="text-base font-semibold mb-2">{step.title}</h3>
-                  <p className={`text-sm leading-relaxed ${t('text-slate-400', 'text-gray-600')}`}>{step.description}</p>
+                  <h3 className="text-sm sm:text-base font-semibold mb-1 sm:mb-2">{step.title}</h3>
+                  <p className={`text-xs sm:text-sm leading-relaxed ${t('text-slate-400', 'text-gray-600')}`}>{step.description}</p>
                 </div>
                 {i < howItWorks.length - 1 && (
                   <div className={`hidden lg:block absolute top-1/2 -right-2.5 w-5 ${t('text-white/20', 'text-gray-300')}`}>
@@ -754,21 +811,21 @@ export default function LandingPage() {
       </section>
 
       {/* Trust Features */}
-      <section className={`py-12 border-y ${t('border-white/5 bg-white/[0.02]', 'border-gray-100 bg-gray-50/50')}`}>
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <section className={`py-8 sm:py-12 border-y ${t('border-white/5 bg-white/[0.02]', 'border-gray-100 bg-gray-50/50')}`}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             {trustFeatures.map((feature, i) => (
-              <div key={i} className={`flex items-center gap-3 p-4 rounded-xl transition-all hover:scale-[1.02] ${
+              <div key={i} className={`flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-xl transition-all hover:scale-[1.02] text-center sm:text-left ${
                 t('bg-white/5 hover:bg-white/10', 'bg-white shadow-sm hover:shadow-md')
               }`}>
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
                   t('bg-emerald-500/20', 'bg-emerald-100')
                 }`}>
-                  <feature.icon className="w-5 h-5 text-emerald-500" />
+                  <feature.icon className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500" />
                 </div>
                 <div className="min-w-0">
-                  <p className="font-medium text-sm truncate">{feature.label}</p>
-                  <p className={`text-xs truncate ${t('text-slate-500', 'text-gray-500')}`}>{feature.description}</p>
+                  <p className="font-medium text-xs sm:text-sm truncate">{feature.label}</p>
+                  <p className={`text-[10px] sm:text-xs truncate hidden sm:block ${t('text-slate-500', 'text-gray-500')}`}>{feature.description}</p>
                 </div>
               </div>
             ))}
@@ -777,22 +834,22 @@ export default function LandingPage() {
       </section>
 
       {/* Comparison Section */}
-      <section ref={comparisonRef} className="py-24">
-        <div className="max-w-3xl mx-auto px-6">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">
+      <section ref={comparisonRef} className="py-16 sm:py-24">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-8 sm:mb-10">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3">
               Why Schools Choose
               <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent"> Us</span>
             </h2>
-            <p className={t('text-slate-400', 'text-gray-600')}>
+            <p className={`text-sm sm:text-base ${t('text-slate-400', 'text-gray-600')}`}>
               See how we compare to traditional software.
             </p>
           </div>
 
-          <div className={`rounded-2xl border overflow-hidden ${
+          <div className={`rounded-2xl border overflow-hidden overflow-x-auto ${
             t('bg-slate-800/50 border-white/10', 'bg-white border-gray-200 shadow-xl')
           }`}>
-            <div className={`grid grid-cols-3 p-4 border-b text-sm font-semibold ${
+            <div className={`grid grid-cols-3 p-3 sm:p-4 border-b text-xs sm:text-sm font-semibold min-w-[320px] ${
               t('bg-white/5 border-white/10', 'bg-gray-50 border-gray-200')
             }`}>
               <div className={t('text-slate-400', 'text-gray-500')}>Feature</div>
@@ -800,22 +857,22 @@ export default function LandingPage() {
               <div className={`text-center ${t('text-slate-500', 'text-gray-400')}`}>Others</div>
             </div>
             {comparisonFeatures.map((item, i) => (
-              <div key={i} className={`comparison-row grid grid-cols-3 p-3.5 border-b last:border-0 text-sm ${
+              <div key={i} className={`comparison-row grid grid-cols-3 p-2.5 sm:p-3.5 border-b last:border-0 text-xs sm:text-sm min-w-[320px] ${
                 t('border-white/5 hover:bg-white/5', 'border-gray-100 hover:bg-gray-50')
               } transition-colors`}>
-                <div className={t('text-slate-300', 'text-gray-700')}>{item.feature}</div>
+                <div className={`pr-2 ${t('text-slate-300', 'text-gray-700')}`}>{item.feature}</div>
                 <div className="text-center">
                   {typeof item.us === 'boolean' ? (
-                    item.us ? <Check className="w-5 h-5 text-emerald-500 mx-auto" /> : <X className="w-5 h-5 text-red-400 mx-auto" />
+                    item.us ? <Check className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500 mx-auto" /> : <X className="w-4 h-4 sm:w-5 sm:h-5 text-red-400 mx-auto" />
                   ) : (
-                    <span className="text-emerald-500 font-semibold text-xs">{item.us}</span>
+                    <span className="text-emerald-500 font-semibold text-[10px] sm:text-xs">{item.us}</span>
                   )}
                 </div>
                 <div className="text-center">
                   {typeof item.others === 'boolean' ? (
-                    item.others ? <Check className="w-5 h-5 text-emerald-500 mx-auto" /> : <X className="w-5 h-5 text-red-400/60 mx-auto" />
+                    item.others ? <Check className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500 mx-auto" /> : <X className="w-4 h-4 sm:w-5 sm:h-5 text-red-400/60 mx-auto" />
                   ) : (
-                    <span className={`text-xs ${t('text-slate-500', 'text-gray-400')}`}>{item.others}</span>
+                    <span className={`text-[10px] sm:text-xs ${t('text-slate-500', 'text-gray-400')}`}>{item.others}</span>
                   )}
                 </div>
               </div>
@@ -825,54 +882,54 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing Section */}
-      <section ref={pricingRef} id="pricing" className={`py-24 ${t('bg-slate-900/50', 'bg-gradient-to-b from-white to-gray-50')}`}>
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-6 ${
+      <section ref={pricingRef} id="pricing" className={`py-16 sm:py-24 ${t('bg-slate-900/50', 'bg-gradient-to-b from-white to-gray-50')}`}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
+            <div className={`inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border mb-4 sm:mb-6 ${
               t('bg-white/10 border-white/20', 'bg-green-50 border-green-200')
             }`}>
-              <CreditCard className="w-4 h-4 text-green-500" />
-              <span className={`text-sm font-medium ${t('text-slate-300', 'text-green-700')}`}>Simple Pricing</span>
+              <CreditCard className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500" />
+              <span className={`text-xs sm:text-sm font-medium ${t('text-slate-300', 'text-green-700')}`}>Simple Pricing</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
               70% Cheaper Than
               <span className="bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent"> Competitors</span>
             </h2>
-            <p className={`text-lg ${t('text-slate-400', 'text-gray-600')}`}>
+            <p className={`text-sm sm:text-base md:text-lg ${t('text-slate-400', 'text-gray-600')}`}>
               World-class features at prices that make sense for Indian schools.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-5 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 max-w-4xl mx-auto">
             {pricingTiers.map((tier, i) => (
               <div
                 key={i}
-                className={`pricing-card relative p-6 rounded-2xl border transition-all duration-300 hover:-translate-y-1 ${
+                className={`pricing-card relative p-5 sm:p-6 rounded-xl sm:rounded-2xl border transition-all duration-300 hover:-translate-y-1 ${
                   tier.popular
                     ? `${t('bg-gradient-to-br from-blue-500/20 to-purple-500/20 border-blue-500/40', 'bg-gradient-to-br from-blue-50 to-purple-50 border-blue-300')} shadow-xl ${t('shadow-blue-500/10', 'shadow-blue-200/50')}`
                     : t('bg-white/5 border-white/10 hover:border-white/20', 'bg-white border-gray-200 shadow-md hover:shadow-lg')
                 }`}
               >
                 {tier.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full text-xs font-semibold text-white shadow-lg">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full text-[10px] sm:text-xs font-semibold text-white shadow-lg whitespace-nowrap">
                     Most Popular
                   </div>
                 )}
-                <h3 className="text-lg font-semibold mb-1">{tier.name}</h3>
-                <p className={`text-xs mb-4 ${t('text-slate-400', 'text-gray-500')}`}>{tier.description}</p>
-                <div className="mb-5">
-                  <span className="text-3xl font-bold">{tier.price}</span>
-                  <span className={`text-sm ${t('text-slate-400', 'text-gray-500')}`}>{tier.period}</span>
+                <h3 className="text-base sm:text-lg font-semibold mb-1">{tier.name}</h3>
+                <p className={`text-[10px] sm:text-xs mb-3 sm:mb-4 ${t('text-slate-400', 'text-gray-500')}`}>{tier.description}</p>
+                <div className="mb-4 sm:mb-5">
+                  <span className="text-2xl sm:text-3xl font-bold">{tier.price}</span>
+                  <span className={`text-xs sm:text-sm ${t('text-slate-400', 'text-gray-500')}`}>{tier.period}</span>
                 </div>
-                <ul className="space-y-2.5 mb-6">
+                <ul className="space-y-2 sm:space-y-2.5 mb-5 sm:mb-6">
                   {tier.features.map((feature, j) => (
-                    <li key={j} className="flex items-start gap-2.5 text-sm">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                    <li key={j} className="flex items-start gap-2 sm:gap-2.5 text-xs sm:text-sm">
+                      <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
                       <span className={t('text-slate-300', 'text-gray-700')}>{feature}</span>
                     </li>
                   ))}
                 </ul>
-                <button className={`w-full py-2.5 rounded-xl text-sm font-medium transition-all ${
+                <button className={`w-full py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all ${
                   tier.popular
                     ? 'bg-gradient-to-r from-blue-500 to-purple-500 hover:shadow-lg hover:shadow-purple-500/25 text-white'
                     : t('bg-white/10 hover:bg-white/20 border border-white/10', 'bg-gray-100 hover:bg-gray-200 border border-gray-200')
@@ -886,43 +943,43 @@ export default function LandingPage() {
       </section>
 
       {/* Testimonials Section */}
-      <section ref={testimonialsRef} id="testimonials" className="py-24">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-6 ${
+      <section ref={testimonialsRef} id="testimonials" className="py-16 sm:py-24">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
+            <div className={`inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border mb-4 sm:mb-6 ${
               t('bg-white/10 border-white/20', 'bg-amber-50 border-amber-200')
             }`}>
-              <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-              <span className={`text-sm font-medium ${t('text-slate-300', 'text-amber-700')}`}>Testimonials</span>
+              <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 fill-amber-500" />
+              <span className={`text-xs sm:text-sm font-medium ${t('text-slate-300', 'text-amber-700')}`}>Testimonials</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">
               Loved by Educators
               <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent"> Across India</span>
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5">
             {testimonials.map((testimonial, i) => (
               <div
                 key={i}
-                className={`testimonial-card p-6 rounded-2xl border transition-all duration-300 hover:-translate-y-1 ${
+                className={`testimonial-card p-5 sm:p-6 rounded-xl sm:rounded-2xl border transition-all duration-300 hover:-translate-y-1 ${
                   t('bg-gradient-to-br from-white/[0.08] to-white/[0.02] border-white/10 hover:border-white/20',
                     'bg-white border-gray-200 shadow-md hover:shadow-xl')
                 }`}
               >
-                <div className="flex items-center gap-0.5 text-amber-400 mb-4">
+                <div className="flex items-center gap-0.5 text-amber-400 mb-3 sm:mb-4">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-current" />
+                    <Star key={i} className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current" />
                   ))}
                 </div>
-                <p className={`text-sm mb-5 leading-relaxed ${t('text-slate-300', 'text-gray-700')}`}>"{testimonial.quote}"</p>
+                <p className={`text-xs sm:text-sm mb-4 sm:mb-5 leading-relaxed ${t('text-slate-300', 'text-gray-700')}`}>"{testimonial.quote}"</p>
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${testimonial.gradient} flex items-center justify-center text-xs font-bold text-white shadow-lg`}>
+                  <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br ${testimonial.gradient} flex items-center justify-center text-[10px] sm:text-xs font-bold text-white shadow-lg`}>
                     {testimonial.avatar}
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{testimonial.author}</p>
-                    <p className={`text-xs ${t('text-slate-400', 'text-gray-500')}`}>{testimonial.role}</p>
+                    <p className="text-xs sm:text-sm font-medium">{testimonial.author}</p>
+                    <p className={`text-[10px] sm:text-xs ${t('text-slate-400', 'text-gray-500')}`}>{testimonial.role}</p>
                   </div>
                 </div>
               </div>
@@ -932,29 +989,29 @@ export default function LandingPage() {
       </section>
 
       {/* FAQ Section */}
-      <section ref={faqRef} className={`py-24 ${t('bg-slate-900/30', 'bg-gray-50')}`}>
-        <div className="max-w-3xl mx-auto px-6">
-          <div className="text-center mb-14">
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-6 ${
+      <section ref={faqRef} className={`py-16 sm:py-24 ${t('bg-slate-900/30', 'bg-gray-50')}`}>
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-10 sm:mb-14">
+            <div className={`inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border mb-4 sm:mb-6 ${
               t('bg-white/10 border-white/20', 'bg-purple-50 border-purple-200')
             }`}>
-              <MessageSquare className="w-4 h-4 text-purple-500" />
-              <span className={`text-sm font-medium ${t('text-slate-300', 'text-purple-700')}`}>FAQ</span>
+              <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-500" />
+              <span className={`text-xs sm:text-sm font-medium ${t('text-slate-300', 'text-purple-700')}`}>FAQ</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
               Frequently Asked
               <span className="bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent"> Questions</span>
             </h2>
-            <p className={`text-lg ${t('text-slate-400', 'text-gray-600')}`}>
+            <p className={`text-sm sm:text-base md:text-lg ${t('text-slate-400', 'text-gray-600')}`}>
               Everything you need to know about Masst Campus.
             </p>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             {faqs.map((faq, i) => (
               <div
                 key={i}
-                className={`faq-item rounded-2xl border overflow-hidden transition-all duration-300 ${
+                className={`faq-item rounded-xl sm:rounded-2xl border overflow-hidden transition-all duration-300 ${
                   openFaq === i
                     ? t('bg-white/[0.08] border-white/20 shadow-lg', 'bg-white border-purple-200 shadow-lg shadow-purple-100/50')
                     : t('bg-white/[0.03] border-white/10 hover:bg-white/[0.05]', 'bg-white border-gray-200 shadow-sm hover:shadow-md')
@@ -962,23 +1019,23 @@ export default function LandingPage() {
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full p-5 flex items-center justify-between text-left"
+                  className="w-full p-4 sm:p-5 flex items-center justify-between text-left"
                 >
-                  <span className="font-semibold pr-4">{faq.question}</span>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
+                  <span className="font-semibold pr-3 sm:pr-4 text-sm sm:text-base">{faq.question}</span>
+                  <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
                     openFaq === i
                       ? 'bg-gradient-to-r from-purple-500 to-pink-500 rotate-180'
                       : t('bg-white/10', 'bg-gray-100')
                   }`}>
-                    <ChevronDown className={`w-4 h-4 transition-colors ${
+                    <ChevronDown className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors ${
                       openFaq === i ? 'text-white' : t('text-slate-400', 'text-gray-500')
                     }`} />
                   </div>
                 </button>
                 <div className={`overflow-hidden transition-all duration-300 ${
-                  openFaq === i ? 'max-h-48' : 'max-h-0'
+                  openFaq === i ? 'max-h-64' : 'max-h-0'
                 }`}>
-                  <p className={`px-5 pb-5 text-sm leading-relaxed ${t('text-slate-400', 'text-gray-600')}`}>
+                  <p className={`px-4 sm:px-5 pb-4 sm:pb-5 text-xs sm:text-sm leading-relaxed ${t('text-slate-400', 'text-gray-600')}`}>
                     {faq.answer}
                   </p>
                 </div>
@@ -989,9 +1046,9 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section ref={ctaRef} className="py-24">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className={`cta-content relative p-10 md:p-14 rounded-3xl border text-center overflow-hidden ${
+      <section ref={ctaRef} className="py-16 sm:py-24">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+          <div className={`cta-content relative p-6 sm:p-10 md:p-14 rounded-2xl sm:rounded-3xl border text-center overflow-hidden ${
             t('bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 border-white/20 shadow-2xl shadow-purple-500/10',
               'bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 border-transparent shadow-2xl shadow-purple-500/30')
           }`}>
@@ -999,32 +1056,32 @@ export default function LandingPage() {
             <div className={`absolute inset-0 ${t('', 'bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.2),transparent_50%)]')}`} />
 
             <div className="relative">
-              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 ${
+              <div className={`inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-4 sm:mb-6 ${
                 t('bg-white/10 border border-white/20', 'bg-white/20 backdrop-blur-sm')
               }`}>
-                <Sparkles className="w-4 h-4 text-yellow-400" />
-                <span className={`text-sm font-medium ${t('text-slate-200', 'text-white')}`}>Limited Time Offer</span>
+                <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellow-400" />
+                <span className={`text-xs sm:text-sm font-medium ${t('text-slate-200', 'text-white')}`}>Limited Time Offer</span>
               </div>
-              <h2 className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-5 ${t('', 'text-white')}`}>
+              <h2 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-5 ${t('', 'text-white')}`}>
                 Ready to Transform Your School?
               </h2>
-              <p className={`text-lg mb-8 max-w-xl mx-auto ${t('text-slate-300', 'text-white/90')}`}>
+              <p className={`text-sm sm:text-base md:text-lg mb-6 sm:mb-8 max-w-xl mx-auto ${t('text-slate-300', 'text-white/90')}`}>
                 Join hundreds of schools already using Masst Campus. Start your free trial today.
               </p>
-              <div className="flex flex-wrap justify-center gap-4">
+              <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
                 <Link
                   href="/login"
-                  className={`group px-8 py-3.5 rounded-xl text-base font-semibold transition-all flex items-center gap-2 ${
+                  className={`group px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl text-sm sm:text-base font-semibold transition-all flex items-center justify-center gap-2 ${
                     t('bg-white text-slate-900 hover:bg-slate-100 shadow-lg',
                       'bg-white text-purple-600 hover:bg-gray-100 shadow-lg hover:shadow-xl')
                   }`}
                 >
                   Start Free Trial
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <a
                   href="#"
-                  className={`px-8 py-3.5 rounded-xl text-base font-semibold transition-all border ${
+                  className={`px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl text-sm sm:text-base font-semibold transition-all border text-center ${
                     t('bg-white/10 border-white/20 hover:bg-white/20',
                       'bg-transparent border-white/40 text-white hover:bg-white/10 hover:border-white/60')
                   }`}
@@ -1032,7 +1089,7 @@ export default function LandingPage() {
                   Schedule Demo
                 </a>
               </div>
-              <p className={`mt-6 text-sm ${t('text-slate-400', 'text-white/70')}`}>
+              <p className={`mt-4 sm:mt-6 text-xs sm:text-sm ${t('text-slate-400', 'text-white/70')}`}>
                 No credit card required • Free 14-day trial • Cancel anytime
               </p>
             </div>
@@ -1041,29 +1098,29 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className={`py-14 border-t ${t('border-white/10 bg-slate-950', 'border-gray-200 bg-white')}`}>
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid md:grid-cols-5 gap-8 md:gap-12 mb-10">
-            <div className="md:col-span-2">
+      <footer className={`py-10 sm:py-14 border-t ${t('border-white/10 bg-slate-950', 'border-gray-200 bg-white')}`}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 gap-8 md:gap-12 mb-8 sm:mb-10">
+            <div className="col-span-2 sm:col-span-2 md:col-span-2">
               <div className="flex items-center gap-2.5 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
-                  <GraduationCap className="w-5 h-5 text-white" />
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
+                  <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
-                <span className="text-lg font-bold">Masst Campus</span>
+                <span className="text-base sm:text-lg font-bold">Masst Campus</span>
               </div>
-              <p className={`text-sm leading-relaxed mb-5 max-w-xs ${t('text-slate-400', 'text-gray-600')}`}>
+              <p className={`text-xs sm:text-sm leading-relaxed mb-4 sm:mb-5 max-w-xs ${t('text-slate-400', 'text-gray-600')}`}>
                 Modern school management for the digital age. Built in India, for India.
               </p>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 {['twitter', 'linkedin', 'facebook', 'instagram'].map((social) => (
                   <a
                     key={social}
                     href="#"
-                    className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all ${
+                    className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center transition-all ${
                       t('bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white', 'bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-900')
                     }`}
                   >
-                    <Globe className="w-4 h-4" />
+                    <Globe className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </a>
                 ))}
               </div>
@@ -1074,8 +1131,8 @@ export default function LandingPage() {
               { title: 'Legal', links: ['Privacy', 'Terms', 'Security'] },
             ].map((col, i) => (
               <div key={i}>
-                <h4 className="font-semibold text-sm mb-4">{col.title}</h4>
-                <ul className={`space-y-2.5 text-sm ${t('text-slate-400', 'text-gray-600')}`}>
+                <h4 className="font-semibold text-xs sm:text-sm mb-3 sm:mb-4">{col.title}</h4>
+                <ul className={`space-y-2 sm:space-y-2.5 text-xs sm:text-sm ${t('text-slate-400', 'text-gray-600')}`}>
                   {col.links.map((link, j) => (
                     <li key={j}>
                       <a href="#" className={`transition-colors hover:underline underline-offset-4 ${t('hover:text-white', 'hover:text-gray-900')}`}>{link}</a>
@@ -1085,13 +1142,13 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-          <div className={`pt-8 border-t flex flex-col md:flex-row justify-between items-center gap-4 ${t('border-white/10', 'border-gray-200')}`}>
-            <p className={`text-xs ${t('text-slate-500', 'text-gray-500')}`}>
+          <div className={`pt-6 sm:pt-8 border-t flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4 ${t('border-white/10', 'border-gray-200')}`}>
+            <p className={`text-[10px] sm:text-xs text-center sm:text-left ${t('text-slate-500', 'text-gray-500')}`}>
               © 2026 Masst Campus (hey.school). All rights reserved.
             </p>
             <div className={`flex items-center gap-2 ${t('text-slate-500', 'text-gray-500')}`}>
-              <Globe className="w-3.5 h-3.5" />
-              <span className="text-xs">Available in 35+ countries</span>
+              <Globe className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              <span className="text-[10px] sm:text-xs">Available in 35+ countries</span>
             </div>
           </div>
         </div>
