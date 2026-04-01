@@ -1,48 +1,40 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Broker } from '@prisma/client';
+
+const MAX_HIERARCHY_DEPTH = 10;
 
 @Injectable()
 export class BrokersService {
   constructor(private prisma: PrismaService) {}
 
-  /**
-   * Get all brokers for a tenant with hierarchy
-   */
   async getBrokersForTenant(tenantId: string): Promise<Broker[]> {
     return this.prisma.broker.findMany({
-      where: { tenantId },
+      where: { tenantId, isActive: true },
       orderBy: [{ level: 'asc' }, { name: 'asc' }],
     });
   }
 
-  /**
-   * Get broker by ID
-   */
   async getBrokerById(brokerId: string, tenantId: string): Promise<Broker | null> {
     return this.prisma.broker.findFirst({
       where: {
         id: brokerId,
         tenantId,
+        isActive: true,
       },
     });
   }
 
-  /**
-   * Get broker hierarchy (parent and all children)
-   */
   async getBrokerHierarchy(brokerId: string, tenantId: string) {
     const broker = await this.getBrokerById(brokerId, tenantId);
     if (!broker) return null;
 
-    // Get all descendants recursively
     const descendants = await this.getDescendants(brokerId, tenantId);
 
-    // Get parent if exists
     let parent = null;
     if (broker.parentBrokerId) {
-      parent = await this.prisma.broker.findUnique({
-        where: { id: broker.parentBrokerId },
+      parent = await this.prisma.broker.findFirst({
+        where: { id: broker.parentBrokerId, isActive: true },
       });
     }
 
@@ -53,30 +45,36 @@ export class BrokersService {
     };
   }
 
-  /**
-   * Helper: Get all descendants of a broker
-   */
-  private async getDescendants(brokerId: string, tenantId: string): Promise<Broker[]> {
+  private async getDescendants(
+    brokerId: string,
+    tenantId: string,
+    depth = 0,
+    visited = new Set<string>(),
+  ): Promise<Broker[]> {
+    if (depth >= MAX_HIERARCHY_DEPTH || visited.has(brokerId)) {
+      return [];
+    }
+
+    visited.add(brokerId);
+
     const children = await this.prisma.broker.findMany({
       where: {
         parentBrokerId: brokerId,
         tenantId,
+        isActive: true,
       },
     });
 
     const allDescendants: Broker[] = [...children];
 
     for (const child of children) {
-      const childDescendants = await this.getDescendants(child.id, tenantId);
+      const childDescendants = await this.getDescendants(child.id, tenantId, depth + 1, visited);
       allDescendants.push(...childDescendants);
     }
 
     return allDescendants;
   }
 
-  /**
-   * Create a new broker
-   */
   async createBroker(
     tenantId: string,
     data: {
@@ -84,15 +82,21 @@ export class BrokersService {
       code: string;
       parentBrokerId?: string;
       metadata?: any;
-    }
+    },
   ): Promise<Broker> {
-    // Determine level based on parent
     let level = 0;
     if (data.parentBrokerId) {
+      if (data.parentBrokerId === tenantId) {
+        throw new BadRequestException('Broker cannot be its own parent');
+      }
       const parent = await this.prisma.broker.findUnique({
         where: { id: data.parentBrokerId },
       });
-      level = parent ? parent.level + 1 : 0;
+      if (!parent) throw new BadRequestException('Parent broker not found');
+      if (parent.level >= MAX_HIERARCHY_DEPTH) {
+        throw new BadRequestException('Maximum broker hierarchy depth exceeded');
+      }
+      level = parent.level + 1;
     }
 
     return this.prisma.broker.create({
@@ -108,9 +112,6 @@ export class BrokersService {
     });
   }
 
-  /**
-   * Update a broker
-   */
   async updateBroker(
     id: string,
     tenantId: string,
@@ -120,13 +121,23 @@ export class BrokersService {
       parentBrokerId?: string;
       isActive?: boolean;
       metadata?: any;
-    }
+    },
   ): Promise<Broker> {
-    // Recalculate level if parent changed
     let updateData: any = { ...data };
+
     if (data.parentBrokerId !== undefined) {
+      if (data.parentBrokerId === id) {
+        throw new BadRequestException('Broker cannot be its own parent');
+      }
+
       let level = 0;
       if (data.parentBrokerId) {
+        // Prevent circular: check new parent isn't a descendant
+        const descendants = await this.getDescendants(id, tenantId);
+        if (descendants.some((d) => d.id === data.parentBrokerId)) {
+          throw new BadRequestException('Cannot set a descendant as parent (circular hierarchy)');
+        }
+
         const parent = await this.prisma.broker.findUnique({
           where: { id: data.parentBrokerId },
         });
@@ -141,22 +152,18 @@ export class BrokersService {
     });
   }
 
-  /**
-   * Delete a broker (soft delete by setting isActive = false)
-   */
   async deleteBroker(id: string, tenantId: string): Promise<Broker> {
-    // Check if broker has students or sub-brokers
     const [studentsCount, subBrokersCount] = await Promise.all([
       this.prisma.student.count({ where: { brokerId: id } }),
-      this.prisma.broker.count({ where: { parentBrokerId: id } }),
+      this.prisma.broker.count({ where: { parentBrokerId: id, isActive: true } }),
     ]);
 
     if (studentsCount > 0) {
-      throw new Error(`Cannot delete broker with ${studentsCount} assigned students`);
+      throw new BadRequestException(`Cannot delete broker with ${studentsCount} assigned students`);
     }
 
     if (subBrokersCount > 0) {
-      throw new Error(`Cannot delete broker with ${subBrokersCount} sub-brokers`);
+      throw new BadRequestException(`Cannot delete broker with ${subBrokersCount} active sub-brokers`);
     }
 
     return this.prisma.broker.update({
@@ -165,13 +172,10 @@ export class BrokersService {
     });
   }
 
-  /**
-   * Get broker statistics
-   */
   async getBrokerStats(brokerId: string, tenantId: string) {
     const [studentsCount, commissionsData] = await Promise.all([
       this.prisma.student.count({
-        where: { brokerId, tenantId },
+        where: { brokerId, tenantId, isActive: true },
       }),
       this.prisma.commission.aggregate({
         where: { brokerId, tenantId },

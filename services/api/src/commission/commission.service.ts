@@ -1,6 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Commission, CommissionRule } from '@prisma/client';
+
+const MAX_HIERARCHY_DEPTH = 10;
+
+const VALID_STATUS_TRANSITIONS: Record<string, string[]> = {
+  PENDING: ['APPROVED'],
+  APPROVED: ['PAID'],
+  PAID: [],
+};
 
 export interface CommissionCalculationResult {
   brokerId: string;
@@ -17,24 +25,16 @@ export interface CommissionCalculationResult {
 export class CommissionService {
   constructor(private prisma: PrismaService) {}
 
-  /**
-   * Calculate commission for a payment across the broker hierarchy
-   * This follows the commission rule logic:
-   * - For each broker in the hierarchy (agent -> sub-broker -> top-broker)
-   * - Find applicable commission rules based on conditions
-   * - Calculate commission amount
-   */
   async calculateCommissionForPayment(
     paymentId: string,
-    tenantId: string
+    tenantId: string,
   ): Promise<CommissionCalculationResult[]> {
-    // Get payment details
     const payment = await this.prisma.payment.findUnique({
       where: { id: paymentId },
       include: {
         student: {
           include: {
-            broker: true, // The broker who enrolled the student
+            broker: true,
           },
         },
         fee: true,
@@ -42,17 +42,17 @@ export class CommissionService {
     });
 
     if (!payment || !payment.student.broker) {
-      return []; // No broker associated, no commission
+      return [];
+    }
+
+    if (payment.tenantId !== tenantId) {
+      throw new ForbiddenException('Payment does not belong to this tenant');
     }
 
     const results: CommissionCalculationResult[] = [];
-
-    // Get broker hierarchy (from agent up to top broker)
     const brokerHierarchy = await this.getBrokerHierarchy(payment.student.broker.id, tenantId);
 
-    // For each broker in the hierarchy, calculate commission
     for (const broker of brokerHierarchy) {
-      // Find applicable commission rules for this broker
       const applicableRule = await this.findApplicableRule(broker.id, payment.fee.type, payment.amount);
 
       if (applicableRule) {
@@ -74,13 +74,10 @@ export class CommissionService {
     return results;
   }
 
-  /**
-   * Create commission records from calculation results
-   */
   async createCommissionRecords(
     tenantId: string,
     paymentId: string,
-    calculations: CommissionCalculationResult[]
+    calculations: CommissionCalculationResult[],
   ): Promise<Commission[]> {
     const commissions: Commission[] = [];
 
@@ -109,85 +106,92 @@ export class CommissionService {
     return commissions;
   }
 
-  /**
-   * Find applicable commission rule for a broker
-   * Matches based on:
-   * - Broker level
-   * - Fee type (if specified in conditions)
-   * - Amount range (if specified in conditions)
-   * - Priority (highest priority rule wins)
-   */
+  async updateCommissionStatus(commissionId: string, tenantId: string, newStatus: string) {
+    const commission = await this.prisma.commission.findFirst({
+      where: { id: commissionId, tenantId },
+    });
+
+    if (!commission) {
+      throw new NotFoundException('Commission not found');
+    }
+
+    const allowed = VALID_STATUS_TRANSITIONS[commission.status];
+    if (!allowed || !allowed.includes(newStatus)) {
+      throw new BadRequestException(
+        `Cannot transition from ${commission.status} to ${newStatus}`,
+      );
+    }
+
+    return this.prisma.commission.update({
+      where: { id: commissionId },
+      data: {
+        status: newStatus,
+        ...(newStatus === 'PAID' && { paidAt: new Date() }),
+      },
+    });
+  }
+
   private async findApplicableRule(
     brokerId: string,
     feeType: string,
-    amount: number
+    amount: number,
   ): Promise<CommissionRule | null> {
     const rules = await this.prisma.commissionRule.findMany({
       where: {
         brokerId,
         isActive: true,
       },
-      orderBy: { priority: 'desc' }, // Higher priority first
+      orderBy: { priority: 'desc' },
     });
 
     for (const rule of rules) {
       const conditions = rule.conditions as any;
 
-      // Check fee type condition
       if (conditions.feeType && Array.isArray(conditions.feeType)) {
-        if (!conditions.feeType.includes(feeType)) {
-          continue; // Rule doesn't apply to this fee type
-        }
+        if (!conditions.feeType.includes(feeType)) continue;
       }
 
-      // Check min amount condition
-      if (conditions.minAmount && amount < conditions.minAmount) {
-        continue;
-      }
+      if (conditions.minAmount && amount < conditions.minAmount) continue;
+      if (conditions.maxAmount && amount > conditions.maxAmount) continue;
 
-      // Check max amount condition
-      if (conditions.maxAmount && amount > conditions.maxAmount) {
-        continue;
-      }
-
-      // All conditions passed, this rule applies
       return rule;
     }
 
     return null;
   }
 
-  /**
-   * Get broker hierarchy from given broker up to root
-   */
   private async getBrokerHierarchy(brokerId: string, tenantId: string) {
     const hierarchy: any[] = [];
     let currentBrokerId: string | null = brokerId;
+    const visited = new Set<string>();
+    let depth = 0;
 
     while (currentBrokerId) {
+      if (visited.has(currentBrokerId) || depth >= MAX_HIERARCHY_DEPTH) break;
+
       const broker = await this.prisma.broker.findFirst({
         where: {
           id: currentBrokerId,
           tenantId,
+          isActive: true,
         },
       });
 
       if (!broker) break;
 
+      visited.add(currentBrokerId);
       hierarchy.push(broker);
       currentBrokerId = broker.parentBrokerId;
+      depth++;
     }
 
     return hierarchy;
   }
 
-  /**
-   * Get commissions for a broker
-   */
   async getCommissionsForBroker(
     brokerId: string,
     tenantId: string,
-    status?: string
+    status?: string,
   ): Promise<Commission[]> {
     const where: any = {
       brokerId,

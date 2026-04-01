@@ -23,7 +23,7 @@ export class StudentsService {
     const limit = options?.limit || 20;
     const skip = (page - 1) * limit;
 
-    const where: any = { tenantId };
+    const where: any = { tenantId, isActive: true };
 
     if (options?.gradeLevel) {
       where.gradeLevel = options.gradeLevel;
@@ -68,6 +68,7 @@ export class StudentsService {
       where: {
         id: studentId,
         tenantId,
+        isActive: true,
       },
       include: {
         broker: { select: { id: true, name: true } },

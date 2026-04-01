@@ -15,7 +15,7 @@ export class TeachersService {
 
   async findOne(id: string, tenantId: string) {
     return this.prisma.teacher.findFirst({
-      where: { id, tenantId },
+      where: { id, tenantId, isActive: true },
       include: { classes: true },
     });
   }

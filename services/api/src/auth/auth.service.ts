@@ -1,18 +1,18 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { randomUUID } from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
+import { TokenBlacklistService } from './token-blacklist.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private tokenBlacklist: TokenBlacklistService,
   ) {}
 
-  /**
-   * Login with email and password (JWT auth)
-   */
   async login(email: string, password: string, tenantId: string) {
     const user = await this.prisma.user.findFirst({
       where: {
@@ -32,15 +32,14 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Update last login
     await this.prisma.user.update({
       where: { id: user.id },
       data: { lastLoginAt: new Date() },
     });
 
-    // Generate JWT
     const payload = {
       sub: user.id,
+      jti: randomUUID(),
       email: user.email,
       role: user.role,
       tenantId: user.tenantId,
@@ -57,9 +56,6 @@ export class AuthService {
     };
   }
 
-  /**
-   * Register a new user (JWT auth)
-   */
   async register(data: {
     email: string;
     password: string;
@@ -86,6 +82,7 @@ export class AuthService {
 
     const payload = {
       sub: user.id,
+      jti: randomUUID(),
       email: user.email,
       role: user.role,
       tenantId: user.tenantId,
@@ -102,18 +99,12 @@ export class AuthService {
     };
   }
 
-  /**
-   * Validate user by ID (used by JWT strategy)
-   */
   async validateUser(userId: string) {
     return this.prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: userId, isActive: true },
     });
   }
 
-  /**
-   * Refresh access token
-   */
   async refreshToken(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId, isActive: true },
@@ -125,6 +116,7 @@ export class AuthService {
 
     const payload = {
       sub: user.id,
+      jti: randomUUID(),
       email: user.email,
       role: user.role,
       tenantId: user.tenantId,
@@ -141,12 +133,58 @@ export class AuthService {
     };
   }
 
-  /**
-   * Logout - clear session
-   */
-  async logout(userId: string) {
-    // For stateless JWT, logout is handled client-side by removing the token
-    // This endpoint exists for audit logging and future token blacklisting
+  async logout(token: string) {
+    try {
+      const payload = this.jwtService.decode(token) as any;
+      if (payload?.jti && payload?.exp) {
+        this.tokenBlacklist.blacklist(payload.jti, payload.exp);
+      }
+    } catch {
+      // Token may be malformed, still return success
+    }
     return { message: 'Logged out successfully' };
+  }
+
+  async requestPasswordReset(email: string, tenantId: string) {
+    const user = await this.prisma.user.findFirst({
+      where: { email, tenantId, isActive: true },
+    });
+
+    if (!user) {
+      // Don't reveal whether email exists
+      return { message: 'If an account exists, a reset link has been sent' };
+    }
+
+    const resetToken = this.jwtService.sign(
+      { sub: user.id, purpose: 'reset' },
+      { secret: (process.env.JWT_SECRET || 'change-me-in-production') + '-reset', expiresIn: '1h' },
+    );
+
+    // In production, send this token via email
+    return { message: 'If an account exists, a reset link has been sent', resetToken };
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    let payload: any;
+    try {
+      payload = this.jwtService.verify(token, {
+        secret: (process.env.JWT_SECRET || 'change-me-in-production') + '-reset',
+      });
+    } catch {
+      throw new BadRequestException('Invalid or expired reset token');
+    }
+
+    if (payload.purpose !== 'reset') {
+      throw new BadRequestException('Invalid reset token');
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+
+    await this.prisma.user.update({
+      where: { id: payload.sub },
+      data: { passwordHash },
+    });
+
+    return { message: 'Password reset successful' };
   }
 }
