@@ -6,39 +6,41 @@ export class TeachersService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(tenantId: string) {
-    return this.prisma.teacherProfile.findMany({
-      where: { tenantId },
-      include: { user: true },
+    return this.prisma.teacher.findMany({
+      where: { tenantId, isActive: true },
+      include: { classes: true },
+      orderBy: { firstName: 'asc' },
     });
   }
 
   async findOne(id: string, tenantId: string) {
-    return this.prisma.teacherProfile.findFirst({
+    return this.prisma.teacher.findFirst({
       where: { id, tenantId },
-      include: { user: true },
+      include: { classes: true },
     });
   }
 
   async create(data: any, tenantId: string) {
-    return this.prisma.teacherProfile.create({
+    return this.prisma.teacher.create({
       data: {
         ...data,
         tenantId,
       },
-      include: { user: true },
+      include: { classes: true },
     });
   }
 
   async update(id: string, data: any, tenantId: string) {
-    return this.prisma.teacherProfile.update({
+    return this.prisma.teacher.update({
       where: { id },
       data,
     });
   }
 
   async delete(id: string, tenantId: string) {
-    return this.prisma.teacherProfile.delete({
+    return this.prisma.teacher.update({
       where: { id },
+      data: { isActive: false },
     });
   }
 }

@@ -36,7 +36,7 @@ export function LoginForm({
 
     setLoading(true)
     try {
-      const response = await authApi.login(email, password, "")
+      const response = await authApi.login(email, password)
 
       if (response.success) {
         // Store user data

@@ -59,38 +59,6 @@ type Parent = {
   createdAt: string
 }
 
-const demoParents: Parent[] = [
-  {
-    id: "1",
-    name: "Rajesh Sharma",
-    email: "rajesh.sharma@email.com",
-    phone: "+91 98765 43210",
-    children: 2,
-    occupation: "Engineer",
-    status: "active",
-    createdAt: "2024-01-15",
-  },
-  {
-    id: "2",
-    name: "Sunita Patel",
-    email: "sunita.patel@email.com",
-    phone: "+91 98765 43211",
-    children: 1,
-    occupation: "Doctor",
-    status: "active",
-    createdAt: "2024-02-20",
-  },
-  {
-    id: "3",
-    name: "Amit Kumar",
-    email: "amit.kumar@email.com",
-    phone: "+91 98765 43212",
-    children: 3,
-    occupation: "Business Owner",
-    status: "active",
-    createdAt: "2024-03-10",
-  },
-]
 
 export default function ParentsPage() {
   const [parents, setParents] = useState<Parent[]>([])
@@ -108,7 +76,8 @@ export default function ParentsPage() {
     try {
       const response = await parentsApi.getAll()
       if (response.success && response.data) {
-        const formattedParents = response.data.parents.map((p: any) => ({
+        const parentsArr = Array.isArray(response.data) ? response.data : response.data.parents || []
+        const formattedParents = parentsArr.map((p: any) => ({
           id: p.id,
           name: p.user ? `${p.user.profile?.firstName || ''} ${p.user.profile?.lastName || ''}`.trim() : "Unknown",
           email: p.user?.email || "N/A",
@@ -123,8 +92,7 @@ export default function ParentsPage() {
       }
     } catch (error) {
       console.error("Failed to fetch parents:", error)
-      setParents(demoParents)
-      toast.info("Using demo data (API unavailable)")
+      toast.error("Failed to load parents")
     } finally {
       setLoading(false)
     }

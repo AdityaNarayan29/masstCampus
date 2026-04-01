@@ -42,6 +42,10 @@ yarn-error.log*
 # Prisma
 apps/backend/prisma/migrations/
 
+# MCP
+.mcp.json
+logs/
+
 # IDE
 .vscode/
 .idea/

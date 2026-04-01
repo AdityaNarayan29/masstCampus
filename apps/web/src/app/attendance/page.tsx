@@ -61,34 +61,10 @@ type Student = {
   enrollmentNumber: string
 }
 
-// Demo data for when API is not available
-const demoClasses: ClassItem[] = [
-  { id: "1", name: "Class 10-A", gradeLevel: "10th", section: "A" },
-  { id: "2", name: "Class 10-B", gradeLevel: "10th", section: "B" },
-  { id: "3", name: "Class 11-A", gradeLevel: "11th", section: "A" },
-  { id: "4", name: "Class 12-A", gradeLevel: "12th", section: "A" },
-]
-
-const demoStudents: Student[] = [
-  { id: "1", firstName: "Rahul", lastName: "Sharma", enrollmentNumber: "STU001" },
-  { id: "2", firstName: "Priya", lastName: "Patel", enrollmentNumber: "STU002" },
-  { id: "3", firstName: "Amit", lastName: "Kumar", enrollmentNumber: "STU003" },
-  { id: "4", firstName: "Sneha", lastName: "Gupta", enrollmentNumber: "STU004" },
-  { id: "5", firstName: "Vikram", lastName: "Singh", enrollmentNumber: "STU005" },
-]
-
-const demoAttendance: AttendanceRecord[] = [
-  { id: "1", studentId: "1", classId: "1", date: new Date().toISOString(), status: "PRESENT", student: demoStudents[0], class: demoClasses[0] },
-  { id: "2", studentId: "2", classId: "1", date: new Date().toISOString(), status: "PRESENT", student: demoStudents[1], class: demoClasses[0] },
-  { id: "3", studentId: "3", classId: "1", date: new Date().toISOString(), status: "ABSENT", student: demoStudents[2], class: demoClasses[0] },
-  { id: "4", studentId: "4", classId: "1", date: new Date().toISOString(), status: "LATE", student: demoStudents[3], class: demoClasses[0] },
-  { id: "5", studentId: "5", classId: "1", date: new Date().toISOString(), status: "EXCUSED", student: demoStudents[4], class: demoClasses[0] },
-]
-
 export default function AttendancePage() {
-  const [attendance, setAttendance] = useState<AttendanceRecord[]>(demoAttendance)
-  const [classes, setClasses] = useState<ClassItem[]>(demoClasses)
-  const [students, setStudents] = useState<Student[]>(demoStudents)
+  const [attendance, setAttendance] = useState<AttendanceRecord[]>([])
+  const [classes, setClasses] = useState<ClassItem[]>([])
+  const [students, setStudents] = useState<Student[]>([])
   const [selectedClass, setSelectedClass] = useState<string>("")
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split("T")[0])
   const [isSheetOpen, setIsSheetOpen] = useState(false)
@@ -104,18 +80,23 @@ export default function AttendancePage() {
     total: attendance.length,
   }
 
-  // Load data on mount (with fallback to demo data)
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [classesRes] = await Promise.all([
-          classesApi.getAll(),
-        ])
-        if (classesRes.success && classesRes.data.length > 0) {
-          setClasses(classesRes.data)
+        const classesRes = await classesApi.getAll()
+        if (classesRes.success && classesRes.data) {
+          const classesData = classesRes.data.classes || classesRes.data
+          const formatted = classesData.map((c: any) => ({
+            id: c.id,
+            name: c.name,
+            gradeLevel: c.gradeLevel,
+            section: c.section,
+          }))
+          setClasses(formatted)
         }
       } catch (error) {
-        console.log("Using demo data - API not available")
+        console.error("Failed to load classes:", error)
+        toast.error("Failed to load classes")
       }
     }
     loadData()
@@ -137,13 +118,12 @@ export default function AttendancePage() {
         classId: selectedClass,
         date: selectedDate,
       })
-      if (res.success) {
-        setAttendance(res.data)
+      if (res.success && res.data) {
+        const records = Array.isArray(res.data) ? res.data : res.data.attendance || []
+        setAttendance(records)
       }
     } catch (error) {
-      console.log("Using demo data for attendance")
-      // Filter demo data by class
-      setAttendance(demoAttendance.filter(a => a.classId === selectedClass))
+      console.error("Failed to load attendance:", error)
     }
     setLoading(false)
   }
@@ -163,12 +143,8 @@ export default function AttendancePage() {
         setBulkAttendance(initial)
       }
     } catch (error) {
-      // Use demo students
-      const initial: Record<string, string> = {}
-      demoStudents.forEach((s) => {
-        initial[s.id] = "PRESENT"
-      })
-      setBulkAttendance(initial)
+      console.error("Failed to load students for class:", error)
+      toast.error("Failed to load students")
     }
   }
 

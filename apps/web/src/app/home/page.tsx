@@ -38,8 +38,210 @@ import {
 } from 'lucide-react';
 import { ChartContainer, ChartTooltip } from '@/components/ui/chart';
 import { Area, AreaChart, Bar, BarChart, Cell, Pie, PieChart as RechartsPieChart } from 'recharts';
+import { MermaidDiagram } from '@/components/mermaid-diagram';
 
 gsap.registerPlugin(ScrollTrigger);
+
+// ER Diagram for database architecture (matches Prisma schema)
+// Shows key fields per entity - full schema in prisma/schema.prisma
+const erDiagram = `erDiagram
+    Tenant ||--o{ User : has
+    Tenant ||--o{ Student : has
+    Tenant ||--o{ Teacher : has
+    Tenant ||--o{ SchoolClass : has
+    Tenant ||--o{ Fee : has
+    Tenant ||--o{ Payment : has
+    Tenant ||--o{ Attendance : has
+    Tenant ||--o{ Broker : has
+    Tenant ||--o{ Commission : has
+    Tenant ||--o{ Notification : has
+    Tenant ||--o{ Message : has
+    Tenant ||--o{ AuditLog : has
+
+    User ||--o| TeacherProfile : has
+    User ||--o| ParentProfile : has
+    User }o--o| Broker : belongs_to
+
+    Broker ||--o{ Broker : parent_of
+    Broker ||--o{ CommissionRule : has
+    Broker ||--o{ Commission : earns
+    Broker ||--o{ Student : enrolled
+
+    Student ||--o{ Fee : owes
+    Student ||--o{ Payment : makes
+    Student ||--o{ Attendance : records
+    Student }o--o| ParentProfile : child_of
+    Student ||--o{ Message : about
+
+    Teacher ||--o{ SchoolClass : teaches
+
+    SchoolClass ||--o{ Attendance : tracks
+
+    Fee ||--o{ Payment : paid_via
+    Payment ||--o{ Commission : generates
+
+    User ||--o{ Attendance : marked_by
+    User ||--o{ Message : sends
+    User ||--o{ AuditLog : triggers
+    User ||--o{ Notification : creates
+
+    Tenant {
+        string id PK
+        string name
+        string subdomain UK
+        json config
+        boolean isActive
+    }
+    User {
+        string id PK
+        string email
+        enum role
+        string tenantId FK
+        string brokerId FK
+        boolean isActive
+        datetime lastLoginAt
+    }
+    Student {
+        string id PK
+        string firstName
+        string lastName
+        string email
+        string phone
+        string enrollmentNumber UK
+        string gradeLevel
+        string section
+        string tenantId FK
+        string brokerId FK
+        string parentId FK
+        boolean isActive
+    }
+    Teacher {
+        string id PK
+        string firstName
+        string lastName
+        string email UK
+        string phone
+        string subject
+        string tenantId FK
+        boolean isActive
+    }
+    SchoolClass {
+        string id PK
+        string name
+        string gradeLevel
+        string section
+        string teacherId FK
+        string tenantId FK
+        json schedule
+        boolean isActive
+    }
+    Fee {
+        string id PK
+        string studentId FK
+        string tenantId FK
+        string type
+        float amount
+        datetime dueDate
+        enum status
+        string academicYear
+    }
+    Payment {
+        string id PK
+        string feeId FK
+        string studentId FK
+        string tenantId FK
+        float amount
+        string paymentMethod
+        string transactionId
+        enum status
+        datetime paidAt
+    }
+    Attendance {
+        string id PK
+        string studentId FK
+        string classId FK
+        string tenantId FK
+        datetime date
+        enum status
+        string markedBy FK
+        string notes
+    }
+    Broker {
+        string id PK
+        string name
+        string code UK
+        string parentBrokerId FK
+        string tenantId FK
+        int level
+        boolean isActive
+    }
+    CommissionRule {
+        string id PK
+        string brokerId FK
+        string name
+        int level
+        float percentage
+        json conditions
+        int priority
+        boolean isActive
+    }
+    Commission {
+        string id PK
+        string brokerId FK
+        string paymentId FK
+        string tenantId FK
+        float amount
+        float percentage
+        float baseAmount
+        string status
+        datetime paidAt
+    }
+    Notification {
+        string id PK
+        string tenantId FK
+        enum type
+        string title
+        string message
+        enum priority
+        boolean delivered
+        string createdBy FK
+    }
+    ParentProfile {
+        string id PK
+        string userId UK
+        string tenantId FK
+        enum relationshipType
+        string occupation
+        boolean isActive
+    }
+    TeacherProfile {
+        string id PK
+        string userId UK
+        string tenantId FK
+        string employeeId
+        json subjects
+        json qualifications
+        boolean isActive
+    }
+    Message {
+        string id PK
+        string senderId FK
+        string studentId FK
+        string tenantId FK
+        string subject
+        string body
+        boolean isRead
+    }
+    AuditLog {
+        string id PK
+        string userId FK
+        string tenantId FK
+        string action
+        string resource
+        string resourceId
+        string ipAddress
+    }
+`;
 
 // Demo chart data
 const attendanceData = [
@@ -809,7 +1011,7 @@ export default function LandingPage() {
                   ].map((stat, i) => (
                     <div key={i} className={`dashboard-stat p-2.5 rounded-lg ${th.bgCard}`}>
                       <p className={`text-[10px] mb-0.5 ${th.textSubtle}`}>{stat.label}</p>
-                      <p className={`text-lg font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
+                      <p className={`text-base font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent leading-snug`}>
                         {stat.value}
                       </p>
                       <p className="text-[10px] text-emerald-400 font-medium flex items-center gap-0.5">
@@ -917,9 +1119,9 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <div className={`absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce ${t('text-slate-500', 'text-gray-400')}`}>
+        <div className={`absolute bottom-6 sm:bottom-10 inset-x-0 flex flex-col items-center gap-1 animate-bounce ${t('text-slate-500', 'text-gray-400')}`}>
           <span className="text-xs">Scroll to explore</span>
-          <ChevronRight className="w-5 h-5 rotate-90" />
+          <ChevronDown className="w-4 h-4" />
         </div>
       </section>
 
@@ -1399,7 +1601,7 @@ export default function LandingPage() {
               t('bg-white/[0.03] border-white/[0.06]', 'bg-gray-50/80 border-gray-200/80')
             }`}>
               <div className={th.textSubtle}>Feature</div>
-              <div className="text-center text-blue-500">Masst Campus</div>
+              <div className={`text-center text-blue-500 rounded-t-md py-1 ${t('bg-blue-500/[0.05]', 'bg-blue-50/60')}`}>Masst Campus</div>
               <div className={`text-center ${th.textSubtle}`}>Others</div>
             </div>
             {comparisonFeatures.map((item, i) => (
@@ -1407,7 +1609,7 @@ export default function LandingPage() {
                 t('border-white/[0.04] hover:bg-white/[0.02]', 'border-gray-100 hover:bg-gray-50/50')
               } transition-colors`}>
                 <div className={`pr-2 ${th.textMuted}`}>{item.feature}</div>
-                <div className="text-center">
+                <div className={`text-center -my-0.5 py-0.5 rounded-sm ${t('bg-blue-500/[0.05]', 'bg-blue-50/60')}`}>
                   {typeof item.us === 'boolean' ? (
                     item.us ? <Check className="w-4 h-4 text-emerald-500 mx-auto" /> : <X className="w-4 h-4 text-red-400 mx-auto" />
                   ) : (
@@ -1589,6 +1791,167 @@ export default function LandingPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Database Architecture Section */}
+      <section className={`py-14 sm:py-20 ${th.sectionBg}`}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-8 sm:mb-12">
+            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs mb-3 ${t('bg-white/[0.08] text-blue-300 border border-white/[0.1]', 'bg-blue-50 text-blue-700 border border-blue-200')}`}>
+              <Shield className="w-3 h-3" />
+              <span className={th.textMuted}>Database Architecture</span>
+            </div>
+            <h2 className={`text-2xl sm:text-3xl md:text-4xl font-bold mb-3 ${th.text}`}>
+              Enterprise-Grade Schema
+            </h2>
+            <p className={`max-w-2xl mx-auto text-sm sm:text-base ${th.textMuted}`}>
+              Multi-tenant architecture with complete data isolation. Every entity is scoped to a tenant for maximum security.
+            </p>
+          </div>
+
+          <div className={`rounded-xl border p-4 sm:p-6 overflow-hidden ${t('bg-[#0d1117] border-white/[0.08]', 'bg-white border-gray-200')}`}>
+            <MermaidDiagram
+              chart={erDiagram}
+              className="w-full overflow-x-auto [&_svg]:mx-auto [&_svg]:max-w-full"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-6 sm:mt-8">
+            {[
+              { label: 'Models', value: '16', desc: 'Database tables' },
+              { label: 'Relations', value: '30+', desc: 'Foreign keys' },
+              { label: 'Indexes', value: '40+', desc: 'Query optimization' },
+              { label: 'Tenant Isolated', value: '100%', desc: 'Data security' },
+            ].map((stat, i) => (
+              <div key={i} className={`text-center p-3 sm:p-4 rounded-lg border ${t('bg-white/[0.03] border-white/[0.06]', 'bg-gray-50 border-gray-200')}`}>
+                <div className={`text-xl sm:text-2xl font-bold ${th.text}`}>{stat.value}</div>
+                <div className={`text-xs font-medium ${th.textMuted}`}>{stat.label}</div>
+                <div className={`text-[10px] mt-0.5 ${th.textSubtle}`}>{stat.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* User Journey Section */}
+      <section className={`py-14 sm:py-20 ${th.sectionAlt}`}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-8 sm:mb-12">
+            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs mb-3 ${t('bg-white/[0.08] text-purple-300 border border-white/[0.1]', 'bg-purple-50 text-purple-700 border border-purple-200')}`}>
+              <Users className="w-3 h-3" />
+              <span className={th.textMuted}>User Journeys</span>
+            </div>
+            <h2 className={`text-2xl sm:text-3xl md:text-4xl font-bold mb-3 ${th.text}`}>
+              Role-Based Workflows
+            </h2>
+            <p className={`max-w-2xl mx-auto text-sm sm:text-base ${th.textMuted}`}>
+              Every role has a tailored experience. From admins managing operations to parents tracking their child&apos;s progress.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            {([
+              {
+                title: 'Admin',
+                desc: 'Full school operations management',
+                gradient: 'from-blue-500 to-cyan-500',
+                color: 'blue',
+                steps: [
+                  { phase: 'Setup', items: ['Login', 'Notifications'] },
+                  { phase: 'Manage', items: ['Enroll students', 'Fee invoices', 'Track payments'] },
+                  { phase: 'Brokers', items: ['Commissions', 'Approve payouts'] },
+                  { phase: 'Reports', items: ['Audit logs', 'Generate reports'] },
+                ],
+              },
+              {
+                title: 'Teacher',
+                desc: 'Class and attendance workflows',
+                gradient: 'from-green-500 to-emerald-500',
+                color: 'green',
+                steps: [
+                  { phase: 'Morning', items: ['Check schedule', 'View classes'] },
+                  { phase: 'Class', items: ['Mark attendance', 'Add notes'] },
+                  { phase: 'Connect', items: ['Message parents', 'Student profiles'] },
+                  { phase: 'Wrap Up', items: ['Review summary', 'Update schedule'] },
+                ],
+              },
+              {
+                title: 'Parent',
+                desc: 'Child monitoring and fee payments',
+                gradient: 'from-purple-500 to-pink-500',
+                color: 'purple',
+                steps: [
+                  { phase: 'Onboard', items: ['Setup profile', 'Link children'] },
+                  { phase: 'Monitor', items: ['View attendance', 'Read notifications', 'Check fee dues'] },
+                  { phase: 'Pay', items: ['View breakdown', 'Make payment', 'Download receipt'] },
+                ],
+              },
+              {
+                title: 'Broker',
+                desc: 'Enrollment and commission tracking',
+                gradient: 'from-orange-500 to-amber-500',
+                color: 'orange',
+                steps: [
+                  { phase: 'Acquire', items: ['Collect details', 'Submit enrollment'] },
+                  { phase: 'Process', items: ['Track status', 'Verify documents'] },
+                  { phase: 'Earn', items: ['Check rules', 'Track earnings'] },
+                  { phase: 'Grow', items: ['View sub-brokers', 'Review cascading'] },
+                ],
+              },
+            ] as const).map((journey, i) => {
+              const colorMap = {
+                blue: { bg: 'bg-blue-500/10', text: 'text-blue-400', border: 'border-blue-500/20', dot: 'bg-blue-500' },
+                green: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20', dot: 'bg-emerald-500' },
+                purple: { bg: 'bg-purple-500/10', text: 'text-purple-400', border: 'border-purple-500/20', dot: 'bg-purple-500' },
+                orange: { bg: 'bg-orange-500/10', text: 'text-orange-400', border: 'border-orange-500/20', dot: 'bg-orange-500' },
+              } as const;
+              const c = colorMap[journey.color];
+
+              return (
+                <div key={i} className={`rounded-xl border overflow-hidden ${t('bg-[#0d1117] border-white/[0.08]', 'bg-white border-gray-200')}`}>
+                  <div className={`flex items-center gap-3 px-4 sm:px-5 py-3.5 border-b ${t('border-white/[0.06] bg-white/[0.02]', 'border-gray-100 bg-gray-50/50')}`}>
+                    <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${journey.gradient} flex items-center justify-center shadow-md`}>
+                      <Users className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <h3 className={`text-sm font-semibold ${th.text}`}>{journey.title} Journey</h3>
+                      <p className={`text-[11px] ${th.textSubtle}`}>{journey.desc}</p>
+                    </div>
+                  </div>
+                  <div className="p-4 sm:p-5">
+                    <div className="flex gap-2 sm:gap-3">
+                      {journey.steps.map((step, si) => (
+                        <div key={si} className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5 mb-2">
+                            <div className={`w-1.5 h-1.5 rounded-full ${c.dot} shrink-0`} />
+                            <span className={`text-[10px] font-semibold uppercase tracking-wider ${c.text} truncate`}>{step.phase}</span>
+                          </div>
+                          <div className="space-y-1.5">
+                            {step.items.map((item, ii) => (
+                              <div
+                                key={ii}
+                                className={`text-[11px] px-2 py-1.5 rounded-md border ${t(
+                                  `${c.bg} ${c.border} ${th.textMuted}`,
+                                  'bg-gray-50 border-gray-200 text-gray-600'
+                                )} truncate`}
+                                title={item}
+                              >
+                                {item}
+                              </div>
+                            ))}
+                          </div>
+                          {si < journey.steps.length - 1 && (
+                            <div className={`hidden sm:block h-px mt-3 ${t('bg-white/[0.06]', 'bg-gray-100')}`} />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>

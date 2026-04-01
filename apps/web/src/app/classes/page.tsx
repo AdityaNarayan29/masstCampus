@@ -58,43 +58,7 @@ type Class = {
   createdAt: string
 }
 
-const schools = ["Vidyamandir Classes", "Demo School", "Development Tenant"]
-
-const demoClasses: Class[] = [
-  {
-    id: "1",
-    name: "Class 12-A",
-    school: "Vidyamandir Classes",
-    grade: "12th",
-    section: "A",
-    students: 45,
-    teacher: "Dr. Rajesh Kumar",
-    status: "active",
-    createdAt: "2024-01-15",
-  },
-  {
-    id: "2",
-    name: "Class 12-B",
-    school: "Vidyamandir Classes",
-    grade: "12th",
-    section: "B",
-    students: 42,
-    teacher: "Mrs. Priya Sharma",
-    status: "active",
-    createdAt: "2024-01-15",
-  },
-  {
-    id: "3",
-    name: "Class 11-A",
-    school: "Vidyamandir Classes",
-    grade: "11th",
-    section: "A",
-    students: 48,
-    teacher: "Mr. Amit Verma",
-    status: "active",
-    createdAt: "2024-01-20",
-  },
-]
+const schools = ["Vidyamandir Classes", "Delhi Public School", "Sunrise Global Academy"]
 
 export default function ClassesPage() {
   const [classes, setClasses] = useState<Class[]>([])
@@ -112,7 +76,8 @@ export default function ClassesPage() {
     try {
       const response = await classesApi.getAll()
       if (response.success && response.data) {
-        const formattedClasses = response.data.classes.map((c: any) => ({
+        const classesArr = Array.isArray(response.data) ? response.data : response.data.classes || []
+        const formattedClasses = classesArr.map((c: any) => ({
           id: c.id,
           name: c.name,
           school: c.tenant?.name || "Unknown",
@@ -120,15 +85,14 @@ export default function ClassesPage() {
           section: c.section || "A",
           students: c._count?.students || 0,
           teacher: c.teacher ? `${c.teacher.firstName} ${c.teacher.lastName}` : "Unassigned",
-          status: c.status?.toLowerCase() || "active",
+          status: c.isActive === false ? "inactive" : "active",
           createdAt: c.createdAt?.split("T")[0] || new Date().toISOString().split("T")[0],
         }))
         setClasses(formattedClasses)
       }
     } catch (error) {
       console.error("Failed to fetch classes:", error)
-      setClasses(demoClasses)
-      toast.info("Using demo data (API unavailable)")
+      toast.error("Failed to load classes")
     } finally {
       setLoading(false)
     }

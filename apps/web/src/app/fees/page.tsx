@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontalIcon, ArrowUpDownIcon, IndianRupeeIcon, CheckCircleIcon, ClockIcon, AlertCircleIcon } from "lucide-react"
+import { MoreHorizontalIcon, ArrowUpDownIcon, IndianRupeeIcon, CheckCircleIcon, ClockIcon, AlertCircleIcon, Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 
@@ -76,71 +76,16 @@ type Payment = {
   paidAt: string
 }
 
-// Demo data
-const demoFees: Fee[] = [
-  {
-    id: "1",
-    studentId: "1",
-    type: "TUITION",
-    amount: 25000,
-    dueDate: "2024-01-15",
-    status: "PAID",
-    academicYear: "2024-25",
-    student: { id: "1", firstName: "Rahul", lastName: "Sharma", enrollmentNumber: "STU001" },
-  },
-  {
-    id: "2",
-    studentId: "2",
-    type: "TUITION",
-    amount: 25000,
-    dueDate: "2024-01-15",
-    status: "PENDING",
-    academicYear: "2024-25",
-    student: { id: "2", firstName: "Priya", lastName: "Patel", enrollmentNumber: "STU002" },
-  },
-  {
-    id: "3",
-    studentId: "3",
-    type: "EXAM",
-    amount: 5000,
-    dueDate: "2024-02-01",
-    status: "OVERDUE",
-    academicYear: "2024-25",
-    student: { id: "3", firstName: "Amit", lastName: "Kumar", enrollmentNumber: "STU003" },
-  },
-  {
-    id: "4",
-    studentId: "4",
-    type: "ADMISSION",
-    amount: 10000,
-    dueDate: "2024-03-01",
-    status: "PENDING",
-    academicYear: "2024-25",
-    student: { id: "4", firstName: "Sneha", lastName: "Gupta", enrollmentNumber: "STU004" },
-  },
-  {
-    id: "5",
-    studentId: "5",
-    type: "TUITION",
-    amount: 25000,
-    dueDate: "2024-01-15",
-    status: "WAIVED",
-    description: "Scholarship recipient",
-    academicYear: "2024-25",
-    student: { id: "5", firstName: "Vikram", lastName: "Singh", enrollmentNumber: "STU005" },
-  },
-]
-
 const feeTypes = ["TUITION", "ADMISSION", "EXAM", "TRANSPORT", "LIBRARY", "LAB", "SPORTS", "OTHER"]
 
 export default function FeesPage() {
-  const [fees, setFees] = useState<Fee[]>(demoFees)
+  const [fees, setFees] = useState<Fee[]>([])
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   const [isPaymentSheetOpen, setIsPaymentSheetOpen] = useState(false)
   const [selectedFee, setSelectedFee] = useState<Fee | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [feeToDelete, setFeeToDelete] = useState<Fee | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   // Form state for new fee
   const [formData, setFormData] = useState({
@@ -170,16 +115,19 @@ export default function FeesPage() {
       : 0,
   }
 
-  // Load fees on mount
   useEffect(() => {
     const loadFees = async () => {
       try {
         const res = await feesApi.getAll()
-        if (res.success && res.data.length > 0) {
-          setFees(res.data)
+        if (res.success && res.data) {
+          const feesData = Array.isArray(res.data) ? res.data : res.data.fees || []
+          setFees(feesData)
         }
       } catch (error) {
-        console.log("Using demo data - API not available")
+        console.error("Failed to load fees:", error)
+        toast.error("Failed to load fees")
+      } finally {
+        setLoading(false)
       }
     }
     loadFees()
@@ -319,6 +267,16 @@ export default function FeesPage() {
       currency: "INR",
       maximumFractionDigits: 0,
     }).format(amount)
+  }
+
+  if (loading) {
+    return (
+      <PageLayout title="Fees" breadcrumbs={[{ label: "Fees" }]}>
+        <div className="flex items-center justify-center h-64">
+          <Loader2Icon className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      </PageLayout>
+    )
   }
 
   const columns: ColumnDef<Fee>[] = [

@@ -59,40 +59,7 @@ type Student = {
   avatar?: string
 }
 
-const schools = ["Vidyamandir Classes", "Demo School", "Development Tenant"]
-
-const demoStudents: Student[] = [
-  {
-    id: "1",
-    name: "Rahul Sharma",
-    email: "rahul.sharma@email.com",
-    phone: "+91 98765 43210",
-    school: "Vidyamandir Classes",
-    grade: "12th",
-    status: "active",
-    enrolledAt: "2024-01-15",
-  },
-  {
-    id: "2",
-    name: "Priya Patel",
-    email: "priya.patel@email.com",
-    phone: "+91 98765 43211",
-    school: "Vidyamandir Classes",
-    grade: "11th",
-    status: "active",
-    enrolledAt: "2024-02-20",
-  },
-  {
-    id: "3",
-    name: "Amit Kumar",
-    email: "amit.kumar@email.com",
-    phone: "+91 98765 43212",
-    school: "Demo School",
-    grade: "10th",
-    status: "active",
-    enrolledAt: "2024-03-10",
-  },
-]
+const schools = ["Vidyamandir Classes", "Delhi Public School", "Sunrise Global Academy"]
 
 export default function StudentsPage() {
   const [students, setStudents] = useState<Student[]>([])
@@ -110,23 +77,22 @@ export default function StudentsPage() {
     try {
       const response = await studentsApi.getAll()
       if (response.success && response.data) {
-        const formattedStudents = response.data.students.map((s: any) => ({
+        const studentsArr = Array.isArray(response.data) ? response.data : response.data.students || []
+        const formattedStudents = studentsArr.map((s: any) => ({
           id: s.id,
           name: `${s.firstName} ${s.lastName}`,
           email: s.email,
           phone: s.phone || "N/A",
           school: s.tenant?.name || "Unknown",
           grade: s.gradeLevel || "N/A",
-          status: s.status?.toLowerCase() || "active",
+          status: s.isActive === false ? "inactive" : "active",
           enrolledAt: s.createdAt?.split("T")[0] || new Date().toISOString().split("T")[0],
         }))
         setStudents(formattedStudents)
       }
     } catch (error) {
       console.error("Failed to fetch students:", error)
-      // Fall back to demo data
-      setStudents(demoStudents)
-      toast.info("Using demo data (API unavailable)")
+      toast.error("Failed to load students")
     } finally {
       setLoading(false)
     }
@@ -392,7 +358,7 @@ export default function StudentsPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{students.length}</div>
-              <p className="text-xs text-muted-foreground">+2 from last month</p>
+              <p className="text-xs text-muted-foreground">Across all schools</p>
             </CardContent>
           </Card>
           <Card>
@@ -411,8 +377,8 @@ export default function StudentsPage() {
               <CardTitle className="text-sm font-medium">New This Month</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">1</div>
-              <p className="text-xs text-muted-foreground">Latest enrollment</p>
+              <div className="text-2xl font-bold">{new Set(students.map(s => s.grade)).size}</div>
+              <p className="text-xs text-muted-foreground">Grade levels</p>
             </CardContent>
           </Card>
           <Card>

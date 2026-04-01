@@ -59,40 +59,7 @@ type Teacher = {
   avatar?: string
 }
 
-const schools = ["Vidyamandir Classes", "Demo School", "Development Tenant"]
-
-const demoTeachers: Teacher[] = [
-  {
-    id: "1",
-    name: "John Smith",
-    email: "john.smith@vidyamandir.com",
-    phone: "+91 98765 43220",
-    school: "Vidyamandir Classes",
-    subjects: ["Mathematics", "Physics"],
-    status: "active",
-    joinedAt: "2023-06-15",
-  },
-  {
-    id: "2",
-    name: "Jane Doe",
-    email: "jane.doe@vidyamandir.com",
-    phone: "+91 98765 43221",
-    school: "Vidyamandir Classes",
-    subjects: ["Chemistry", "Biology"],
-    status: "active",
-    joinedAt: "2023-08-20",
-  },
-  {
-    id: "3",
-    name: "Rajesh Kumar",
-    email: "rajesh.kumar@demo.com",
-    phone: "+91 98765 43222",
-    school: "Demo School",
-    subjects: ["English", "History"],
-    status: "active",
-    joinedAt: "2024-01-10",
-  },
-]
+const schools = ["Vidyamandir Classes", "Delhi Public School", "Sunrise Global Academy"]
 
 export default function TeachersPage() {
   const [teachers, setTeachers] = useState<Teacher[]>([])
@@ -109,23 +76,23 @@ export default function TeachersPage() {
   const fetchTeachers = async () => {
     try {
       const response = await teachersApi.getAll()
-      if (response.success && response.data) {
-        const formattedTeachers = response.data.teachers.map((t: any) => ({
-          id: t.id,
-          name: `${t.firstName} ${t.lastName}`,
-          email: t.email,
-          phone: t.phone || "N/A",
-          school: t.tenant?.name || "Unknown",
-          subjects: t.subjects || [],
-          status: t.status?.toLowerCase() || "active",
-          joinedAt: t.createdAt?.split("T")[0] || new Date().toISOString().split("T")[0],
-        }))
-        setTeachers(formattedTeachers)
-      }
+      // API may return raw array or { success, data }
+      const rawData = response.success !== undefined ? response.data : response
+      const teachersArr = Array.isArray(rawData) ? rawData : rawData?.teachers || []
+      const formattedTeachers = teachersArr.map((t: any) => ({
+        id: t.id,
+        name: `${t.firstName} ${t.lastName}`,
+        email: t.email,
+        phone: t.phone || "N/A",
+        school: t.tenant?.name || "Unknown",
+        subjects: t.subject ? [t.subject] : t.subjects || [],
+        status: t.isActive === false ? "inactive" : "active",
+        joinedAt: t.createdAt?.split("T")[0] || new Date().toISOString().split("T")[0],
+      }))
+      setTeachers(formattedTeachers)
     } catch (error) {
       console.error("Failed to fetch teachers:", error)
-      setTeachers(demoTeachers)
-      toast.info("Using demo data (API unavailable)")
+      toast.error("Failed to load teachers")
     } finally {
       setLoading(false)
     }
@@ -405,7 +372,7 @@ export default function TeachersPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{teachers.length}</div>
-              <p className="text-xs text-muted-foreground">+1 from last month</p>
+              <p className="text-xs text-muted-foreground">Across all schools</p>
             </CardContent>
           </Card>
           <Card>

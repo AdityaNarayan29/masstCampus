@@ -1,8 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontalIcon, ArrowUpDownIcon, ExternalLinkIcon } from "lucide-react"
+import { MoreHorizontalIcon, ArrowUpDownIcon, ExternalLinkIcon, Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
 
 import { PageLayout } from "@/components/page-layout"
@@ -45,6 +45,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { PartnerForm } from "@/components/forms/partner-form"
 import { type PartnerFormData } from "@/lib/schemas"
+import { brokersApi } from "@/lib/api"
 
 type Partner = {
   id: string
@@ -60,62 +61,43 @@ type Partner = {
   avatar?: string
 }
 
-const initialPartners: Partner[] = [
-  {
-    id: "1",
-    name: "EduConnect Ltd",
-    type: "company",
-    email: "contact@educonnect.com",
-    phone: "+91 98765 43240",
-    schoolsOnboarded: 5,
-    commission: 250000,
-    status: "active",
-    website: "https://educonnect.com",
-    joinedAt: "2023-06-15",
-  },
-  {
-    id: "2",
-    name: "SchoolBridge Inc",
-    type: "company",
-    email: "hello@schoolbridge.in",
-    phone: "+91 98765 43241",
-    schoolsOnboarded: 3,
-    commission: 150000,
-    status: "active",
-    website: "https://schoolbridge.in",
-    joinedAt: "2023-08-20",
-  },
-  {
-    id: "3",
-    name: "Vikram Mehta",
-    type: "individual",
-    email: "vikram.mehta@gmail.com",
-    phone: "+91 98765 43242",
-    schoolsOnboarded: 2,
-    commission: 80000,
-    status: "active",
-    joinedAt: "2023-11-10",
-  },
-  {
-    id: "4",
-    name: "EduTech Solutions",
-    type: "company",
-    email: "info@edutechsol.com",
-    phone: "+91 98765 43243",
-    schoolsOnboarded: 0,
-    commission: 0,
-    status: "pending",
-    website: "https://edutechsol.com",
-    joinedAt: "2024-04-01",
-  },
-]
-
 export default function PartnersPage() {
-  const [partners, setPartners] = useState<Partner[]>(initialPartners)
+  const [partners, setPartners] = useState<Partner[]>([])
+  const [loading, setLoading] = useState(true)
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [partnerToDelete, setPartnerToDelete] = useState<Partner | null>(null)
+
+  useEffect(() => {
+    fetchPartners()
+  }, [])
+
+  const fetchPartners = async () => {
+    try {
+      const response = await brokersApi.getAll()
+      if (response.success && response.data) {
+        const formattedPartners = response.data.map((b: any) => ({
+          id: b.id,
+          name: b.name,
+          type: b.level === 0 ? "company" : "individual",
+          email: b.metadata?.email || `${b.code.toLowerCase()}@partner.com`,
+          phone: b.metadata?.phone || "N/A",
+          schoolsOnboarded: b._count?.students || 0,
+          commission: b._count?.commissions || 0,
+          status: b.isActive ? "active" : "inactive",
+          website: b.metadata?.website,
+          joinedAt: b.createdAt?.split("T")[0] || new Date().toISOString().split("T")[0],
+        }))
+        setPartners(formattedPartners)
+      }
+    } catch (error) {
+      console.error("Failed to fetch partners:", error)
+      toast.error("Failed to load partners")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleAdd = () => {
     setSelectedPartner(null)
@@ -132,35 +114,67 @@ export default function PartnersPage() {
     setDeleteDialogOpen(true)
   }
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (partnerToDelete) {
-      setPartners(partners.filter((p) => p.id !== partnerToDelete.id))
-      toast.success(`${partnerToDelete.name} has been deactivated`)
+      try {
+        await brokersApi.delete(partnerToDelete.id)
+        setPartners(partners.filter((p) => p.id !== partnerToDelete.id))
+        toast.success(`${partnerToDelete.name} has been deactivated`)
+      } catch (error) {
+        toast.error("Failed to deactivate partner")
+      }
       setDeleteDialogOpen(false)
       setPartnerToDelete(null)
     }
   }
 
-  const handleFormSubmit = (data: PartnerFormData) => {
+  const handleFormSubmit = async (data: PartnerFormData) => {
     if (selectedPartner) {
-      setPartners(
-        partners.map((p) =>
-          p.id === selectedPartner.id
-            ? { ...p, ...data }
-            : p
+      try {
+        await brokersApi.update(selectedPartner.id, {
+          name: data.name,
+          isActive: data.status === "active",
+          metadata: {
+            email: data.email,
+            phone: data.phone,
+            website: data.website,
+          },
+        })
+        setPartners(
+          partners.map((p) =>
+            p.id === selectedPartner.id ? { ...p, ...data } : p
+          )
         )
-      )
-      toast.success(`${data.name} has been updated`)
-    } else {
-      const newPartner: Partner = {
-        id: String(Date.now()),
-        ...data,
-        schoolsOnboarded: 0,
-        commission: 0,
-        joinedAt: new Date().toISOString().split("T")[0],
+        toast.success(`${data.name} has been updated`)
+      } catch (error) {
+        toast.error("Failed to update partner")
       }
-      setPartners([...partners, newPartner])
-      toast.success(`${data.name} has been added`)
+    } else {
+      try {
+        const code = data.name.toUpperCase().replace(/\s+/g, "_").slice(0, 10) + "-" + Date.now().toString().slice(-4)
+        const response = await brokersApi.create({
+          name: data.name,
+          code,
+          metadata: {
+            email: data.email,
+            phone: data.phone,
+            website: data.website,
+          },
+        })
+        if (response.success && response.data) {
+          const newPartner: Partner = {
+            id: response.data.id,
+            ...data,
+            schoolsOnboarded: 0,
+            commission: 0,
+            joinedAt: new Date().toISOString().split("T")[0],
+          }
+          setPartners([...partners, newPartner])
+          toast.success(`${data.name} has been added`)
+        }
+      } catch (error) {
+        toast.error("Failed to add partner")
+      }
     }
     setIsSheetOpen(false)
     setSelectedPartner(null)
@@ -248,7 +262,7 @@ export default function PartnersPage() {
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Schools
+            Students
             <ArrowUpDownIcon className="ml-2 h-4 w-4" />
           </Button>
         )
@@ -265,19 +279,14 @@ export default function PartnersPage() {
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Commission
+            Commissions
             <ArrowUpDownIcon className="ml-2 h-4 w-4" />
           </Button>
         )
       },
       cell: ({ row }) => {
-        const amount = row.getValue("commission") as number
-        const formatted = new Intl.NumberFormat("en-IN", {
-          style: "currency",
-          currency: "INR",
-          maximumFractionDigits: 0,
-        }).format(amount)
-        return <div className="font-medium">{formatted}</div>
+        const count = row.getValue("commission") as number
+        return <div className="text-center font-medium">{count}</div>
       },
     },
     {
@@ -349,9 +358,18 @@ export default function PartnersPage() {
     },
   ]
 
-  const totalCommission = partners.reduce((sum, p) => sum + p.commission, 0)
   const totalSchools = partners.reduce((sum, p) => sum + p.schoolsOnboarded, 0)
   const activePartners = partners.filter(p => p.status === "active").length
+
+  if (loading) {
+    return (
+      <PageLayout title="Partners" breadcrumbs={[{ label: "Partners" }]}>
+        <div className="flex items-center justify-center h-64">
+          <Loader2Icon className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      </PageLayout>
+    )
+  }
 
   return (
     <PageLayout title="Partners" breadcrumbs={[{ label: "Partners" }]}>
@@ -359,7 +377,7 @@ export default function PartnersPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Partners</h1>
           <p className="text-muted-foreground">
-            Manage partners who help onboard new schools to the platform
+            Manage brokers and agents who help enroll students
           </p>
         </div>
 
@@ -370,7 +388,7 @@ export default function PartnersPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{partners.length}</div>
-              <p className="text-xs text-muted-foreground">+1 from last month</p>
+              <p className="text-xs text-muted-foreground">Brokers & agents</p>
             </CardContent>
           </Card>
           <Card>
@@ -386,7 +404,7 @@ export default function PartnersPage() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Schools Onboarded</CardTitle>
+              <CardTitle className="text-sm font-medium">Students Enrolled</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{totalSchools}</div>
@@ -395,17 +413,13 @@ export default function PartnersPage() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Commission</CardTitle>
+              <CardTitle className="text-sm font-medium">Avg per Partner</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {new Intl.NumberFormat("en-IN", {
-                  style: "currency",
-                  currency: "INR",
-                  maximumFractionDigits: 0,
-                }).format(totalCommission)}
+                {partners.length > 0 ? (totalSchools / partners.length).toFixed(1) : 0}
               </div>
-              <p className="text-xs text-muted-foreground">paid out</p>
+              <p className="text-xs text-muted-foreground">students per partner</p>
             </CardContent>
           </Card>
         </div>
@@ -414,7 +428,7 @@ export default function PartnersPage() {
           <CardHeader>
             <CardTitle>All Partners</CardTitle>
             <CardDescription>
-              A list of all partners helping onboard schools
+              A list of all brokers and agents
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -455,7 +469,7 @@ export default function PartnersPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will deactivate {partnerToDelete?.name}. They will no longer be able to onboard new schools.
+              This will deactivate {partnerToDelete?.name}. They will no longer be able to enroll students.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

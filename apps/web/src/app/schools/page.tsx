@@ -71,38 +71,6 @@ type School = {
   theme?: TenantTheme
 }
 
-const demoSchools: School[] = [
-  {
-    id: "1",
-    name: "Vidyamandir Classes",
-    domain: "vidyamandir.masstcampus.com",
-    students: 150,
-    teachers: 12,
-    status: "active",
-    plan: "premium",
-    createdAt: "2024-01-15",
-  },
-  {
-    id: "2",
-    name: "Demo School",
-    domain: "demo.masstcampus.com",
-    students: 50,
-    teachers: 5,
-    status: "active",
-    plan: "basic",
-    createdAt: "2024-02-20",
-  },
-  {
-    id: "3",
-    name: "Development Tenant",
-    domain: "dev.masstcampus.com",
-    students: 25,
-    teachers: 3,
-    status: "active",
-    plan: "free",
-    createdAt: "2024-03-10",
-  },
-]
 
 export default function SchoolsPage() {
   const [schools, setSchools] = useState<School[]>([])
@@ -120,10 +88,11 @@ export default function SchoolsPage() {
     try {
       const response = await tenantApi.getAll()
       if (response.success && response.data) {
-        const formattedSchools = response.data.map((t: any) => ({
+        const tenantsArr = Array.isArray(response.data) ? response.data : response.data.tenants || []
+        const formattedSchools = tenantsArr.map((t: any) => ({
           id: t.id,
           name: t.name,
-          domain: t.domain || `${t.slug}.masstcampus.com`,
+          domain: t.primaryDomain || t.subdomain || `${t.slug}.masstcampus.com`,
           students: t._count?.students || 0,
           teachers: t._count?.teachers || 0,
           status: t.isActive ? "active" : "inactive",
@@ -135,8 +104,7 @@ export default function SchoolsPage() {
       }
     } catch (error) {
       console.error("Failed to fetch schools:", error)
-      setSchools(demoSchools)
-      toast.info("Using demo data (API unavailable)")
+      toast.error("Failed to load schools")
     } finally {
       setLoading(false)
     }

@@ -61,41 +61,6 @@ type Counselor = {
   avatar?: string
 }
 
-const demoCounselors: Counselor[] = [
-  {
-    id: "1",
-    name: "Anita Sharma",
-    email: "anita.sharma@masstcampus.com",
-    phone: "+91 98765 43230",
-    studentsReferred: 15,
-    target: 20,
-    commission: 45000,
-    status: "active",
-    joinedAt: "2023-09-15",
-  },
-  {
-    id: "2",
-    name: "Ravi Kumar",
-    email: "ravi.kumar@masstcampus.com",
-    phone: "+91 98765 43231",
-    studentsReferred: 12,
-    target: 20,
-    commission: 36000,
-    status: "active",
-    joinedAt: "2023-10-20",
-  },
-  {
-    id: "3",
-    name: "Meera Counselor",
-    email: "meera.c@masstcampus.com",
-    phone: "+91 98765 43232",
-    studentsReferred: 18,
-    target: 20,
-    commission: 54000,
-    status: "active",
-    joinedAt: "2023-08-10",
-  },
-]
 
 export default function CounselorsPage() {
   const [counselors, setCounselors] = useState<Counselor[]>([])
@@ -113,7 +78,8 @@ export default function CounselorsPage() {
     try {
       const response = await brokersApi.getAll()
       if (response.success && response.data) {
-        const formattedCounselors = response.data.map((b: any) => ({
+        const brokersArr = Array.isArray(response.data) ? response.data : response.data.brokers || []
+        const formattedCounselors = brokersArr.map((b: any) => ({
           id: b.id,
           name: b.name,
           email: b.metadata?.email || `${b.code.toLowerCase()}@masstcampus.com`,
@@ -128,8 +94,7 @@ export default function CounselorsPage() {
       }
     } catch (error) {
       console.error("Failed to fetch counselors:", error)
-      setCounselors(demoCounselors)
-      toast.info("Using demo data (API unavailable)")
+      toast.error("Failed to load counselors")
     } finally {
       setLoading(false)
     }
