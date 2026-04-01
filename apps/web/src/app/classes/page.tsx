@@ -83,7 +83,7 @@ export default function ClassesPage() {
           school: c.tenant?.name || "Unknown",
           grade: c.gradeLevel || "N/A",
           section: c.section || "A",
-          students: c._count?.students || 0,
+          students: c._count?.attendance || c._count?.students || 0,
           teacher: c.teacher ? `${c.teacher.firstName} ${c.teacher.lastName}` : "Unassigned",
           status: c.isActive === false ? "inactive" : "active",
           createdAt: c.createdAt?.split("T")[0] || new Date().toISOString().split("T")[0],

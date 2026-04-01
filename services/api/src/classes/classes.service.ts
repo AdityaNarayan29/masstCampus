@@ -48,6 +48,7 @@ export class ClassesService {
         take: limit,
         orderBy: [{ gradeLevel: 'asc' }, { section: 'asc' }],
         include: {
+          tenant: { select: { id: true, name: true } },
           teacher: { select: { id: true, firstName: true, lastName: true, email: true } },
           _count: { select: { attendance: true } },
         },

@@ -8,7 +8,7 @@ export class TeachersService {
   async findAll(tenantId: string) {
     return this.prisma.teacher.findMany({
       where: { tenantId, isActive: true },
-      include: { classes: true },
+      include: { tenant: { select: { id: true, name: true } }, classes: true },
       orderBy: { firstName: 'asc' },
     });
   }
@@ -16,7 +16,7 @@ export class TeachersService {
   async findOne(id: string, tenantId: string) {
     return this.prisma.teacher.findFirst({
       where: { id, tenantId, isActive: true },
-      include: { classes: true },
+      include: { tenant: { select: { id: true, name: true } }, classes: true },
     });
   }
 
@@ -26,7 +26,7 @@ export class TeachersService {
         ...data,
         tenantId,
       },
-      include: { classes: true },
+      include: { tenant: { select: { id: true, name: true } }, classes: true },
     });
   }
 

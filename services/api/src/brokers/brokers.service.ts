@@ -8,10 +8,13 @@ const MAX_HIERARCHY_DEPTH = 10;
 export class BrokersService {
   constructor(private prisma: PrismaService) {}
 
-  async getBrokersForTenant(tenantId: string): Promise<Broker[]> {
+  async getBrokersForTenant(tenantId: string) {
     return this.prisma.broker.findMany({
       where: { tenantId, isActive: true },
       orderBy: [{ level: 'asc' }, { name: 'asc' }],
+      include: {
+        _count: { select: { students: true, commissions: true } },
+      },
     });
   }
 

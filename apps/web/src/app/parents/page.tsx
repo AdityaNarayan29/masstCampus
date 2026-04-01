@@ -82,7 +82,7 @@ export default function ParentsPage() {
           name: p.user ? `${p.user.profile?.firstName || ''} ${p.user.profile?.lastName || ''}`.trim() : "Unknown",
           email: p.user?.email || "N/A",
           phone: p.phone || p.user?.profile?.phone || "N/A",
-          children: p._count?.children || 0,
+          children: p._count?.children || p.children?.length || 0,
           occupation: p.occupation,
           address: p.address,
           status: p.user?.isActive ? "active" : "inactive",

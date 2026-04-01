@@ -117,9 +117,23 @@ export function LoginForm({
                 )}
               </Button>
             </div>
-            <div className="mt-6 text-center text-sm text-muted-foreground">
-              <p>Demo credentials:</p>
-              <p className="font-mono text-xs mt-1">admin@vidyamandir.com / admin123</p>
+            <div className="mt-6 text-center text-sm text-muted-foreground space-y-1">
+              <p className="font-medium">Demo credentials:</p>
+              {[
+                { label: 'Admin', email: 'admin@vidyamandir.com', pass: 'admin123' },
+                { label: 'Teacher', email: 'teacher1@vidyamandir.com', pass: 'teacher123' },
+                { label: 'Parent', email: 'parent1@vidyamandir.com', pass: 'parent123' },
+                { label: 'Broker', email: 'broker@vidyamandir.com', pass: 'broker123' },
+              ].map((cred) => (
+                <button
+                  key={cred.label}
+                  type="button"
+                  className="block w-full text-xs font-mono px-2 py-1 rounded hover:bg-muted transition-colors cursor-pointer"
+                  onClick={() => { setEmail(cred.email); setPassword(cred.pass); }}
+                >
+                  <span className="font-semibold">{cred.label}:</span> {cred.email} / {cred.pass}
+                </button>
+              ))}
             </div>
           </form>
         </CardContent>

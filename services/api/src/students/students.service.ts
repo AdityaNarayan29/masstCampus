@@ -50,6 +50,7 @@ export class StudentsService {
         take: limit,
         orderBy: { createdAt: 'desc' },
         include: {
+          tenant: { select: { id: true, name: true } },
           broker: { select: { id: true, name: true } },
           parent: { select: { id: true, relationshipType: true } },
         },
