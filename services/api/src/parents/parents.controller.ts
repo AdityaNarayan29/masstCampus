@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Query, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Query, Request, HttpException, HttpStatus } from '@nestjs/common';
 import { ParentsService } from './parents.service';
 import { TenantId } from '../tenant/tenant.decorator';
 import { Roles } from '../auth/roles.decorator';
@@ -7,9 +7,25 @@ import { Roles } from '../auth/roles.decorator';
 export class ParentsController {
   constructor(private readonly parentsService: ParentsService) {}
 
-  /**
-   * Get all parents
-   */
+  @Get('me')
+  async getMyProfile(@Request() req: any, @TenantId() tenantId: string) {
+    const profile = await this.parentsService.findByUserId(req.user.id, tenantId);
+    if (!profile) {
+      return { success: false, error: 'Parent profile not found' };
+    }
+    return { success: true, data: profile };
+  }
+
+  @Get('me/children')
+  async getMyChildren(@Request() req: any, @TenantId() tenantId: string) {
+    const profile = await this.parentsService.findByUserId(req.user.id, tenantId);
+    if (!profile) {
+      return { success: true, data: [] };
+    }
+    const children = await this.parentsService.getChildren(profile.id, tenantId);
+    return { success: true, data: children };
+  }
+
   @Get()
   async findAll(
     @TenantId() tenantId: string,

@@ -51,7 +51,8 @@ import {
 } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { feesApi } from "@/lib/api"
+import { feesApi, parentsApi } from "@/lib/api"
+import { ParentFees } from "@/components/parent-fees"
 
 type Fee = {
   id: string
@@ -115,12 +116,33 @@ export default function FeesPage() {
       : 0,
   }
 
+  const [userRole, setUserRole] = useState<string>("")
+  const isParent = userRole === "PARENT"
+
   useEffect(() => {
+    const stored = localStorage.getItem("user")
+    if (stored) {
+      try { setUserRole(JSON.parse(stored).role || "") } catch {}
+    }
+
     const loadFees = async () => {
       try {
         const res = await feesApi.getAll()
         if (res.success && res.data) {
-          const feesData = Array.isArray(res.data) ? res.data : res.data.fees || []
+          let feesData = Array.isArray(res.data) ? res.data : res.data.fees || []
+
+          // If parent, filter to only their children's fees
+          const user = stored ? JSON.parse(stored) : null
+          if (user?.role === "PARENT") {
+            try {
+              const childrenRes = await parentsApi.getMyChildren()
+              if (childrenRes.success && childrenRes.data) {
+                const childIds = new Set(childrenRes.data.map((c: any) => c.id))
+                feesData = feesData.filter((f: any) => childIds.has(f.studentId))
+              }
+            } catch {}
+          }
+
           setFees(feesData)
         }
       } catch (error) {
@@ -404,6 +426,14 @@ export default function FeesPage() {
     },
   ]
 
+  if (isParent) {
+    return (
+      <PageLayout title="My Fees" breadcrumbs={[{ label: "My Fees" }]}>
+        <ParentFees />
+      </PageLayout>
+    )
+  }
+
   return (
     <PageLayout title="Fees" breadcrumbs={[{ label: "Fees" }]}>
       <div className="space-y-6">
@@ -473,8 +503,8 @@ export default function FeesPage() {
               data={fees}
               searchKey="student"
               searchPlaceholder="Search fees..."
-              onAdd={handleAdd}
-              addButtonLabel="Add Fee"
+              onAdd={isParent ? undefined : handleAdd}
+              addButtonLabel={isParent ? undefined : "Add Fee"}
             />
           </CardContent>
         </Card>

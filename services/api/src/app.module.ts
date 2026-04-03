@@ -15,6 +15,7 @@ import { TeachersModule } from './teachers/teachers.module';
 import { ParentsModule } from './parents/parents.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ClassesModule } from './classes/classes.module';
+import { OnboardingModule } from './onboarding/onboarding.module';
 import { TenantInterceptor } from './tenant/tenant.interceptor';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { RolesGuard } from './auth/roles.guard';
@@ -41,6 +42,7 @@ import { RolesGuard } from './auth/roles.guard';
     ParentsModule,
     NotificationsModule,
     ClassesModule,
+    OnboardingModule,
   ],
   providers: [
     {

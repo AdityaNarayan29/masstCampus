@@ -34,7 +34,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
-import { attendanceApi, classesApi } from "@/lib/api"
+import { attendanceApi, classesApi, parentsApi } from "@/lib/api"
+import { ParentAttendance } from "@/components/parent-attendance"
 
 type AttendanceRecord = {
   id: string
@@ -70,6 +71,8 @@ export default function AttendancePage() {
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [bulkAttendance, setBulkAttendance] = useState<Record<string, string>>({})
+  const [userRole, setUserRole] = useState<string>("")
+  const [childIds, setChildIds] = useState<Set<string>>(new Set())
 
   // Stats
   const stats = {
@@ -80,7 +83,26 @@ export default function AttendancePage() {
     total: attendance.length,
   }
 
+  const isParent = userRole === "PARENT"
+
   useEffect(() => {
+    const stored = localStorage.getItem("user")
+    if (stored) {
+      try {
+        const user = JSON.parse(stored)
+        setUserRole(user.role || "")
+
+        // If parent, load their children
+        if (user.role === "PARENT") {
+          parentsApi.getMyChildren().then(res => {
+            if (res.success && res.data) {
+              setChildIds(new Set(res.data.map((c: any) => c.id)))
+            }
+          }).catch(() => {})
+        }
+      } catch {}
+    }
+
     const loadData = async () => {
       try {
         const classesRes = await classesApi.getAll()
@@ -119,7 +141,11 @@ export default function AttendancePage() {
         date: selectedDate,
       })
       if (res.success && res.data) {
-        const records = Array.isArray(res.data) ? res.data : res.data.attendance || []
+        let records = Array.isArray(res.data) ? res.data : res.data.attendance || []
+        // If parent, filter to only their children
+        if (userRole === "PARENT" && childIds.size > 0) {
+          records = records.filter((r: any) => childIds.has(r.studentId))
+        }
         setAttendance(records)
       }
     } catch (error) {
@@ -271,6 +297,14 @@ export default function AttendancePage() {
     },
   ]
 
+  if (isParent) {
+    return (
+      <PageLayout title="My Attendance" breadcrumbs={[{ label: "My Attendance" }]}>
+        <ParentAttendance />
+      </PageLayout>
+    )
+  }
+
   return (
     <PageLayout title="Attendance" breadcrumbs={[{ label: "Attendance" }]}>
       <div className="space-y-6">
@@ -311,11 +345,13 @@ export default function AttendancePage() {
                   onChange={(e) => setSelectedDate(e.target.value)}
                 />
               </div>
-              <div className="flex items-end">
-                <Button onClick={handleMarkAttendance} disabled={!selectedClass}>
-                  Mark Attendance
-                </Button>
-              </div>
+              {!isParent && (
+                <div className="flex items-end">
+                  <Button onClick={handleMarkAttendance} disabled={!selectedClass}>
+                    Mark Attendance
+                  </Button>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

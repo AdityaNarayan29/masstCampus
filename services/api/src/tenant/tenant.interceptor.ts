@@ -25,7 +25,7 @@ export class TenantInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest();
 
     // Skip tenant resolution for certain paths
-    const skipPaths = ['/api/v1/health', '/api/v1/tenants/resolve'];
+    const skipPaths = ['/api/v1/health', '/api/v1/tenants/resolve', '/api/v1/onboarding/school', '/api/v1/auth/login', '/api/v1/auth/register', '/api/v1/auth/forgot-password', '/api/v1/auth/reset-password', '/api/v1/auth/clerk-webhook'];
     if (skipPaths.some((path) => request.url.includes(path))) {
       return next.handle();
     }

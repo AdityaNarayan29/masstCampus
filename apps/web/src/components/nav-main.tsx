@@ -1,8 +1,9 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { MailIcon, PlusCircleIcon, type LucideIcon } from "lucide-react"
+import { MailIcon, PlusCircleIcon, Loader2Icon, type LucideIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -23,6 +24,15 @@ export function NavMain({
   }[]
 }) {
   const pathname = usePathname()
+  const [loadingUrl, setLoadingUrl] = useState<string | null>(null)
+
+  const handleClick = (url: string) => {
+    if (url !== pathname) {
+      setLoadingUrl(url)
+      // Clear after navigation completes
+      setTimeout(() => setLoadingUrl(null), 2000)
+    }
+  }
 
   return (
     <SidebarGroup>
@@ -49,11 +59,17 @@ export function NavMain({
         <SidebarMenu>
           {items.map((item) => {
             const isActive = pathname === item.url || pathname.startsWith(item.url + "/")
+            const isLoading = loadingUrl === item.url
+
             return (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton asChild tooltip={item.title} isActive={isActive}>
-                  <Link href={item.url}>
-                    {item.icon && <item.icon />}
+                  <Link href={item.url} onClick={() => handleClick(item.url)}>
+                    {isLoading ? (
+                      <Loader2Icon className="animate-spin" />
+                    ) : (
+                      item.icon && <item.icon />
+                    )}
                     <span>{item.title}</span>
                   </Link>
                 </SidebarMenuButton>

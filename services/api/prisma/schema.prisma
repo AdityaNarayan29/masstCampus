@@ -20,9 +20,14 @@ model Tenant {
   subdomain     String   @unique // e.g., "portal.vidyamandir"
   theme         Json     @default("{}")
   config        Json     @default("{}")
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  isActive           Boolean  @default(true)
+  board              String?
+  city               String?
+  state              String?
+  onboardingStep     Int      @default(0)
+  onboardingComplete Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   // Relations
   users         User[]

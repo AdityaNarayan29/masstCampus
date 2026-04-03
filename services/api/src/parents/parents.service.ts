@@ -7,6 +7,16 @@ import * as bcrypt from 'bcrypt';
 export class ParentsService {
   constructor(private prisma: PrismaService) {}
 
+  async findByUserId(userId: string, tenantId: string) {
+    return this.prisma.parentProfile.findFirst({
+      where: { userId, tenantId, isActive: true },
+      include: {
+        user: { select: { id: true, email: true, profile: true } },
+        children: { where: { isActive: true }, select: { id: true, firstName: true, lastName: true, gradeLevel: true, section: true, enrollmentNumber: true } },
+      },
+    });
+  }
+
   /**
    * Get all parents for a tenant
    */

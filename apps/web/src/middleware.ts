@@ -15,10 +15,11 @@ import type { NextRequest } from 'next/server';
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip for static files, API routes, and Next.js internals
+  // Skip for static files, API routes, Next.js internals, and onboarding
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
+    pathname.startsWith('/onboarding') ||
     pathname.includes('.')
   ) {
     return NextResponse.next();

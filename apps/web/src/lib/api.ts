@@ -284,6 +284,14 @@ export const parentsApi = {
     const response = await apiClient.get(`/parents/${id}`);
     return response.data;
   },
+  getMyProfile: async () => {
+    const response = await apiClient.get('/parents/me');
+    return response.data;
+  },
+  getMyChildren: async () => {
+    const response = await apiClient.get('/parents/me/children');
+    return response.data;
+  },
   getChildren: async (id: string) => {
     const response = await apiClient.get(`/parents/${id}/children`);
     return response.data;
@@ -322,6 +330,57 @@ export const notificationsApi = {
   },
   delete: async (id: string) => {
     const response = await apiClient.delete(`/notifications/${id}`);
+    return response.data;
+  },
+};
+
+// Onboarding API
+export const onboardingApi = {
+  createSchool: async (data: {
+    schoolName: string;
+    board: string;
+    city: string;
+    state: string;
+    adminName: string;
+    adminEmail: string;
+    adminPhone: string;
+    password: string;
+  }) => {
+    const response = await apiClient.post('/onboarding/school', data);
+    if (response.data?.data?.accessToken) {
+      localStorage.setItem('auth_token', response.data.data.accessToken);
+    }
+    if (response.data?.data?.tenantId) {
+      apiClient.defaults.headers.common['x-tenant-id'] = response.data.data.tenantId;
+    }
+    return response.data;
+  },
+  createClasses: async (tenantId: string, data: { grades: Record<string, number> }) => {
+    const response = await apiClient.post(`/onboarding/${tenantId}/classes`, data);
+    return response.data;
+  },
+  importStudents: async (tenantId: string, data: { students: any[] }) => {
+    const response = await apiClient.post(`/onboarding/${tenantId}/students/import`, data);
+    return response.data;
+  },
+  downloadCsvTemplate: async (tenantId: string) => {
+    const response = await apiClient.get(`/onboarding/${tenantId}/students/csv-template`);
+    return response.data;
+  },
+  createTeachers: async (tenantId: string, data: { teachers: any[] }) => {
+    const response = await apiClient.post(`/onboarding/${tenantId}/teachers`, data);
+    return response.data;
+  },
+  createFeeStructure: async (tenantId: string, data: { academicYear: string; fees: any[] }) => {
+    const response = await apiClient.post(`/onboarding/${tenantId}/fee-structure`, data);
+    return response.data;
+  },
+  getSummary: async (tenantId: string) => {
+    const response = await apiClient.get(`/onboarding/${tenantId}/summary`);
+    return response.data;
+  },
+  goLive: async (tenantId: string) => {
+    const response = await apiClient.post(`/onboarding/${tenantId}/go-live`);
     return response.data;
   },
 };

@@ -194,8 +194,8 @@ async function main() {
       });
     }
 
-    // Parent users (5 per school)
-    for (let i = 1; i <= 5; i++) {
+    // Parent users (20 per school - realistic 1-3 kids each)
+    for (let i = 1; i <= 20; i++) {
       const fn = pick(firstNames);
       const ln = pick(lastNames);
       users[`parent${i}`] = await prisma.user.upsert({
@@ -218,7 +218,7 @@ async function main() {
   for (const { school } of schoolConfigs) {
     const users = allUsers[school.id];
     const profiles: any[] = [];
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 20; i++) {
       const parentUser = users[`parent${i}`];
       const rel: ('FATHER' | 'MOTHER' | 'GUARDIAN')[] = ['FATHER', 'MOTHER', 'GUARDIAN'];
       const profile = await prisma.parentProfile.upsert({
@@ -236,7 +236,7 @@ async function main() {
     }
     allParentProfiles[school.id] = profiles;
   }
-  console.log(`✅ Created parent profiles\n`);
+  console.log(`✅ Created parent profiles (20 per school)\n`);
 
   // ========================================
   // TEACHERS (detailed records per school)
@@ -369,7 +369,10 @@ async function main() {
 
       const cls = classes[i % classes.length];
       const broker = brokers.length > 0 ? brokers[i % brokers.length] : null;
-      const parent = parents.length > 0 ? parents[i % parents.length] : null;
+      // Realistic: first 15 parents get 2 kids each (30 students), remaining 10 get 1 kid
+      // This gives parent1 students 0,1 | parent2 students 2,3 | etc
+      const parentIndex = Math.floor(i / 2); // 2 kids per parent
+      const parent = parents.length > 0 ? parents[parentIndex % parents.length] : null;
       const enrollNum = `${prefix}2025${String(i).padStart(3, '0')}`;
 
       const student = await prisma.student.upsert({
@@ -481,9 +484,86 @@ async function main() {
         }));
       }
     }
+    // Previous academic year fees (2024-2025) - mostly paid, gives historical data
+    for (const student of students) {
+      const prevTuition = feeAmounts.TUITION[0] + Math.floor(Math.random() * (feeAmounts.TUITION[1] - feeAmounts.TUITION[0]));
+      fees.push(await prisma.fee.create({
+        data: {
+          studentId: student.id, tenantId: school.id, type: 'TUITION',
+          amount: prevTuition,
+          dueDate: new Date('2024-06-01'),
+          status: pick(['PAID', 'PAID', 'PAID', 'PAID', 'PAID', 'WAIVED']) as any,
+          description: 'Annual Tuition Fee 2024-25',
+          academicYear: '2024-2025',
+        },
+      }));
+
+      // Q1 fee
+      fees.push(await prisma.fee.create({
+        data: {
+          studentId: student.id, tenantId: school.id, type: 'TUITION',
+          amount: Math.round(prevTuition / 4),
+          dueDate: new Date('2024-07-15'),
+          status: 'PAID' as any,
+          description: 'Q1 Tuition Fee 2024-25',
+          academicYear: '2024-2025',
+        },
+      }));
+
+      // Q2 fee
+      fees.push(await prisma.fee.create({
+        data: {
+          studentId: student.id, tenantId: school.id, type: 'TUITION',
+          amount: Math.round(prevTuition / 4),
+          dueDate: new Date('2024-10-15'),
+          status: 'PAID' as any,
+          description: 'Q2 Tuition Fee 2024-25',
+          academicYear: '2024-2025',
+        },
+      }));
+
+      // Q3 fee
+      fees.push(await prisma.fee.create({
+        data: {
+          studentId: student.id, tenantId: school.id, type: 'TUITION',
+          amount: Math.round(prevTuition / 4),
+          dueDate: new Date('2025-01-15'),
+          status: pick(['PAID', 'PAID', 'PAID', 'PENDING']) as any,
+          description: 'Q3 Tuition Fee 2024-25',
+          academicYear: '2024-2025',
+        },
+      }));
+
+      // Exam fee prev year
+      fees.push(await prisma.fee.create({
+        data: {
+          studentId: student.id, tenantId: school.id, type: 'EXAM',
+          amount: feeAmounts.EXAM[0] + Math.floor(Math.random() * (feeAmounts.EXAM[1] - feeAmounts.EXAM[0])),
+          dueDate: new Date('2024-09-01'),
+          status: 'PAID' as any,
+          description: 'Annual Exam Fee 2024-25',
+          academicYear: '2024-2025',
+        },
+      }));
+
+      // Admission fee (one-time, prev year)
+      if (Math.random() < 0.3) {
+        fees.push(await prisma.fee.create({
+          data: {
+            studentId: student.id, tenantId: school.id, type: 'ADMISSION',
+            amount: feeAmounts.ADMISSION[0] + Math.floor(Math.random() * (feeAmounts.ADMISSION[1] - feeAmounts.ADMISSION[0])),
+            dueDate: new Date('2024-04-01'),
+            status: 'PAID' as any,
+            description: 'One-time Admission Fee',
+            academicYear: '2024-2025',
+          },
+        }));
+      }
+    }
+
     allFees[school.id] = fees;
   }
-  console.log(`✅ Created ${Object.values(allFees).flat().length} fee records\n`);
+  console.log(`✅ Created ${Object.values(allFees).flat().length} fee records (2 academic years)\n`);
 
   // ========================================
   // PAYMENTS & COMMISSIONS (for PAID fees)
@@ -559,12 +639,42 @@ async function main() {
   console.log(`✅ Created ${paymentCount} payments and ${commissionCount} commissions\n`);
 
   // ========================================
-  // ATTENDANCE (last 30 days for all students)
+  // ATTENDANCE (12 months of school days)
   // ========================================
-  console.log('📋 Creating attendance records (last 30 school days)...');
+  console.log('📋 Creating attendance records (12 months of school days)...');
 
   let attendanceCount = 0;
   const today = new Date();
+
+  // Indian school holidays (approximate month-day ranges to skip)
+  const holidays = [
+    // Summer break: May 15 - Jun 30
+    { startMonth: 4, startDay: 15, endMonth: 5, endDay: 30 },
+    // Diwali break: ~Oct 25 - Nov 5
+    { startMonth: 9, startDay: 25, endMonth: 10, endDay: 5 },
+    // Winter break: Dec 25 - Jan 2
+    { startMonth: 11, startDay: 25, endMonth: 0, endDay: 2 },
+  ];
+
+  function isHoliday(date: Date): boolean {
+    const m = date.getMonth();
+    const d = date.getDate();
+    for (const h of holidays) {
+      if (h.startMonth <= h.endMonth) {
+        if (m >= h.startMonth && m <= h.endMonth) {
+          if (m === h.startMonth && d < h.startDay) continue;
+          if (m === h.endMonth && d > h.endDay) continue;
+          return true;
+        }
+      } else {
+        // Wraps around year (Dec-Jan)
+        if ((m >= h.startMonth && d >= h.startDay) || (m <= h.endMonth && d <= h.endDay)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 
   for (let si = 0; si < schools.length; si++) {
     const school = schools[si];
@@ -572,34 +682,45 @@ async function main() {
     const classes = allClasses[school.id];
     const teacherUser = allUsers[school.id].teacher1;
 
-    // Generate attendance for last 15 weekdays (to keep it manageable)
+    // Generate school days for the past 12 months
     const schoolDays: Date[] = [];
-    let d = new Date(today);
-    while (schoolDays.length < 15) {
-      d.setDate(d.getDate() - 1);
+    const d = new Date(today);
+    d.setFullYear(d.getFullYear() - 1); // Start from 1 year ago
+
+    while (d <= today) {
       const dow = d.getDay();
-      if (dow !== 0 && dow !== 6) { // Skip weekends
+      if (dow !== 0 && dow !== 6 && !isHoliday(d)) {
         schoolDays.push(new Date(d));
       }
+      d.setDate(d.getDate() + 1);
     }
 
-    // Batch attendance per day - each student attends their class
+    console.log(`  📅 ${school.name}: ${schoolDays.length} school days for ${students.length} students`);
+
+    // Process in monthly batches
+    const BATCH_SIZE = 500;
+    let batch: any[] = [];
+
     for (const day of schoolDays) {
-      const attendanceData: any[] = [];
       for (const student of students) {
-        // Find the class for this student's grade+section
         const studentClass = classes.find((c: any) => c.gradeLevel === student.gradeLevel && c.section === student.section);
         if (!studentClass) continue;
 
-        // 85% present, 8% absent, 4% late, 3% excused
+        // Attendance varies by month (lower in winter, exam time)
+        const month = day.getMonth();
+        let presentRate = 0.88; // default 88%
+        if (month === 0 || month === 11) presentRate = 0.82; // Winter: lower
+        if (month === 2 || month === 8) presentRate = 0.92; // Exam months: higher
+        if (month === 6) presentRate = 0.78; // July (monsoon): lowest
+
         const rand = Math.random();
         let status: 'PRESENT' | 'ABSENT' | 'LATE' | 'EXCUSED';
-        if (rand < 0.85) status = 'PRESENT';
-        else if (rand < 0.93) status = 'ABSENT';
-        else if (rand < 0.97) status = 'LATE';
+        if (rand < presentRate) status = 'PRESENT';
+        else if (rand < presentRate + 0.07) status = 'ABSENT';
+        else if (rand < presentRate + 0.10) status = 'LATE';
         else status = 'EXCUSED';
 
-        attendanceData.push({
+        batch.push({
           studentId: student.id,
           classId: studentClass.id,
           tenantId: school.id,
@@ -608,17 +729,22 @@ async function main() {
           markedBy: teacherUser.id,
           notes: status === 'ABSENT' ? pick(['Sick leave', 'Family emergency', 'Not informed', '']) : (status === 'LATE' ? pick(['Traffic', 'Bus late', '']) : undefined),
         });
-      }
 
-      // Use createMany for performance
-      await prisma.attendance.createMany({
-        data: attendanceData,
-        skipDuplicates: true,
-      });
-      attendanceCount += attendanceData.length;
+        if (batch.length >= BATCH_SIZE) {
+          await prisma.attendance.createMany({ data: batch, skipDuplicates: true });
+          attendanceCount += batch.length;
+          batch = [];
+        }
+      }
+    }
+
+    // Flush remaining
+    if (batch.length > 0) {
+      await prisma.attendance.createMany({ data: batch, skipDuplicates: true });
+      attendanceCount += batch.length;
     }
   }
-  console.log(`✅ Created ${attendanceCount} attendance records\n`);
+  console.log(`✅ Created ${attendanceCount} attendance records (12 months)\n`);
 
   // ========================================
   // NOTIFICATIONS (mix of types)
