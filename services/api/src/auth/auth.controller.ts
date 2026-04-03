@@ -17,17 +17,23 @@ export class AuthController {
   async login(
     @Body() body: { email: string; password: string; tenantId?: string },
     @Headers('x-forwarded-host') forwardedHost?: string,
+    @Headers('x-tenant-subdomain') subdomain?: string,
     @Headers('host') host?: string,
   ) {
     let tenantId = body.tenantId && body.tenantId.trim() !== '' ? body.tenantId : undefined;
 
+    // Try subdomain resolution first
+    if (!tenantId && subdomain) {
+      const tenant = await this.tenantService.getTenantBySubdomain(subdomain);
+      if (tenant) tenantId = tenant.id;
+    }
+
+    // Then try host-based resolution
     if (!tenantId) {
       const targetHost = forwardedHost || host;
       if (targetHost) {
         const tenant = await this.tenantService.getTenantByHost(targetHost);
-        if (tenant) {
-          tenantId = tenant.id;
-        }
+        if (tenant) tenantId = tenant.id;
       }
     }
 

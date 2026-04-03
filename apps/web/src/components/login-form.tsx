@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { authApi } from "@/lib/api"
+import { getSubdomain, isMainDomain } from "@/lib/tenant"
 import { Loader2Icon, GraduationCapIcon } from "lucide-react"
 import { toast } from "sonner"
 
@@ -25,6 +26,8 @@ export function LoginForm({
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
+  const subdomain = getSubdomain()
+  const showDemoCredentials = isMainDomain()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -117,24 +120,31 @@ export function LoginForm({
                 )}
               </Button>
             </div>
-            <div className="mt-6 text-center text-sm text-muted-foreground space-y-1">
-              <p className="font-medium">Demo credentials:</p>
-              {[
-                { label: 'Admin', email: 'admin@vidyamandir.com', pass: 'admin123' },
-                { label: 'Teacher', email: 'teacher1@vidyamandir.com', pass: 'teacher123' },
-                { label: 'Parent', email: 'parent1@vidyamandir.com', pass: 'parent123' },
-                { label: 'Broker', email: 'broker@vidyamandir.com', pass: 'broker123' },
-              ].map((cred) => (
-                <button
-                  key={cred.label}
-                  type="button"
-                  className="block w-full text-xs font-mono px-2 py-1 rounded hover:bg-muted transition-colors cursor-pointer"
-                  onClick={() => { setEmail(cred.email); setPassword(cred.pass); }}
-                >
-                  <span className="font-semibold">{cred.label}:</span> {cred.email} / {cred.pass}
-                </button>
-              ))}
-            </div>
+            {subdomain && (
+              <p className="mt-4 text-center text-xs text-muted-foreground">
+                Logging into <span className="font-semibold">{subdomain}</span> portal
+              </p>
+            )}
+            {showDemoCredentials && (
+              <div className="mt-6 text-center text-sm text-muted-foreground space-y-1">
+                <p className="font-medium">Demo credentials:</p>
+                {[
+                  { label: 'Admin', email: 'admin@vidyamandir.com', pass: 'admin123' },
+                  { label: 'Teacher', email: 'teacher1@vidyamandir.com', pass: 'teacher123' },
+                  { label: 'Parent', email: 'parent1@vidyamandir.com', pass: 'parent123' },
+                  { label: 'Broker', email: 'broker@vidyamandir.com', pass: 'broker123' },
+                ].map((cred) => (
+                  <button
+                    key={cred.label}
+                    type="button"
+                    className="block w-full text-xs font-mono px-2 py-1 rounded hover:bg-muted transition-colors cursor-pointer"
+                    onClick={() => { setEmail(cred.email); setPassword(cred.pass); }}
+                  >
+                    <span className="font-semibold">{cred.label}:</span> {cred.email} / {cred.pass}
+                  </button>
+                ))}
+              </div>
+            )}
           </form>
         </CardContent>
       </Card>

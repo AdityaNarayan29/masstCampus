@@ -43,7 +43,19 @@ export class TenantInterceptor implements NestInterceptor {
       }
     }
 
-    // Priority 2 & 3: Resolve from host headers
+    // Priority 2: Resolve from subdomain header (set by Next.js middleware)
+    const subdomainHeader = request.headers['x-tenant-subdomain'];
+    if (subdomainHeader) {
+      const tenant = await this.tenantService.getTenantBySubdomain(subdomainHeader);
+      if (tenant) {
+        request.tenantId = tenant.id;
+        request.tenant = tenant;
+        return next.handle();
+      }
+      throw new BadRequestException(`No tenant found for subdomain: ${subdomainHeader}`);
+    }
+
+    // Priority 3 & 4: Resolve from host headers
     const forwardedHost = request.headers['x-forwarded-host'];
     const host = request.headers['host'];
     const targetHost = forwardedHost || host;

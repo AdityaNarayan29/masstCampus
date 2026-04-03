@@ -40,12 +40,12 @@ async function main() {
   console.log('📦 Creating 3 schools (tenants)...');
 
   const school1 = await prisma.tenant.upsert({
-    where: { subdomain: 'portal.vidyamandir' },
-    update: { primaryDomain: 'localhost:3003' },
+    where: { subdomain: 'vidyamandir' },
+    update: { primaryDomain: 'vidyamandir.localhost' },
     create: {
       name: 'Vidyamandir Classes',
-      primaryDomain: 'localhost:3003',
-      subdomain: 'portal.vidyamandir',
+      primaryDomain: 'vidyamandir.localhost',
+      subdomain: 'vidyamandir',
       theme: {
         logo: '/logos/vidyamandir.svg',
         colors: { primary: 'hsl(221 83% 53%)', secondary: 'hsl(210 40% 96.1%)', accent: 'hsl(210 40% 96.1%)', background: 'hsl(0 0% 100%)', foreground: 'hsl(222.2 84% 4.9%)' },
@@ -57,12 +57,12 @@ async function main() {
   });
 
   const school2 = await prisma.tenant.upsert({
-    where: { subdomain: 'portal.dps' },
-    update: {},
+    where: { subdomain: 'dps' },
+    update: { primaryDomain: 'dps.localhost' },
     create: {
       name: 'Delhi Public School',
       primaryDomain: 'dps.localhost',
-      subdomain: 'portal.dps',
+      subdomain: 'dps',
       theme: {
         logo: '/logos/dps.svg',
         colors: { primary: 'hsl(142 76% 36%)', secondary: 'hsl(143 64% 94%)', accent: 'hsl(142 76% 36%)', background: 'hsl(0 0% 100%)', foreground: 'hsl(222.2 84% 4.9%)' },
@@ -74,12 +74,12 @@ async function main() {
   });
 
   const school3 = await prisma.tenant.upsert({
-    where: { subdomain: 'portal.sunriseglobal' },
-    update: {},
+    where: { subdomain: 'sunrise' },
+    update: { primaryDomain: 'sunrise.localhost' },
     create: {
       name: 'Sunrise Global Academy',
       primaryDomain: 'sunrise.localhost',
-      subdomain: 'portal.sunriseglobal',
+      subdomain: 'sunrise',
       theme: {
         logo: '/logos/sunrise.svg',
         colors: { primary: 'hsl(25 95% 53%)', secondary: 'hsl(30 80% 95%)', accent: 'hsl(25 95% 53%)', background: 'hsl(0 0% 100%)', foreground: 'hsl(222.2 84% 4.9%)' },

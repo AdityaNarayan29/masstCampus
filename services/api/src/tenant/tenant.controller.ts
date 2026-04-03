@@ -15,16 +15,24 @@ export class TenantController {
   @Get('resolve')
   async resolveTenant(
     @Headers('x-forwarded-host') forwardedHost?: string,
+    @Headers('x-tenant-subdomain') subdomainHeader?: string,
     @Headers('host') host?: string
   ) {
-    // Priority: x-forwarded-host > host
-    const targetHost = forwardedHost || host;
+    let tenant = null;
 
-    if (!targetHost) {
-      return { success: false, error: 'No host header provided' };
+    // Priority 1: explicit subdomain header (set by Next.js middleware)
+    if (subdomainHeader) {
+      tenant = await this.tenantService.getTenantBySubdomain(subdomainHeader);
     }
 
-    const tenant = await this.tenantService.getTenantByHost(targetHost);
+    // Priority 2: resolve from host
+    if (!tenant) {
+      const targetHost = forwardedHost || host;
+      if (!targetHost) {
+        return { success: false, error: 'No host header provided' };
+      }
+      tenant = await this.tenantService.getTenantByHost(targetHost);
+    }
 
     if (!tenant) {
       return { success: false, error: 'Tenant not found' };

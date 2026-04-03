@@ -7,10 +7,26 @@ export class TenantService {
   constructor(private prisma: PrismaService) {}
 
   /**
-   * Resolve tenant by host header value
+   * Resolve tenant by subdomain slug (e.g., "vidyamandir", "dps").
+   * This is the primary resolution path when the Next.js middleware
+   * sends the x-tenant-subdomain header.
+   */
+  async getTenantBySubdomain(subdomain: string): Promise<Tenant | null> {
+    if (!subdomain) return null;
+
+    return this.prisma.tenant.findFirst({
+      where: {
+        subdomain,
+        isActive: true,
+      },
+    });
+  }
+
+  /**
+   * Resolve tenant by host header value.
    * Priority:
    * 1. Check if it's a custom domain (primaryDomain)
-   * 2. Check if it's a subdomain
+   * 2. Extract subdomain from host and look up by subdomain field
    */
   async getTenantByHost(host: string): Promise<Tenant | null> {
     if (!host) return null;
@@ -38,25 +54,24 @@ export class TenantService {
 
     if (tenant) return tenant;
 
-    // Try to find by subdomain
-    // Extract subdomain from host (e.g., "portal.vidyamandir.local" -> "portal.vidyamandir")
-    // or "portal.vidyamandir.com" -> "portal.vidyamandir"
+    // Extract subdomain from host
+    // e.g., "vidyamandir.localhost" -> "vidyamandir"
+    // e.g., "dps.masstcampus.com" -> "dps"
     const parts = cleanHost.split('.');
-    if (parts.length >= 2) {
-      const subdomain = parts.slice(0, -1).join('.'); // Everything except TLD
-      tenant = await this.prisma.tenant.findFirst({
-        where: {
-          subdomain,
-          isActive: true,
-        },
-      });
+    let extractedSubdomain: string | null = null;
+
+    if (parts.length === 2 && parts[1] === 'localhost') {
+      // vidyamandir.localhost -> vidyamandir
+      extractedSubdomain = parts[0];
+    } else if (parts.length > 2) {
+      // dps.masstcampus.com -> dps
+      extractedSubdomain = parts[0];
     }
 
-    // For localhost without dots, check subdomain directly
-    if (!tenant && cleanHost === 'localhost') {
+    if (extractedSubdomain) {
       tenant = await this.prisma.tenant.findFirst({
         where: {
-          subdomain: 'localhost',
+          subdomain: extractedSubdomain,
           isActive: true,
         },
       });
