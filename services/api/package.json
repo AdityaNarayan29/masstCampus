@@ -25,8 +25,6 @@
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.2.10",
     "@prisma/client": "^5.22.0",
-    "@school-crm/config": "workspace:*",
-    "@school-crm/types": "workspace:*",
     "bcrypt": "^5.1.1",
     "csv-parse": "^5.5.0",
     "class-transformer": "^0.5.1",
