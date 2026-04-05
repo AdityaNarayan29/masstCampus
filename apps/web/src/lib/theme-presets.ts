@@ -1,6 +1,6 @@
 "use client"
 
-import type { TenantTheme } from "@school-crm/types"
+import type { TenantTheme } from "../types/tenant"
 
 export interface ThemePreset {
   id: string

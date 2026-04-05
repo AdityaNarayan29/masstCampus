@@ -1,4 +1,4 @@
-import type { Tenant } from '@school-crm/types';
+import type { Tenant } from '../types/tenant';
 
 /**
  * Get tenant by host on the server side

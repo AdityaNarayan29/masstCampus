@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import type { TenantTheme } from "@school-crm/types"
+import type { TenantTheme } from "../../types/tenant"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"

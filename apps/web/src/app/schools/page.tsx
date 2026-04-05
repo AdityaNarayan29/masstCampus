@@ -45,7 +45,7 @@ import {
 import { SchoolForm } from "@/components/forms/school-form"
 import { type SchoolWithThemeFormData } from "@/lib/schemas"
 import { tenantApi } from "@/lib/api"
-import type { TenantTheme } from "@school-crm/types"
+import type { TenantTheme } from "../../types/tenant"
 
 // Helper to normalize theme from form data to TenantTheme
 function normalizeTheme(theme: SchoolWithThemeFormData["theme"]): TenantTheme | undefined {
