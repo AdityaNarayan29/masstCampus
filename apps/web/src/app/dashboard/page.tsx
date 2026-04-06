@@ -21,6 +21,7 @@ function RoleDashboard({ role }: { role: string }) {
     case "TEACHER":
       return <TeacherDashboard />
     case "ADMIN":
+    case "SUPER_ADMIN":
       return <AdminDashboard />
     case "BROKER":
       return <BrokerDashboard />
@@ -48,6 +49,7 @@ export default function Page() {
     userRole === "PARENT" ||
     userRole === "TEACHER" ||
     userRole === "ADMIN" ||
+    userRole === "SUPER_ADMIN" ||
     userRole === "BROKER"
 
   if (hasRoleDashboard && userRole) {
