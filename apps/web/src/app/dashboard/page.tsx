@@ -11,6 +11,7 @@ import { ParentDashboard } from "@/components/parent-dashboard"
 import { TeacherDashboard } from "@/components/teacher-dashboard"
 import { AdminDashboard } from "@/components/admin-dashboard"
 import { BrokerDashboard } from "@/components/broker-dashboard"
+import { SuperAdminDashboard } from "@/components/superadmin-dashboard"
 
 import data from "./data.json"
 
@@ -21,8 +22,9 @@ function RoleDashboard({ role }: { role: string }) {
     case "TEACHER":
       return <TeacherDashboard />
     case "ADMIN":
-    case "SUPER_ADMIN":
       return <AdminDashboard />
+    case "SUPER_ADMIN":
+      return <SuperAdminDashboard />
     case "BROKER":
       return <BrokerDashboard />
     default:
