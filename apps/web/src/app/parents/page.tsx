@@ -351,13 +351,13 @@ export default function ParentsPage() {
     <PageLayout title="Parents" breadcrumbs={[{ label: "Parents" }]}>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Parents</h1>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Parents</h1>
           <p className="text-muted-foreground">
             Manage all parents across all schools
           </p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Parents</CardTitle>

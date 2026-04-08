@@ -359,13 +359,13 @@ export default function TeachersPage() {
     <PageLayout title="Teachers" breadcrumbs={[{ label: "Teachers" }]}>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Teachers</h1>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Teachers</h1>
           <p className="text-muted-foreground">
             Manage all teachers across all schools
           </p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Teachers</CardTitle>

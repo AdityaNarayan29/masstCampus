@@ -367,7 +367,7 @@ export default function AttendancePage() {
     <PageLayout title="Attendance" breadcrumbs={[{ label: "Attendance" }]}>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Attendance</h1>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Attendance</h1>
           <p className="text-muted-foreground">
             Mark and track student attendance
           </p>
@@ -379,8 +379,8 @@ export default function AttendancePage() {
             <CardTitle className="text-lg">Select Class & Date</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-wrap gap-4">
-              <div className="w-[200px]">
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
+              <div className="w-full sm:w-[200px]">
                 <Label>Class</Label>
                 <Select value={selectedClass} onValueChange={setSelectedClass}>
                   <SelectTrigger>
@@ -395,7 +395,7 @@ export default function AttendancePage() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="w-[200px]">
+              <div className="w-full sm:w-[200px]">
                 <Label>Date</Label>
                 <Input
                   type="date"
@@ -405,7 +405,7 @@ export default function AttendancePage() {
               </div>
               {!isParent && (
                 <div className="flex items-end">
-                  <Button onClick={handleMarkAttendance} disabled={!selectedClass} size="lg">
+                  <Button onClick={handleMarkAttendance} disabled={!selectedClass} size="lg" className="w-full sm:w-auto">
                     <Users2Icon className="mr-2 h-4 w-4" />
                     Mark Attendance
                   </Button>
@@ -416,7 +416,7 @@ export default function AttendancePage() {
         </Card>
 
         {/* Stats */}
-        <div className="grid gap-4 md:grid-cols-5">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total</CardTitle>

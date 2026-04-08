@@ -241,9 +241,9 @@ export default function SettingsPage() {
 
   return (
     <PageLayout title="Settings" breadcrumbs={[{ label: "Settings" }]}>
-      <div className="space-y-6 max-w-3xl">
+      <div className="space-y-6 w-full max-w-3xl">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Settings</h1>
           <p className="text-muted-foreground">
             Manage your account settings and preferences
           </p>
@@ -423,7 +423,7 @@ export default function SettingsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-3">
+              <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
                 <div className="space-y-2">
                   <Label>School Name</Label>
                   <Input value={schoolInfo.name} readOnly className="bg-muted" />
