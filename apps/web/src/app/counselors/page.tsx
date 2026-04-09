@@ -343,12 +343,10 @@ export default function CounselorsPage() {
                 Copy counselor ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>View profile</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleEdit(counselor)}>View / Edit profile</DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleEdit(counselor)}>
                 Edit details
               </DropdownMenuItem>
-              <DropdownMenuItem>View referrals</DropdownMenuItem>
-              <DropdownMenuItem>Pay commission</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-destructive"

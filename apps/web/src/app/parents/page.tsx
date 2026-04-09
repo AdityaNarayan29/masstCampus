@@ -313,12 +313,11 @@ export default function ParentsPage() {
                 Copy parent ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>View profile</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleEdit(parent)}>View / Edit profile</DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleEdit(parent)}>
                 Edit details
               </DropdownMenuItem>
-              <DropdownMenuItem>View children</DropdownMenuItem>
-              <DropdownMenuItem>Send message</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => window.location.href = "/students"}>View children</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-destructive"

@@ -338,12 +338,10 @@ export default function PartnersPage() {
                 Copy partner ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>View profile</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleEdit(partner)}>View / Edit profile</DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleEdit(partner)}>
                 Edit details
               </DropdownMenuItem>
-              <DropdownMenuItem>View schools</DropdownMenuItem>
-              <DropdownMenuItem>Pay commission</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-destructive"

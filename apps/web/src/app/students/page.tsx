@@ -309,12 +309,12 @@ export default function StudentsPage() {
                 Copy student ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>View profile</DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleEdit(student)}>
-                Edit details
+                View / Edit profile
               </DropdownMenuItem>
-              <DropdownMenuItem>View attendance</DropdownMenuItem>
-              <DropdownMenuItem>Contact parent</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => window.location.href = '/attendance'}>
+                View attendance
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-destructive"

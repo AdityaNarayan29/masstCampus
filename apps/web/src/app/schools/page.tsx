@@ -340,7 +340,7 @@ export default function SchoolsPage() {
               <DropdownMenuItem onClick={() => handleEdit(school)}>
                 Edit school
               </DropdownMenuItem>
-              <DropdownMenuItem>Manage users</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => window.location.href = "/students"}>View students</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-destructive"

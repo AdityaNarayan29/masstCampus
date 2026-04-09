@@ -308,12 +308,11 @@ export default function ClassesPage() {
                 Copy class ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>View students</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => window.location.href = "/students"}>View students</DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleEdit(classItem)}>
                 Edit class
               </DropdownMenuItem>
-              <DropdownMenuItem>Assign teacher</DropdownMenuItem>
-              <DropdownMenuItem>View schedule</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleEdit(classItem)}>Edit / Assign teacher</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-destructive"
