@@ -279,129 +279,54 @@ const features = [
   {
     icon: ClipboardCheck,
     title: 'Smart Attendance',
-    description: 'Mark attendance in seconds with our intuitive interface. Real-time sync across all devices.',
+    description: 'Mark attendance class by class in seconds, on the web or from the teacher app.',
     color: 'from-blue-500 to-cyan-500',
   },
   {
     icon: CreditCard,
     title: 'Fee Management',
-    description: 'Automated fee collection, reminders, and detailed payment tracking with multiple payment modes.',
+    description: 'Create fees, record payments, see what each student owes, and flag overdue fees automatically.',
     color: 'from-green-500 to-emerald-500',
   },
   {
     icon: Users,
     title: 'Student Management',
-    description: 'Complete student profiles, enrollment tracking, and academic history in one place.',
+    description: 'Student profiles and enrolment by class and section, with bulk import from a CSV template.',
     color: 'from-purple-500 to-pink-500',
   },
   {
     icon: MessageSquare,
     title: 'Parent Communication',
-    description: 'Instant notifications, announcements, and direct messaging with parents.',
+    description: 'In-app notifications and messages, plus a parent app where families follow attendance and fees.',
     color: 'from-orange-500 to-red-500',
   },
   {
     icon: BarChart3,
-    title: 'Analytics & Reports',
-    description: 'Powerful insights with customizable reports on attendance, fees, and performance.',
+    title: 'Analytics',
+    description: 'Dashboards for attendance trends, fee collection and how students are spread across classes.',
     color: 'from-indigo-500 to-purple-500',
   },
   {
     icon: Calendar,
-    title: 'Class Scheduling',
-    description: 'Effortless timetable management with conflict detection and teacher allocation.',
+    title: 'Timetables',
+    description: 'Timetable planning with clash detection and teacher allocation.',
+    soon: true,
     color: 'from-teal-500 to-cyan-500',
   },
 ];
 
 const stats = [
   { value: '218M+', label: 'Students in India', icon: GraduationCap },
-  { value: '1.55M', label: 'Schools', icon: School },
-  { value: '70%', label: 'Cost Savings', icon: PieChart },
-  { value: '24/7', label: 'Support', icon: Zap },
-];
-
-const pricingTiers = [
-  {
-    name: 'Starter',
-    price: '₹20',
-    period: '/student/year',
-    description: 'Perfect for small schools getting started',
-    features: [
-      'Up to 500 students',
-      'Attendance management',
-      'Basic fee collection',
-      'Parent app access',
-      'Email support',
-    ],
-    cta: 'Start Free Trial',
-    popular: false,
-  },
-  {
-    name: 'Professional',
-    price: '₹35',
-    period: '/student/year',
-    description: 'Most popular for growing institutions',
-    features: [
-      'Unlimited students',
-      'All Starter features',
-      'Advanced analytics',
-      'Custom reports',
-      'SMS notifications',
-      'Priority support',
-      'API access',
-    ],
-    cta: 'Get Started',
-    popular: true,
-  },
-  {
-    name: 'Enterprise',
-    price: 'Custom',
-    period: '',
-    description: 'For large institutions & chains',
-    features: [
-      'Everything in Professional',
-      'Multi-branch management',
-      'White-label solution',
-      'Dedicated account manager',
-      'Custom integrations',
-      'SLA guarantee',
-      'On-premise option',
-    ],
-    cta: 'Contact Sales',
-    popular: false,
-  },
-];
-
-const testimonials = [
-  {
-    quote: "Masst Campus transformed how we manage our school. Fee collection is now 3x faster.",
-    author: 'Rajesh Kumar',
-    role: 'Principal, Delhi Public School',
-    avatar: 'RK',
-    gradient: 'from-blue-500 to-cyan-500',
-  },
-  {
-    quote: "The parent communication feature alone saved us countless hours every week.",
-    author: 'Priya Sharma',
-    role: "Administrator, St. Mary's Convent",
-    avatar: 'PS',
-    gradient: 'from-purple-500 to-pink-500',
-  },
-  {
-    quote: "Finally, a school management system that actually understands Indian schools.",
-    author: 'Amit Patel',
-    role: 'Director, Sunrise Academy',
-    avatar: 'AP',
-    gradient: 'from-orange-500 to-red-500',
-  },
+  { value: '1.55M', label: 'Schools in India', icon: School },
+  { value: 'Web + app', label: 'For staff and parents', icon: PieChart },
+  { value: '3 roles', label: 'Admin, teacher, parent', icon: Zap },
 ];
 
 const howItWorks = [
   {
     step: '01',
     title: 'Sign Up & Setup',
-    description: 'Create your school account in under 5 minutes. Import existing data or start fresh.',
+    description: 'Create your school account in minutes. Add students one by one or import them from a CSV template.',
     icon: GraduationCap,
   },
   {
@@ -413,56 +338,59 @@ const howItWorks = [
   {
     step: '03',
     title: 'Connect Parents',
-    description: 'Parents download the app and instantly connect. Real-time updates begin flowing.',
+    description: 'Parents sign in to the parent app and follow attendance, fees and messages as they happen.',
     icon: Smartphone,
   },
   {
     step: '04',
     title: 'Start Managing',
-    description: 'Attendance, fees, communication - everything works seamlessly from day one.',
+    description: 'Attendance, fees and communication, all in one place from day one.',
     icon: Zap,
   },
 ];
 
 const trustFeatures = [
-  { icon: Shield, label: 'Bank-grade Security', description: 'Your data is encrypted and secure' },
-  { icon: Cloud, label: '99.9% Uptime', description: 'Always available when you need it' },
-  { icon: HeadphonesIcon, label: '24/7 Support', description: 'Help available in Hindi & English' },
-  { icon: Smartphone, label: 'Mobile Apps', description: 'iOS & Android for parents' },
+  { icon: Shield, label: 'Separate data', description: "Each school's data is isolated" },
+  { icon: Cloud, label: 'Audit log', description: 'Every change is recorded' },
+  { icon: HeadphonesIcon, label: 'Direct support', description: 'Talk to the people building it' },
+  { icon: Smartphone, label: 'Mobile app', description: 'For parents and teachers' },
 ];
 
 const comparisonFeatures = [
-  { feature: 'Attendance Management', us: true, others: true },
-  { feature: 'Fee Collection', us: true, others: true },
-  { feature: 'Parent Mobile App', us: true, others: false },
-  { feature: 'SMS/WhatsApp Notifications', us: true, others: false },
-  { feature: 'Real-time Analytics', us: true, others: false },
-  { feature: 'Multi-branch Support', us: true, others: false },
-  { feature: 'Offline Mode', us: true, others: false },
-  { feature: 'Indian Language Support', us: true, others: false },
-  { feature: 'Starting Price', us: '₹20/student/year', others: '₹60+/student/year' },
+  { feature: 'Attendance management', live: true },
+  { feature: 'Fees and payment tracking', live: true },
+  { feature: 'Student import from CSV', live: true },
+  { feature: 'Parent and teacher mobile app', live: true },
+  { feature: 'Notifications and messages', live: true },
+  { feature: 'Analytics dashboard', live: true },
+  { feature: 'SMS and WhatsApp alerts', live: false },
+  { feature: 'Online fee payments and reminders', live: false },
+  { feature: 'Timetables', live: false },
+  { feature: 'Multi-branch schools', live: false },
+  { feature: 'Offline mode', live: false },
+  { feature: 'Hindi and regional languages', live: false },
 ];
 
 const faqs = [
   {
     question: 'How long does it take to set up?',
-    answer: 'Most schools are up and running within a day. Our team helps you import existing data and train your staff at no extra cost.',
+    answer: 'Creating your school takes a few minutes. You can add students one by one or import them in bulk from our CSV template.',
   },
   {
-    question: 'Can parents use it without smartphones?',
-    answer: 'Yes! Parents receive SMS notifications for attendance and fee reminders. The app is optional but recommended for the best experience.',
+    question: 'How do parents stay updated?',
+    answer: 'Parents sign in to the Masst Campus app to follow attendance, fees and messages from the school. SMS and WhatsApp alerts are coming soon.',
   },
   {
     question: 'Is my data safe?',
-    answer: 'Absolutely. We use bank-grade encryption, regular backups, and comply with all Indian data protection regulations. Your data never leaves Indian servers.',
+    answer: "Each school's data is kept separate from every other school, access depends on each person's role, and every change is recorded in an audit log.",
   },
   {
     question: 'What if we need help?',
-    answer: 'Our support team is available 24/7 via chat, phone, and email. We also provide free training sessions and video tutorials in Hindi and English.',
+    answer: 'You talk directly to the people building Masst Campus. Reach out any time and we will help you get set up.',
   },
   {
-    question: 'Can we try before buying?',
-    answer: 'Yes! Start with a free 14-day trial with full features. No credit card required. If you love it, choose a plan that fits your school.',
+    question: 'How much does it cost?',
+    answer: 'We are setting pricing together with our first schools. Talk to us about your school and we will share a plan that fits.',
   },
 ];
 
@@ -828,7 +756,7 @@ export default function LandingPage() {
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className={`text-sm transition-colors ${t('text-slate-400 hover:text-white', 'text-gray-600 hover:text-gray-900')}`}>Features</a>
             <a href="#pricing" className={`text-sm transition-colors ${t('text-slate-400 hover:text-white', 'text-gray-600 hover:text-gray-900')}`}>Pricing</a>
-            <a href="#testimonials" className={`text-sm transition-colors ${t('text-slate-400 hover:text-white', 'text-gray-600 hover:text-gray-900')}`}>Testimonials</a>
+            <a href="#early-access" className={`text-sm transition-colors ${t('text-slate-400 hover:text-white', 'text-gray-600 hover:text-gray-900')}`}>Early Access</a>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
             <button
@@ -882,11 +810,11 @@ export default function LandingPage() {
               Pricing
             </a>
             <a
-              href="#testimonials"
+              href="#early-access"
               onClick={closeMobileMenu}
               className={`block py-2 text-sm font-medium ${t('text-slate-300 hover:text-white', 'text-gray-700 hover:text-gray-900')}`}
             >
-              Testimonials
+              Early Access
             </a>
             <div className="pt-3 flex flex-col gap-2 border-t ${t('border-white/10', 'border-gray-200')}">
               <Link
@@ -927,7 +855,7 @@ export default function LandingPage() {
               t('bg-white/[0.04] border-white/[0.08]', 'bg-blue-50/80 border-blue-200/60')
             }`}>
               <Sparkles className="w-3 h-3 text-yellow-500" />
-              <span className={th.textMuted}>Trusted by 100+ Schools</span>
+              <span className={th.textMuted}>Now onboarding our first schools</span>
             </div>
 
             <h1 className="hero-title text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-3">
@@ -939,7 +867,7 @@ export default function LandingPage() {
 
             <p className={`hero-subtitle text-sm sm:text-base mb-5 max-w-md mx-auto lg:mx-0 ${th.textMuted}`}>
               The all-in-one platform for attendance, fees, communication, and analytics.
-              Built for Indian schools, priced for everyone.
+              Built for Indian schools.
             </p>
 
             <div className="hero-cta flex flex-col sm:flex-row gap-2.5 justify-center lg:justify-start">
@@ -947,7 +875,7 @@ export default function LandingPage() {
                 href="/login"
                 className="group px-5 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg text-sm font-medium hover:shadow-lg hover:shadow-purple-500/20 transition-all flex items-center justify-center gap-2 text-white"
               >
-                Start Free Trial
+                Get Started
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <a
@@ -961,33 +889,9 @@ export default function LandingPage() {
               </a>
             </div>
 
-            <div className="mt-6 flex items-center gap-3 justify-center lg:justify-start">
-              <div className="flex -space-x-2">
-                {[
-                  { initials: 'RK', gradient: 'from-blue-500 to-cyan-500' },
-                  { initials: 'PS', gradient: 'from-purple-500 to-pink-500' },
-                  { initials: 'AP', gradient: 'from-orange-500 to-red-500' },
-                  { initials: 'SK', gradient: 'from-green-500 to-emerald-500' },
-                ].map((user, i) => (
-                  <div
-                    key={i}
-                    className={`w-7 h-7 rounded-full bg-gradient-to-br ${user.gradient} border-2 flex items-center justify-center text-[9px] font-semibold text-white ${
-                      t('border-[#0a0a0f]', 'border-white')
-                    }`}
-                  >
-                    {user.initials}
-                  </div>
-                ))}
-              </div>
-              <div>
-                <div className="flex items-center gap-0.5 text-yellow-500">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-3 h-3 fill-current" />
-                  ))}
-                </div>
-                <p className={`text-[11px] ${th.textSubtle}`}>Loved by educators</p>
-              </div>
-            </div>
+            <p className={`mt-6 text-[11px] ${th.textSubtle}`}>
+              Web dashboard for admins · mobile app for teachers and parents
+            </p>
           </div>
 
           <div className="hero-image relative hidden lg:block">
@@ -1163,7 +1067,7 @@ export default function LandingPage() {
               </span>
             </h2>
             <p className={`text-sm ${th.textMuted}`}>
-              From attendance to analytics, we've got every aspect of school management covered.
+              From attendance to analytics, the essentials of running a school in one place.
             </p>
           </div>
 
@@ -1179,7 +1083,14 @@ export default function LandingPage() {
                 <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${feature.color} flex items-center justify-center mb-3 group-hover:scale-105 transition-transform duration-300`}>
                   <feature.icon className="w-4 h-4 text-white" />
                 </div>
-                <h3 className="text-sm font-semibold mb-1.5">{feature.title}</h3>
+                <h3 className="text-sm font-semibold mb-1.5 flex items-center gap-2">
+                  {feature.title}
+                  {'soon' in feature && feature.soon && (
+                    <span className="px-1.5 py-0.5 rounded-full border text-[9px] font-medium uppercase tracking-wide text-amber-500 border-amber-500/40">
+                      Soon
+                    </span>
+                  )}
+                </h3>
                 <p className={`text-xs leading-relaxed ${th.textMuted}`}>{feature.description}</p>
               </div>
             ))}
@@ -1280,10 +1191,10 @@ export default function LandingPage() {
                 <span className="block bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">Seconds</span>
               </h2>
               <p className={`text-sm mb-5 max-w-md mx-auto lg:mx-0 ${th.textMuted}`}>
-                One-tap attendance marking with instant parent notifications. Track trends and never miss a pattern.
+                One-tap attendance marking by class, on the web or the teacher app, with trends you can see at a glance.
               </p>
               <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-                {['One-tap marking', 'SMS alerts', 'Daily reports', 'Trend analysis'].map((item, i) => (
+                {['One-tap marking', 'By class and section', 'Teacher app', 'Attendance trends'].map((item, i) => (
                   <div key={i} className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs ${th.bgCard} ${th.textMuted}`}>
                     <CheckCircle2 className="w-3 h-3 text-emerald-400" />
                     {item}
@@ -1311,10 +1222,10 @@ export default function LandingPage() {
                 <span className="block bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Connected</span>
               </h2>
               <p className={`text-sm mb-5 max-w-md mx-auto lg:mx-0 ${th.textMuted}`}>
-                Real-time updates on attendance, fees, and announcements. Parents never miss important school information.
+                Parents follow attendance, fees and messages from the school, all in one app.
               </p>
               <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-                {['Push notifications', 'Fee payments', 'Direct chat', 'Report cards'].map((item, i) => (
+                {['Notifications', 'Fee status', 'Messages', 'Attendance'].map((item, i) => (
                   <div key={i} className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs ${th.bgCard} border ${th.border} ${th.textMuted}`}>
                     <CheckCircle2 className="w-3 h-3 text-purple-400" />
                     {item}
@@ -1586,43 +1497,27 @@ export default function LandingPage() {
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-8 sm:mb-10">
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2">
-              Why Schools Choose
-              <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent"> Us</span>
+              What&apos;s Live
+              <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent"> Today</span>
             </h2>
             <p className={`text-xs sm:text-sm ${th.textMuted}`}>
-              See how we compare to traditional software.
+              Everything marked Live works today. Items marked Soon are on the roadmap.
             </p>
           </div>
 
           <div className={`rounded-xl border overflow-hidden overflow-x-auto ${th.shadow} ${
             t('bg-white/[0.02] border-white/[0.06]', 'bg-white border-gray-200/80')
           }`}>
-            <div className={`grid grid-cols-3 p-3 sm:p-4 border-b text-xs font-semibold min-w-[320px] ${
-              t('bg-white/[0.03] border-white/[0.06]', 'bg-gray-50/80 border-gray-200/80')
-            }`}>
-              <div className={th.textSubtle}>Feature</div>
-              <div className={`text-center text-blue-500 rounded-t-md py-1 ${t('bg-blue-500/[0.05]', 'bg-blue-50/60')}`}>Masst Campus</div>
-              <div className={`text-center ${th.textSubtle}`}>Others</div>
-            </div>
             {comparisonFeatures.map((item, i) => (
-              <div key={i} className={`comparison-row grid grid-cols-3 p-2.5 sm:p-3 border-b last:border-0 text-xs min-w-[320px] ${
+              <div key={i} className={`comparison-row flex items-center justify-between p-2.5 sm:p-3 border-b last:border-0 text-xs ${
                 t('border-white/[0.04] hover:bg-white/[0.02]', 'border-gray-100 hover:bg-gray-50/50')
               } transition-colors`}>
-                <div className={`pr-2 ${th.textMuted}`}>{item.feature}</div>
-                <div className={`text-center -my-0.5 py-0.5 rounded-sm ${t('bg-blue-500/[0.05]', 'bg-blue-50/60')}`}>
-                  {typeof item.us === 'boolean' ? (
-                    item.us ? <Check className="w-4 h-4 text-emerald-500 mx-auto" /> : <X className="w-4 h-4 text-red-400 mx-auto" />
-                  ) : (
-                    <span className="text-emerald-500 font-semibold text-[10px]">{item.us}</span>
-                  )}
-                </div>
-                <div className="text-center">
-                  {typeof item.others === 'boolean' ? (
-                    item.others ? <Check className="w-4 h-4 text-emerald-500 mx-auto" /> : <X className="w-4 h-4 text-red-400/60 mx-auto" />
-                  ) : (
-                    <span className={`text-[10px] ${th.textSubtle}`}>{item.others}</span>
-                  )}
-                </div>
+                <div className={th.textMuted}>{item.feature}</div>
+                {item.live ? (
+                  <span className="inline-flex items-center gap-1 text-emerald-500 font-semibold text-[10px]"><Check className="w-3.5 h-3.5" />Live</span>
+                ) : (
+                  <span className="px-1.5 py-0.5 rounded-full border text-[9px] font-medium uppercase tracking-wide text-amber-500 border-amber-500/40">Soon</span>
+                )}
               </div>
             ))}
           </div>
@@ -1637,102 +1532,54 @@ export default function LandingPage() {
               t('bg-white/[0.03] border-white/[0.08]', 'bg-green-50 border-green-200/80')
             }`}>
               <CreditCard className="w-3.5 h-3.5 text-green-500" />
-              <span className={`text-xs font-medium ${t('text-white/70', 'text-green-700')}`}>Simple Pricing</span>
+              <span className={`text-xs font-medium ${t('text-white/70', 'text-green-700')}`}>Pricing</span>
             </div>
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2">
-              70% Cheaper Than
-              <span className="bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent"> Competitors</span>
+              Pricing That Fits
+              <span className="bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent"> Your School</span>
             </h2>
             <p className={`text-xs sm:text-sm ${th.textMuted}`}>
-              World-class features at prices that make sense for Indian schools.
+              We&apos;re working with our first schools on pricing. Tell us about yours and we&apos;ll put together a plan.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
-            {pricingTiers.map((tier, i) => (
-              <div
-                key={i}
-                className={`pricing-card relative p-5 rounded-xl border transition-all duration-300 hover:-translate-y-0.5 ${
-                  tier.popular
-                    ? `${t('bg-gradient-to-br from-blue-500/15 to-purple-500/15 border-blue-500/30', 'bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200/80')} ${th.shadow}`
-                    : t('bg-white/[0.02] border-white/[0.06] hover:border-white/[0.1]', 'bg-white border-gray-200/80 shadow-sm hover:shadow-md')
-                }`}
-              >
-                {tier.popular && (
-                  <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full text-[10px] font-semibold text-white shadow-md whitespace-nowrap">
-                    Most Popular
-                  </div>
-                )}
-                <h3 className="text-sm font-semibold mb-1">{tier.name}</h3>
-                <p className={`text-[10px] mb-3 ${th.textSubtle}`}>{tier.description}</p>
-                <div className="mb-4">
-                  <span className="text-xl font-bold">{tier.price}</span>
-                  <span className={`text-[10px] ${th.textSubtle}`}>{tier.period}</span>
-                </div>
-                <ul className="space-y-2 mb-5">
-                  {tier.features.map((feature, j) => (
-                    <li key={j} className="flex items-start gap-2 text-xs">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0 mt-0.5" />
-                      <span className={th.textMuted}>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <button className={`w-full py-2 rounded-lg text-xs font-medium transition-all ${
-                  tier.popular
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 hover:shadow-md hover:shadow-purple-500/20 text-white'
-                    : t('bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.06]', 'bg-gray-100 hover:bg-gray-200 border border-gray-200/80')
-                }`}>
-                  {tier.cta}
-                </button>
-              </div>
-            ))}
+          <div className={`pricing-card max-w-md mx-auto p-6 rounded-xl border text-center ${
+            t('bg-white/[0.02] border-white/[0.06]', 'bg-white border-gray-200/80 shadow-sm')
+          }`}>
+            <h3 className="text-sm font-semibold mb-1.5">Talk to us</h3>
+            <p className={`text-xs leading-relaxed mb-5 ${th.textMuted}`}>
+              Share your school&apos;s size and what you need, and we&apos;ll get back to you with pricing.
+            </p>
+            <a
+              href="https://www.linkedin.com/in/adityanarayan29"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 w-full py-2 rounded-lg text-xs font-medium bg-gradient-to-r from-blue-500 to-purple-500 hover:shadow-md hover:shadow-purple-500/20 text-white transition-all"
+            >
+              Talk to us
+              <ArrowRight className="w-3.5 h-3.5" />
+            </a>
           </div>
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section ref={testimonialsRef} id="testimonials" className={`py-14 sm:py-20 ${th.sectionAlt}`}>
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
-          <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border mb-4 ${
-              t('bg-white/[0.03] border-white/[0.08]', 'bg-amber-50 border-amber-200/80')
-            }`}>
-              <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-              <span className={`text-xs font-medium ${t('text-white/70', 'text-amber-700')}`}>Testimonials</span>
-            </div>
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">
-              Loved by Educators
-              <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent"> Across India</span>
-            </h2>
+      {/* Early Access Section */}
+      <section ref={testimonialsRef} id="early-access" className={`py-14 sm:py-20 ${th.sectionAlt}`}>
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
+          <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border mb-4 ${
+            t('bg-white/[0.03] border-white/[0.08]', 'bg-amber-50 border-amber-200/80')
+          }`}>
+            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            <span className={`text-xs font-medium ${t('text-white/70', 'text-amber-700')}`}>Early Access</span>
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {testimonials.map((testimonial, i) => (
-              <div
-                key={i}
-                className={`testimonial-card p-5 rounded-xl border transition-all duration-300 hover:-translate-y-0.5 ${
-                  t('bg-white/[0.02] border-white/[0.06] hover:border-white/[0.1]',
-                    'bg-white border-gray-200/80 shadow-sm hover:shadow-md')
-                }`}
-              >
-                <div className="flex items-center gap-0.5 text-amber-400 mb-3">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-3 h-3 fill-current" />
-                  ))}
-                </div>
-                <p className={`text-xs mb-4 leading-relaxed ${th.textMuted}`}>"{testimonial.quote}"</p>
-                <div className="flex items-center gap-2.5">
-                  <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${testimonial.gradient} flex items-center justify-center text-[10px] font-bold text-white shadow-md`}>
-                    {testimonial.avatar}
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium">{testimonial.author}</p>
-                    <p className={`text-[10px] ${th.textSubtle}`}>{testimonial.role}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-3">
+            Be One of Our
+            <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent"> First Schools</span>
+          </h2>
+          <p className={`text-xs sm:text-sm max-w-xl mx-auto ${th.textMuted}`}>
+            Masst Campus is new. We&apos;re onboarding our first schools now and building the next features
+            alongside them, so the things your school needs most shape what comes next.
+          </p>
         </div>
       </section>
 
@@ -1971,13 +1818,13 @@ export default function LandingPage() {
                 t('bg-white/[0.08] border border-white/[0.1]', 'bg-white/20 backdrop-blur-sm')
               }`}>
                 <Sparkles className="w-3 h-3 text-yellow-400" />
-                <span className={`text-[10px] font-medium ${t('text-white/80', 'text-white')}`}>Limited Time Offer</span>
+                <span className={`text-[10px] font-medium ${t('text-white/80', 'text-white')}`}>Early Access</span>
               </div>
               <h2 className={`text-xl sm:text-2xl md:text-3xl font-bold mb-3 ${t('', 'text-white')}`}>
                 Ready to Transform Your School?
               </h2>
               <p className={`text-xs sm:text-sm mb-5 max-w-md mx-auto ${t('text-white/70', 'text-white/90')}`}>
-                Join hundreds of schools already using Masst Campus. Start your free trial today.
+                Be one of the first schools on Masst Campus. Setting up takes minutes.
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-2.5">
                 <Link
@@ -1987,21 +1834,23 @@ export default function LandingPage() {
                       'bg-white text-purple-600 hover:bg-gray-100 shadow-md hover:shadow-lg')
                   }`}
                 >
-                  Start Free Trial
+                  Get Started
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                 </Link>
                 <a
-                  href="#"
+                  href="https://www.linkedin.com/in/adityanarayan29"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className={`px-5 py-2.5 rounded-lg text-xs font-medium transition-all border text-center ${
                     t('bg-white/[0.05] border-white/[0.15] hover:bg-white/[0.1]',
                       'bg-transparent border-white/40 text-white hover:bg-white/10 hover:border-white/60')
                   }`}
                 >
-                  Schedule Demo
+                  Talk to Us
                 </a>
               </div>
               <p className={`mt-4 text-[10px] ${t('text-white/50', 'text-white/70')}`}>
-                No credit card required • Free 14-day trial • Cancel anytime
+                Now onboarding our first schools
               </p>
             </div>
           </div>
@@ -2059,7 +1908,7 @@ export default function LandingPage() {
             </p>
             <div className={`flex items-center gap-1.5 ${th.textTiny}`}>
               <Globe className="w-3 h-3" />
-              <span className="text-[10px]">Available in 35+ countries</span>
+              <span className="text-[10px]">Made in India</span>
             </div>
           </div>
         </div>
